@@ -1,0 +1,33 @@
+{
+  "name": "skatteabc-client",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "debug": "NODE_OPTIONS='--inspect' next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@elastic/elasticsearch": "^8.13.1",
+    "dompurify": "^3.1.1",
+    "llamaindex": "^0.2.10",
+    "next": "14.2.2",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.4.19",
+    "daisyui": "^4.10.2",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.2",
+    "node-loader": "^2.0.0",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5"
+  }
+}
