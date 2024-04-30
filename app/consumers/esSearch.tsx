@@ -19,7 +19,6 @@ export async function searchMatchKeyword(searchText: string) {
         }
       }
     });
-    console.log('response', response);
     return unwrapESResponse(response)
   } catch (error) {
     console.error("Elasticsearch search error:", error);
@@ -28,12 +27,12 @@ export async function searchMatchKeyword(searchText: string) {
 }
 
 
-export async function searchMatchVector(searchText: string) {
+export async function searchMatchVector(searchText: string, searchRange: number) {
   try {
     const searchVector: number[] = await embedText(searchText);
     const esResponse = await client.search({
       index: process.env.ELASTICSEARCH_INDEX || 'index_skatt',
-      size: 1,
+      size: 10,
       knn: {
         field: "embedding",
         query_vector: searchVector,

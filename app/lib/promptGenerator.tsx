@@ -2,7 +2,7 @@
 
 export default function generatePromt(question: string, context: string[]) {
 
-    let query = 'Du er en ekspert på norske skattelover og skal svare så nyaktig og konkret som mulig på spørsmål som anngår skatteabc. referer til paragrafene du bruker i konteksten og pek hvor man kan lete i skatteabc-dokumentet for å lese videre. Strukturer dette på en lesbar måte som tolkes av html';
+    let query = 'Du er en ekspert på norske skattelover og skal svare konkret og kort på spørsmålet på norsk, bruk konteksten og referer til paragrafer. Del svaret opp i flere paragrafer. ';
 
     query += `\n\n Spørsmål: ${question} `;
     query += `\n\n Kontekst: ${context.join('\n')} `;

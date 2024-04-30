@@ -18,7 +18,7 @@ export async function embedText(text: string) {
 export async function queryChat(question: string, context: string[]) {
 
   const azureopenai = new OpenAI({
-    model: 'gpt-3.5-turbo-1106',
+    model: 'gpt-4-turbo',
     apiKey: process.env.OPENAI_API_KEY,
 
   })
@@ -29,6 +29,8 @@ export async function queryChat(question: string, context: string[]) {
 
   const chatParams = { messages: messages};
 
-  return await azureopenai.chat(chatParams);
-}
+  const response = await azureopenai.chat(chatParams);
 
+  return response.message.content
+
+}

@@ -5,12 +5,13 @@ import { queryChat } from '@/app/consumers/openAi';
 
 export async function POST(request: NextRequest) {
   try {
-    const { searchText } = await request.json();
-    console.log('searchText', searchText);
-    const esResponse = await searchMatchVector(searchText)
+    const { searchText, searchRange } = await request.json();
+    const esResponse = await searchMatchVector(searchText, searchRange)
     const openaiResponse = await queryChat(searchText, esResponse)
+
+    const response = Response.json({openaiResponse});
     
-    return Response.json({openaiResponse});
+    return response
   } catch (error) {
     console.error('Elasticsearch query error:', error);
     Response.json({ error: 'Error fetching data from Elasticsearch' });
