@@ -1,22 +1,23 @@
 'use client'
 import { useState } from "react";
-import SafeHtmlRenderer from "./renderHTML";
-import RangeBar from "./rangeBar";
+import ModelSelectDropdown from "./ModelSelectDropdown";
+import { ALL_MODELS, DEFAULT_MODEL } from "../constants.ts/opanAiParameters";
 
 
 export default function SearchBar() {
 
     const [searchInput, setSearch] = useState('');
-    const [searchRange, setSearchRange] = useState(1)
+    const [modelSelect, setModelSelect] = useState(DEFAULT_MODEL)
     const [searchResponse, setSearchResponse] = useState(null);
+    const [documentsResponse, setDocumentsResponse] = useState(['']);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(event.target.value);
     }
 
-    const handleRangeChange = (newRangee: number) => {
-        setSearchRange(newRangee);
+    const handleModelSelect = (model: string) => {
+        setModelSelect(model);
     };
 
     const handeButtonClick = async () => {
@@ -27,13 +28,14 @@ export default function SearchBar() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ searchText: searchInput, searchRange: searchRange }),
+                body: JSON.stringify({ searchText: searchInput, modelSelect: modelSelect }),
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
             setSearchResponse(data.openaiResponse);
+            setDocumentsResponse(data.esResponse);
         } catch (error) {
             console.error('Error fetching search results:', error);
         }
@@ -60,14 +62,17 @@ export default function SearchBar() {
                 <button className="btn btn-primary mr-10" disabled={isLoading || searchInput === ""} onClick={handeButtonClick}>
                     Spør
                 </button>
-                <RangeBar value={searchRange} onChange={handleRangeChange}></RangeBar>
+                <ModelSelectDropdown models={ALL_MODELS} onSelect={handleModelSelect}></ModelSelectDropdown>
             </div>
             <div className="divider p-12"></div>
             <div className="px-40 pb-20">
             {isLoading && <p className="text-center">Loading...</p>}
             {!isLoading && searchResponse !== null && (
-                <div style={{whiteSpace: "pre-line"}}>
-                    <p>{searchResponse}</p>
+                <div>
+                    <div className="text-left" style={{whiteSpace: "pre-line"}}>
+                        <p>{searchResponse}</p>
+                    </div>
+                    <div className="divider p-12"></div>
                 </div>
             )}
             </div>

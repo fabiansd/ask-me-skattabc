@@ -5,11 +5,11 @@ import { queryChat } from '@/app/consumers/openAi';
 
 export async function POST(request: NextRequest) {
   try {
-    const { searchText, searchRange } = await request.json();
-    const esResponse = await searchMatchVector(searchText, searchRange)
-    const openaiResponse = await queryChat(searchText, esResponse)
+    const { searchText, modelSelect } = await request.json();
+    const esResponse = await searchMatchVector(searchText)
+    const openaiResponse = await queryChat(searchText, esResponse, modelSelect)
 
-    const response = Response.json({openaiResponse});
+    const response = Response.json({openaiResponse, esResponse});
     
     return response
   } catch (error) {

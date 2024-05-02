@@ -1,11 +1,12 @@
-import { OpenAI, OpenAIEmbedding, Settings, Message } from "llamaindex";
+import { ChatMessage, OpenAI, OpenAIEmbedding, Settings } from "llamaindex";
 import generatePromt from "../lib/promptGenerator";
+import { OPENAI_EMBEDDING_MODEL } from "../constants.ts/opanAiParameters";
 
 
 export async function embedText(text: string) {
 
   Settings.embedModel = new OpenAIEmbedding({
-    model: process.env.OPENAI_EMBEDDING_MODEL,
+    model: OPENAI_EMBEDDING_MODEL,
     apiKey: process.env.OPENAI_API_KEY,
 
     }
@@ -15,17 +16,17 @@ export async function embedText(text: string) {
 
 }
 
-export async function queryChat(question: string, context: string[]) {
+export async function queryChat(question: string, context: string[], modelSelect: string) {
 
   const azureopenai = new OpenAI({
-    model: 'gpt-4-turbo',
+    model: modelSelect || 'gpt-4-turbo',
     apiKey: process.env.OPENAI_API_KEY,
 
   })
 
   const query = generatePromt(question, context)
 
-  const messages: Message[] = [{role: 'user', content: query}];
+  const messages: ChatMessage[] = [{role: 'user', content: query}];
 
   const chatParams = { messages: messages};
 
