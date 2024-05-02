@@ -20,6 +20,7 @@ export async function searchMatchKeyword(searchText: string) {
         }
       }
     });
+    console.log('ES keyword search retreived ')
     return unwrapESResponse(response)
   } catch (error) {
     console.error("Elasticsearch search error:", error);
@@ -42,6 +43,7 @@ export async function searchMatchVector(searchText: string) {
         boost: 0.1,
         }
       });
+    console.log('ES vector search retreived ')
     return unwrapESResponse(esResponse)
   } catch (error) {
     console.error("Elasticsearch search error:", error);

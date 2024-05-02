@@ -5,33 +5,45 @@ import { OPENAI_EMBEDDING_MODEL } from "../constants.ts/opanAiParameters";
 
 export async function embedText(text: string) {
 
-  Settings.embedModel = new OpenAIEmbedding({
-    model: OPENAI_EMBEDDING_MODEL,
-    apiKey: process.env.OPENAI_API_KEY,
-
-    }
-  );
-
-  return await Settings.embedModel.getTextEmbedding(text);
-
+  try {    
+    Settings.embedModel = new OpenAIEmbedding({
+      model: OPENAI_EMBEDDING_MODEL,
+      apiKey: process.env.OPENAI_API_KEY,
+  
+      }
+    );
+    
+    const embeddedVector = await Settings.embedModel.getTextEmbedding(text);
+    console.log('Embedding successful');
+    return embeddedVector;
+  } catch(error) {
+    console.error('Error getting embedding ')
+    throw error;
+  }
 }
 
 export async function queryChat(question: string, context: string[], modelSelect: string) {
 
-  const azureopenai = new OpenAI({
-    model: modelSelect || 'gpt-4-turbo',
-    apiKey: process.env.OPENAI_API_KEY,
-
-  })
-
-  const query = generatePromt(question, context)
-
-  const messages: ChatMessage[] = [{role: 'user', content: query}];
-
-  const chatParams = { messages: messages};
-
-  const response = await azureopenai.chat(chatParams);
-
-  return response.message.content
-
+  try {
+    console.log('Query openai -> model: ', modelSelect, ' query: ', question)
+    const openai = new OpenAI({
+      model: modelSelect || 'gpt-4-turbo',
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+    console.log('Connection to openai successful ')
+    
+    const query = generatePromt(question, context)
+    
+    const messages: ChatMessage[] = [{role: 'user', content: query}];
+    
+    const chatParams = { messages: messages};
+    
+    const response = await openai.chat(chatParams);
+    
+    console.log('Query successful: ', response)
+    
+    return response.message.content
+  } catch(error) {
+    console.error('Error querying openai, ', error)
+  }
 }

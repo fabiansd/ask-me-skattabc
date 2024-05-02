@@ -23,6 +23,7 @@ export default function SearchBar() {
     const handeButtonClick = async () => {
         setIsLoading(true);
         try {
+            console.log('API call -> searchText: ',searchInput, ' Model: ', modelSelect)
             const response = await fetch(`/api/elasticsearch/match_all`, {
                 method: 'POST',
                 headers: {
@@ -34,6 +35,7 @@ export default function SearchBar() {
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
+            console.log('Client API call successfull: ', data)
             setSearchResponse(data.openaiResponse);
             setDocumentsResponse(data.esResponse);
         } catch (error) {

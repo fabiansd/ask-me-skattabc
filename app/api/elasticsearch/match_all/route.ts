@@ -6,6 +6,7 @@ import { queryChat } from '@/app/consumers/openAi';
 export async function POST(request: NextRequest) {
   try {
     const { searchText, modelSelect } = await request.json();
+    console.log('Search text: ', searchText, ' with model: ', modelSelect)
     const esResponse = await searchMatchVector(searchText)
     const openaiResponse = await queryChat(searchText, esResponse, modelSelect)
 
@@ -13,7 +14,7 @@ export async function POST(request: NextRequest) {
     
     return response
   } catch (error) {
-    console.error('Elasticsearch query error:', error);
-    Response.json({ error: 'Error fetching data from Elasticsearch' });
+    console.error('Prompt query error:', error);
+    Response.json({ error: 'Error generating answer' });
   }
 }
