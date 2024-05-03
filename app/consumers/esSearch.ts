@@ -1,7 +1,6 @@
-import { ELASTICSEARCH_INDEX_SKATT, ES_KNN_NUMBER, ES_VECTOR_SEARCH_SIZE } from "../constants.ts/esParameters";
+import { ELASTICSEARCH_INDEX_SKATT, ES_KNN_NUMBER } from "../constants.ts/esParameters";
 import { client } from "../lib/esClient";
 import { unwrapESResponse } from "../lib/esUtil";
-import { embedText, queryChat } from "./openAi";
 
 
 export async function healthCheck() {
@@ -39,13 +38,11 @@ export async function searchMatchKeyword(searchText: string) {
   }
 }
 
-
-export async function searchMatchVector(searchText: string) {
+export async function searchMatchVector(searchVector: number[], index: string, size: number) {
   try {
-    const searchVector: number[] = await embedText(searchText);
     const esResponse = await client.search({
-      index: ELASTICSEARCH_INDEX_SKATT || 'index_skatt',
-      size: ES_VECTOR_SEARCH_SIZE,
+      index: index,
+      size: size,
       knn: {
         field: "embedding",
         query_vector: searchVector,
@@ -54,7 +51,7 @@ export async function searchMatchVector(searchText: string) {
         boost: 0.1,
         }
       });
-    console.log('ES vector search retreived ')
+    console.log('ES vector search retreived: ', esResponse)
     return unwrapESResponse(esResponse)
   } catch (error) {
     console.error("Elasticsearch search error:", error);

@@ -28,7 +28,15 @@ RUN npm ci --include=dev
 COPY --link . .
 
 # Build application
-RUN npm run build
+RUN --mount=type=secret,id=ELASTICSEARCH_URL \
+    --mount=type=secret,id=OPENAI_API_KEY \
+    --mount=type=secret,id=ELASTICSEARCH_USER \
+    --mount=type=secret,id=ELASTICSEARCH_PASSWORD \
+    ELASTICSEARCH_URL="$(cat /run/secrets/ELASTICSEARCH_URL)" \
+    OPENAI_API_KEY="$(cat /run/secrets/OPENAI_API_KEY)" \
+    ELASTICSEARCH_USER="$(cat /run/secrets/ELASTICSEARCH_USER)" \
+    ELASTICSEARCH_PASSWORD="$(cat /run/secrets/ELASTICSEARCH_PASSWORD)" \
+    npm run build
 
 # Remove development dependencies
 RUN npm prune --omit=dev

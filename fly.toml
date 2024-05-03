@@ -6,7 +6,7 @@
 app = 'ask-me-skattabc-young-violet-4122'
 primary_region = 'arn'
 kill_signal = 'SIGINT'
-kill_timeout = '60m'
+kill_timeout = '10m'
 
 [build]
 
@@ -19,6 +19,6 @@ kill_timeout = '60m'
   processes = ['app']
 
 [[vm]]
-  memory = '1gb'
+  memory = '1.5gb'
   cpu_kind = 'shared'
   cpus = 1

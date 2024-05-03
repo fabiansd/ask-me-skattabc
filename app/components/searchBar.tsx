@@ -2,7 +2,8 @@
 import { useState } from "react";
 import ModelSelectDropdown from "./ModelSelectDropdown";
 import { ALL_MODELS, DEFAULT_MODEL } from "../constants.ts/opanAiParameters";
-import EsHealth from "./esPingHealth";
+import GptResponseDisplay from "./gptResponseDisplay";
+import ParagraphsDisplay from "./paragraphsDisplay";
 
 
 export default function SearchBar() {
@@ -10,7 +11,7 @@ export default function SearchBar() {
     const [searchInput, setSearch] = useState('');
     const [modelSelect, setModelSelect] = useState(DEFAULT_MODEL)
     const [searchResponse, setSearchResponse] = useState(null);
-    const [documentsResponse, setDocumentsResponse] = useState(['']);
+    const [paragraphsResponse, setParagraphsResponse] = useState(['']);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,7 +39,7 @@ export default function SearchBar() {
             const data = await response.json();
             console.log('Client API call successfull: ', data)
             setSearchResponse(data.openaiResponse);
-            setDocumentsResponse(data.esResponse);
+            setParagraphsResponse(data.esParagraphSearch);
         } catch (error) {
             console.error('Error fetching search results:', error);
         }
@@ -72,10 +73,9 @@ export default function SearchBar() {
             {isLoading && <p className="text-center">Loading...</p>}
             {!isLoading && searchResponse !== null && (
                 <div>
-                    <div className="text-left" style={{whiteSpace: "pre-line"}}>
-                        <p>{searchResponse}</p>
-                    </div>
-                    <div className="divider p-12"></div>
+                    <GptResponseDisplay searchResponse={searchResponse}/>
+                    <div className="divider p-12"> Relevant paragrafer</div>
+                    <ParagraphsDisplay paragraphs={paragraphsResponse}/>
                 </div>
             )}
             </div>
