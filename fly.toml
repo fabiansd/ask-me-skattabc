@@ -1,0 +1,24 @@
+# fly.toml app configuration file generated for ask-me-skattabc-young-violet-4122 on 2024-05-03T10:26:49+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'ask-me-skattabc-young-violet-4122'
+primary_region = 'arn'
+kill_signal = 'SIGINT'
+kill_timeout = '60m'
+
+[build]
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1

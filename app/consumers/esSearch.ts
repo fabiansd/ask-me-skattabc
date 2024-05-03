@@ -4,6 +4,17 @@ import { unwrapESResponse } from "../lib/esUtil";
 import { embedText, queryChat } from "./openAi";
 
 
+export async function healthCheck() {
+  try {
+    const pingResponse = await client.ping()
+    console.log('ES health check passed ')
+    return pingResponse;
+  } catch (error) {
+    console.error('ES health check failed ')
+    throw error
+  }
+}
+
 export async function searchMatchKeyword(searchText: string) {
   try {
     const response = await client.search({

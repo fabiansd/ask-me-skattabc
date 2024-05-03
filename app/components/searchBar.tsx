@@ -2,6 +2,7 @@
 import { useState } from "react";
 import ModelSelectDropdown from "./ModelSelectDropdown";
 import { ALL_MODELS, DEFAULT_MODEL } from "../constants.ts/opanAiParameters";
+import EsHealth from "./esPingHealth";
 
 
 export default function SearchBar() {

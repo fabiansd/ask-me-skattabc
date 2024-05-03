@@ -18,6 +18,7 @@
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -29,5 +30,13 @@
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
     "typescript": "^5"
+  },
+  "dockerfile": {
+    "secrets": [
+      "ELASTICSEARCH_URL",
+      "OPENAI_API_KEY",
+      "ELASTICSEARCH_USER",
+      "ELASTICSEARCH_PASSWORD"
+    ]
   }
 }

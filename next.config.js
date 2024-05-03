@@ -1,6 +1,7 @@
 // next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    output: "standalone",
     experimental: {
       serverComponentsExternalPackages: [
         "pdf2json",
