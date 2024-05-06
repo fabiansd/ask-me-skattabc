@@ -1,11 +1,12 @@
-// lib/esClient.ts
 import { Client } from '@elastic/elasticsearch';
 
 
+const ELASTIC_USERNAME = 'elastic';
+
 export const client = new Client({
     auth: {
-        username: 'elastic',
-        password: 'abc',
+        username: ELASTIC_USERNAME,
+        password: process.env.ELASTIC_PASSWORD || '',
     },
-    node: process.env.ELASTICSEARCH_URL || 'http://localhost:9200'
+    node: process.env.ELASTICSEARCH_URL || ''
 });

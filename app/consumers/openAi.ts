@@ -9,7 +9,6 @@ export async function embedText(text: string) {
     Settings.embedModel = new OpenAIEmbedding({
       model: OPENAI_EMBEDDING_MODEL,
       apiKey: process.env.OPENAI_API_KEY,
-  
       }
     );
     
@@ -29,6 +28,7 @@ export async function queryChat(question: string, context: string[], modelSelect
     const openai = new OpenAI({
       model: modelSelect || 'gpt-4-turbo',
       apiKey: process.env.OPENAI_API_KEY,
+      temperature: 0,
     })
     console.log('Connection to openai successful ')
     
