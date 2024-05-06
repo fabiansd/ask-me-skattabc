@@ -1,4 +1,4 @@
-import { healthCheck } from '@/app/consumers/esSearch';
+import { healthCheck } from '@/app/consumers/esSearchConsumer';
 
 
 export async function GET() {

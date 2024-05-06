@@ -1,4 +1,4 @@
-import { ELASTICSEARCH_INDEX_SKATT, ES_KNN_NUMBER } from "../constants.ts/esParameters";
+import { ELASTICSEARCH_INDEX_SKATT, ES_KNN_NUMBER } from "../constants/esParameters";
 import { client } from "../lib/esClient";
 import { unwrapESResponse } from "../lib/esUtil";
 
@@ -33,7 +33,7 @@ export async function searchMatchKeyword(searchText: string) {
     console.log('ES keyword search retreived ')
     return unwrapESResponse(response)
   } catch (error) {
-    console.error("Elasticsearch search error:", error);
+    console.error("Elasticsearch search error: ", error);
     throw error;
   }
 }

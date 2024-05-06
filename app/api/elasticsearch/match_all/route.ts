@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { searchMatchVector } from '@/app/consumers/esSearch';
-import { embedText, queryChat } from '@/app/consumers/openAi';
-import { ELASTICSEARCH_INDEX_SKATT, ELASTICSEARCH_INDEX_SKATT_PARA, ES_VECTOR_SEARCH_SIZE_SKATT, ES_VECTOR_SEARCH_SIZE_SKATT_PARA } from '@/app/constants.ts/esParameters';
+import { searchMatchVector } from '@/app/consumers/esSearchConsumer';
+import { embedText, queryChat } from '@/app/consumers/openAiConsumer';
+import { ELASTICSEARCH_INDEX_SKATT, ELASTICSEARCH_INDEX_SKATT_PARA, ES_VECTOR_SEARCH_SIZE_SKATT, ES_VECTOR_SEARCH_SIZE_SKATT_PARA } from '@/app/constants/esParameters';
 
 
 export async function POST(request: NextRequest) {

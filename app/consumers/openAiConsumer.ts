@@ -1,6 +1,6 @@
 import { ChatMessage, OpenAI, OpenAIEmbedding, Settings } from "llamaindex";
 import generatePromt from "../lib/promptGenerator";
-import { OPENAI_EMBEDDING_MODEL } from "../constants.ts/opanAiParameters";
+import { OPENAI_EMBEDDING_MODEL } from "../constants/opanAiParameters";
 
 
 export async function embedText(text: string) {

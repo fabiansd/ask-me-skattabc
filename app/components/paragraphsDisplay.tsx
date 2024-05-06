@@ -9,7 +9,7 @@ interface ParagraphsDisplayProps {
 const ParagraphsDisplay = ({ paragraphs }: ParagraphsDisplayProps) => {
   return (
     <div className="p-4">
-      {paragraphs.map((paragraph, index) => (
+      {!!paragraphs && paragraphs.map((paragraph, index) => (
         <div key={index} className="p-4 mb-6 text-left bg-base-300 rounded-box shadow">
           <GptResponseDisplay searchResponse={paragraph}/>
         </div>
