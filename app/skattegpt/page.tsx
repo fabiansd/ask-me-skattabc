@@ -5,20 +5,25 @@ import { ALL_MODELS, DEFAULT_MODEL } from "../constants/opanAiParameters";
 import GptResponseDisplay from "../components/gptResponseDisplay";
 import ParagraphsDisplay from "../components/paragraphsDisplay";
 import { SearchState } from "../interface/skattSokInterface";
-import usePersistedSearchResponse from "../lib/persinstenStateUtil";
 
 
-export const initialSearchResponse: SearchState = {
+const initialSearchResponse: SearchState = {
     queryResponse: '',
     paragraphsResponse: [''],
 };
 
-
 export default function Search() {
-    const [serachResponse, setSearchResponse] = usePersistedSearchResponse('searchData', initialSearchResponse);
+    //const [serachResponse, setSearchResponse] = usePersistedSearchResponse('searchData', initialSearchResponse);
+    //let savedSearchResponse = initialSearchResponse;
+    const [searchResponse, setSearchResponse] = useState(initialSearchResponse);
     const [isLoading, setIsLoading] = useState(false);
     const [searchInput, setSearchInput] = useState('');
     const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
+
+    useEffect(() => {
+        const savedSearchResponse = localStorage.getItem('searchResponse');
+        setSearchResponse(savedSearchResponse ? JSON.parse(savedSearchResponse) : initialSearchResponse);
+    }, []);
 
     const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(event.target.value);
@@ -30,7 +35,6 @@ export default function Search() {
 
     const handeButtonClick = async () => {
         setIsLoading(true);
-        setSearchResponse(prev => ({ ...prev }));
         try {
             console.log('API call -> searchText: ', searchInput, ' Model: ', selectedModel);
             const response = await fetch(`/api/elasticsearch/match_all`, {
@@ -43,14 +47,14 @@ export default function Search() {
             }
             const data = await response.json();
             console.log('Client API call successful: ', data);
-            setSearchResponse(prev => ({
-                ...prev,
+            const newSearchResponse = {
                 queryResponse: data.openaiResponse,
-                paragraphsResponse: data.esParagraphSearch,
-            }));
+                paragraphsResponse: data.esParagraphSearch
+            };
+            setSearchResponse(newSearchResponse);    
+            localStorage.setItem('searchResponse', JSON.stringify(newSearchResponse));
         } catch (error) {
             console.error('Error fetching search results:', error);
-            setSearchResponse(prev => ({ ...prev }));
         }
         setIsLoading(false);
     };
@@ -80,11 +84,11 @@ export default function Search() {
             <div className="divider p-12"></div>
             <div className="px-40 pb-20">
                 {isLoading && <p className="text-center">Loading...</p>}
-                {!isLoading && serachResponse?.queryResponse !== null && (
+                {!isLoading && searchResponse?.queryResponse !== null && (
                     <div suppressHydrationWarning={true}>
-                        <GptResponseDisplay searchResponse={serachResponse.queryResponse} />
+                        <GptResponseDisplay searchResponse={searchResponse.queryResponse} />
                         <div className="divider p-12">Relevant paragrafer</div>
-                        <ParagraphsDisplay paragraphs={serachResponse.paragraphsResponse} />
+                        <ParagraphsDisplay paragraphs={searchResponse.paragraphsResponse} />
                     </div>
                 )}
             </div>
