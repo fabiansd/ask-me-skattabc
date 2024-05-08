@@ -10,7 +10,9 @@ interface GptResponseDisplayProps {
 const GptResponseDisplay = ({ searchResponse }: GptResponseDisplayProps) => {
   return (
     <div className="text-left" style={{ whiteSpace: "pre-line" }}>
-      <ReactMarkdown>{searchResponse}</ReactMarkdown>
+      {!!searchResponse &&
+        <ReactMarkdown>{searchResponse}</ReactMarkdown>
+      }
     </div>
   );
 };

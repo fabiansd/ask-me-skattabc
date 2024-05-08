@@ -8,6 +8,7 @@ export default function usePersistedState<T>(key: string, defaultValue: T): [T, 
             const savedState = localStorage.getItem(key);
             return savedState ? JSON.parse(savedState) : defaultValue;
         }
+        return defaultValue;
     });
 
     useEffect(() => {
