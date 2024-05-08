@@ -33,7 +33,7 @@ RUN --mount=type=secret,id=ELASTICSEARCH_URL \
     --mount=type=secret,id=ELASTIC_PASSWORD \
     ELASTICSEARCH_URL="$(cat /run/secrets/ELASTICSEARCH_URL)" \
     OPENAI_API_KEY="$(cat /run/secrets/OPENAI_API_KEY)" \
-    ELASTICSEARCH_PASSWORD="$(cat /run/secrets/ELASTIC_PASSWORD)" \
+    ELASTIC_PASSWORD="$(cat /run/secrets/ELASTIC_PASSWORD)" \
     npm run build
 
 # Remove development dependencies
