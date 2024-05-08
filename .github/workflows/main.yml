@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+
 jobs:
   deploy:
     name: Deploy skatteabc
@@ -11,9 +12,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
+
+      - name: Deploy with Fly.io
+        run: |
+          flyctl deploy --remote-only \
+            --build-secret ELASTICSEARCH_URL=${{ secrets.ELASTICSEARCH_URL }} \
+            --build-secret OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
+            --build-secret ELASTIC_PASSWORD=${{ secrets.ELASTIC_PASSWORD }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-          ELASTICSEARCH_URL: ${{ secrets.ELASTICSEARCH_URL }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          ELASTIC_PASSWORD: ${{ secrets.ELASTIC_PASSWORD }}
