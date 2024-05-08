@@ -1,6 +1,6 @@
 import { ChatMessage, OpenAI, OpenAIEmbedding, Settings } from "llamaindex";
 import generatePromt from "../lib/promptGenerator";
-import { OPENAI_EMBEDDING_MODEL } from "../constants/opanAiParameters";
+import { DEFAULT_MODEL, OPENAI_EMBEDDING_MODEL } from "../constants/opanAiParameters";
 
 
 export async function embedText(text: string) {
@@ -21,12 +21,12 @@ export async function embedText(text: string) {
   }
 }
 
-export async function queryChat(question: string, context: string[], modelSelect: string) {
+export async function queryChat(question: string, context: string[]) {
 
   try {
-    console.log('Query openai -> model: ', modelSelect, ' query: ', question)
+    console.log('Query openai -> query: ', question)
     const openai = new OpenAI({
-      model: modelSelect || 'gpt-4-turbo',
+      model: DEFAULT_MODEL || 'gpt-4-turbo',
       apiKey: process.env.OPENAI_API_KEY,
       temperature: 0,
     })

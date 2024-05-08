@@ -1,5 +1,4 @@
 import Link from "next/link"
-import NavBar from "../components/navbar"
 import EsHealth from "../components/esPingHealth"
 
 export default function SearchLayout({
