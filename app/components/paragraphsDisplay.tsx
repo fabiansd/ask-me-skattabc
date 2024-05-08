@@ -8,14 +8,15 @@ interface ParagraphsDisplayProps {
 
 const ParagraphsDisplay = ({ paragraphs }: ParagraphsDisplayProps) => {
   return (
-    <div className="p-4">
+    <div className="carousel rounded-box">
       {!!paragraphs && paragraphs.map((paragraph, index) => (
-        <div key={index} className="p-4 mb-6 text-left bg-base-300 rounded-box shadow">
+        <div key={index} className="carousel-item p-4 m-6 text-left bg-base-300 rounded-box shadow inline-block">
           <GptResponseDisplay searchResponse={paragraph}/>
         </div>
       ))}
     </div>
   );
 };
+
 
 export default ParagraphsDisplay;

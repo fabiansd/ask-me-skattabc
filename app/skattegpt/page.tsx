@@ -87,7 +87,7 @@ export default function Search() {
                 {!isLoading && searchResponse?.queryResponse !== null && (
                     <div suppressHydrationWarning={true}>
                         <GptResponseDisplay searchResponse={searchResponse.queryResponse} />
-                        <div className="divider p-12">Relevant paragrafer</div>
+                        <div className="divider p-12">Relevante paragrafer</div>
                         <ParagraphsDisplay paragraphs={searchResponse.paragraphsResponse} />
                     </div>
                 )}
