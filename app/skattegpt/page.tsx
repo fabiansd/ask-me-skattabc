@@ -24,7 +24,6 @@ export default function Search() {
             setSearchHistory(savedHistoryList);
             if (savedHistoryList.length > 0) {
                 const latestSearch = savedHistoryList[savedHistoryList.length - 1];
-                console.log('useeffect latest search', latestSearch)
                 setSearchResponse(latestSearch);
                 setSearchInput(latestSearch.searchInput);
             }
@@ -42,7 +41,6 @@ export default function Search() {
     };
 
     const handleHistorySelect = (selectedSearch: SearchState) => {
-        console.log('handleHistorySelect', selectedSearch)
         setSearchResponse(selectedSearch);
         setSearchInput(selectedSearch.searchInput);
     };
@@ -100,7 +98,7 @@ export default function Search() {
             <div className="divider p-12"></div>
             <div className="px-40 pb-20">
                 {isLoading && <p className="text-center">Loading...</p>}
-                {!isLoading && searchResponse?.queryResponse !== null && (
+                {!isLoading && searchResponse !== initialSearchResponse && (
                     <div>
                         <GptResponseDisplay searchResponse={searchResponse.queryResponse} />
                         <div className="divider p-12">Relevante paragrafer</div>
