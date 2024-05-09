@@ -17,7 +17,7 @@ export default function NavBar() {
         </div>
         <div className="navbar-center justify-center items-center">
             <Link href="/skattegpt">
-                <h1 className="text-4xl font-bold">Velkommen til SkatteGPT</h1>
+                <h1 className="text-4xl font-bold">SkatteGPT</h1>
           </Link>
         </div>
         </div>

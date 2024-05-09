@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from "react";
-import GptResponseDisplay from "../components/gptResponseDisplay";
+import GptResponseDisplay from "../components/markdownTextDisplay";
 import ParagraphsDisplay from "../components/paragraphsDisplay";
 import { SearchState } from "../interface/skattSokInterface";
 import HistoryDropdownSelect from "../components/historyDropdownSelect.tsx";
@@ -81,16 +81,16 @@ export default function Search() {
 
     return (
         <div>
-            <div className="flex justify-center padding-bottom-30">
+            <div className="flex justify-center">
                 <input
                     type="text"
                     placeholder="Spør meg om skatt"
-                    className="input input-bordered mr-10 w-full max-w-lg"
+                    className="input input-bordered mr-10 w-full max-w-2xl m-1"
                     value={searchInput}
                     onChange={handleSearchInputChange}
                     onKeyDown={handleKeyPress}
                 />
-                <button className="btn btn-primary mr-10" disabled={isLoading || searchInput === ""} onClick={handeButtonClick}>
+                <button className="btn bg-sky-700 hover:bg-sky-800 text-white font-bold m-1 px-6 rounded mr-10" disabled={isLoading || searchInput === ""} onClick={handeButtonClick}>
                     Spør
                 </button>
                 <HistoryDropdownSelect searchHistory={searchHistory} onSelect={handleHistorySelect}></HistoryDropdownSelect>

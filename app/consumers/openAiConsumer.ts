@@ -1,6 +1,6 @@
 import { ChatMessage, OpenAI, OpenAIEmbedding, Settings } from "llamaindex";
-import generatePromt from "../lib/promptGenerator";
 import { DEFAULT_MODEL, OPENAI_EMBEDDING_MODEL } from "../constants/opanAiParameters";
+import { generateConcretePromt } from "../lib/promptGenerator";
 
 
 export async function embedText(text: string) {
@@ -32,7 +32,7 @@ export async function queryChat(question: string, context: string[]) {
     })
     console.log('Connection to openai successful ')
     
-    const query = generatePromt(question, context)
+    const query = generateConcretePromt(question, context)
     
     const messages: ChatMessage[] = [{role: 'user', content: query}];
     

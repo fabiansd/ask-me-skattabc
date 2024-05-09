@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-import GptResponseDisplay from './gptResponseDisplay';
+import GptResponseDisplay from './markdownTextDisplay';
 
 interface ParagraphsDisplayProps {
   paragraphs: string[];

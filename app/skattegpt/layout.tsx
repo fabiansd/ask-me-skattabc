@@ -11,7 +11,7 @@ export default function SearchLayout({
         <div className="relative p-10 mb-10 text-center">
           <Link href="/skattegpt">
             <div className="relative">
-              <h1 className="text-4xl font-bold inline-block">Velkommen til SkatteGPT</h1>
+              <h1 className="text-4xl font-bold inline-block">SkatteGPT</h1>
               <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
                 <EsHealth />
               </div>
