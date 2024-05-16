@@ -1,4 +1,5 @@
 import React from 'react';
+import EsHealth from '../esPingHealth';
 
 const Header = () => {
   return (
@@ -12,6 +13,9 @@ const Header = () => {
             </ul>
         </div>
         <div className="navbar-end">
+            <div className='pr-8'>
+                <EsHealth/>
+            </div>
             <a className="btn">Login</a>
         </div>
         </div>
