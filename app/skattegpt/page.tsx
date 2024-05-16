@@ -1,11 +1,12 @@
 'use client'
 import { useEffect, useState } from "react";
-import GptResponseDisplay from "../components/markdownTextDisplay";
-import ParagraphsDisplay from "../components/paragraphsDisplay";
+import GptResponseDisplay from "../components/textManagement/markdownTextDisplay";
+import ParagraphsDisplay from "../components/textManagement/paragraphsDisplay";
 import { SearchState } from "../interface/skattSokInterface";
 import HistoryDropdownSelect from "../components/localStorage/historyDropdownSelect.tsx";
 import DeleteLocalStorage from "../components/localStorage/clearLocalStorage";
 import ToggleSwitch from "../components/toogleModelDepth";
+import DownloadCSV from "../components/textManagement/csvRapport";
 
 
 const initialSearchResponse: SearchState = {
@@ -109,6 +110,7 @@ export default function Search() {
                     textB="Detaljert" 
                 />
                 <HistoryDropdownSelect searchHistory={searchHistory} onSelect={handleHistorySelect}/>
+                <DownloadCSV searchResponse={searchResponse} />
                 <DeleteLocalStorage/>
             </div>
             <div className="divider"></div>
