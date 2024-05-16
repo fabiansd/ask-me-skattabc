@@ -6,7 +6,7 @@ import { ELASTICSEARCH_INDEX_SKATT, ELASTICSEARCH_INDEX_SKATT_PARA, ES_VECTOR_SE
 
 export async function POST(request: NextRequest) {
   try {
-    const { searchText } = await request.json();
+    const { searchText, isDetailed } = await request.json();
     console.log('Search text: ', searchText)
 
     const searchVector: number[] = await embedText(searchText);
@@ -25,7 +25,8 @@ export async function POST(request: NextRequest) {
 
     const openaiResponse = await queryChat(
       searchText, 
-      esChunkSearch
+      esChunkSearch,
+      isDetailed
     );
 
     const response = Response.json({openaiResponse, esParagraphSearch});

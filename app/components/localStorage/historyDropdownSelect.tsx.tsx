@@ -1,7 +1,7 @@
 // historyDropdownSelect.tsx
 'use client';
 import React, { useState } from 'react';
-import { SearchState } from '../interface/skattSokInterface';
+import { SearchState } from '../../interface/skattSokInterface';
 
 interface HistoryDropdownProps {
   searchHistory: SearchState[];
@@ -18,7 +18,7 @@ const HistoryDropdownSelect: React.FC<HistoryDropdownProps> = ({ searchHistory, 
 
   return (
     <div className="dropdown">
-      <div tabIndex={0} role="button" className="btn m-1">
+      <div tabIndex={0} role="button" className="btn text-white m-1 px-6 rounded mr-10">
         {"Søkshistorikk"}
       </div>
         <ul className="dropdown-content z-[1] menu p-2 shadow bg-base-300 rounded-box w-64 max-h-200 overflow-y-auto">

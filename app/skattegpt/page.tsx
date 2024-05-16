@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import GptResponseDisplay from "../components/markdownTextDisplay";
 import ParagraphsDisplay from "../components/paragraphsDisplay";
 import { SearchState } from "../interface/skattSokInterface";
-import HistoryDropdownSelect from "../components/historyDropdownSelect.tsx";
+import HistoryDropdownSelect from "../components/localStorage/historyDropdownSelect.tsx";
+import DeleteLocalStorage from "../components/localStorage/clearLocalStorage";
+import ToggleSwitch from "../components/toogleModelDepth";
 
 
 const initialSearchResponse: SearchState = {
@@ -15,6 +17,7 @@ const initialSearchResponse: SearchState = {
 export default function Search() {
     const [searchResponse, setSearchResponse] = useState<SearchState>(initialSearchResponse);
     const [searchHistory, setSearchHistory] = useState<SearchState[]>([]);
+    const [isDetailed, setIsDetailed] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [searchInput, setSearchInput] = useState('');
 
@@ -40,6 +43,11 @@ export default function Search() {
         setSearchInput(event.target.value);
     };
 
+    const handleToggle = (state: boolean) => {
+        setIsDetailed(state);
+        console.log(isDetailed)
+    };
+
     const handleHistorySelect = (selectedSearch: SearchState) => {
         setSearchResponse(selectedSearch);
         setSearchInput(selectedSearch.searchInput);
@@ -52,7 +60,7 @@ export default function Search() {
             const response = await fetch(`/api/elasticsearch/match_all`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ searchText: searchInput }),
+                body: JSON.stringify({ searchText: searchInput, isDetailed: isDetailed }),
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -80,7 +88,7 @@ export default function Search() {
     };
 
     return (
-        <div>
+        <div className="pt-10">
             <div className="flex justify-center">
                 <input
                     type="text"
@@ -93,10 +101,18 @@ export default function Search() {
                 <button className="btn bg-sky-700 hover:bg-sky-800 text-white font-bold m-1 px-6 rounded mr-10" disabled={isLoading || searchInput === ""} onClick={handeButtonClick}>
                     Spør
                 </button>
-                <HistoryDropdownSelect searchHistory={searchHistory} onSelect={handleHistorySelect}></HistoryDropdownSelect>
             </div>
-            <div className="divider p-12"></div>
-            <div className="px-40 pb-20">
+            <div className="flex justify-center pt-5">
+                <ToggleSwitch 
+                    onToggle={handleToggle} 
+                    textA="Konkret" 
+                    textB="Detaljert" 
+                />
+                <HistoryDropdownSelect searchHistory={searchHistory} onSelect={handleHistorySelect}/>
+                <DeleteLocalStorage/>
+            </div>
+            <div className="divider"></div>
+            <div className="px-60">
                 {isLoading && <p className="text-center">Loading...</p>}
                 {!isLoading && searchResponse !== initialSearchResponse && (
                     <div>
