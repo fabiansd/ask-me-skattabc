@@ -9,7 +9,12 @@ const Header = () => {
         </div>
         <div className="navbar-center hidden lg:flex">
             <ul className="menu menu-horizontal px-1">
-            <a href='/skattegpt' className="btn btn-ghost text-xl">chat</a>
+            <a href='/skattegpt' className="btn btn-ghost text-xl">Chat</a>
+            </ul>
+        </div>
+        <div className="navbar-center hidden lg:flex">
+            <ul className="menu menu-horizontal px-1">
+            <a href='/historikk' className="btn btn-ghost text-xl">Historikk</a>
             </ul>
         </div>
         <div className="navbar-end">

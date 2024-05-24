@@ -1,11 +1,10 @@
 import { Client } from '@elastic/elasticsearch';
+import { ELASTIC_USERNAME } from '../constants/esParameters';
 
-
-const ELASTIC_USERNAME = 'elastic';
 
 export const client = new Client({
     auth: {
-        username: ELASTIC_USERNAME,
+        username: ELASTIC_USERNAME || 'elastic',
         password: process.env.ELASTIC_PASSWORD || '',
     },
     node: process.env.ELASTICSEARCH_URL || ''

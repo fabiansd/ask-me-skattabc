@@ -18,7 +18,7 @@ const HistoryDropdownSelect: React.FC = () => {
         role="button" 
         className="btn bg-red-700 hover:bg-red-800 text-white m-1 px-6 rounded mr-10"
         onClick={handleDelete}>
-        {"Slett historikk"}
+        {"Slett nylige"}
       </div>
     </div>
   );

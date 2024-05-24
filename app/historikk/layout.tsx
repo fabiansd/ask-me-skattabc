@@ -1,5 +1,4 @@
-
-export default function SearchLayout({
+export default function HistoryLayout({
     children, // will be a page or nested layout
   }: {
     children: React.ReactNode

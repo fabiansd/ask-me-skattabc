@@ -58,7 +58,7 @@ export default function Search() {
         setIsLoading(true);
         try {
             console.log('API call -> searchText: ', searchInput);
-            const response = await fetch(`/api/elasticsearch/match_all`, {
+            const response = await fetch(`/api/query`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ searchText: searchInput, isDetailed: isDetailed }),

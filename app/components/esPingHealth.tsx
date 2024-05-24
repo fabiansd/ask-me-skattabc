@@ -7,7 +7,7 @@ const EsHealth = () => {
 
   const pingBackend = async () => {
     try {
-      const response = await fetch(`/api/elasticsearch/health`);
+      const response = await fetch(`/api/health`);
       if (response.ok) {
         setIsOnline(true);
       } else {

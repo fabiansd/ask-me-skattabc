@@ -1,7 +1,12 @@
-import { ChatMessage, OpenAI, OpenAIEmbedding, Settings } from "llamaindex";
+import { ChatMessage, ChatResponse, OpenAI, OpenAIEmbedding, Settings, ToolCallLLMMessageOptions } from "llamaindex";
 import { DEFAULT_MODEL, OPENAI_EMBEDDING_MODEL } from "../constants/opanAiParameters";
 import { generateConcretePromt, generateDetailedPromt } from "../lib/promptGenerator";
 
+type OpenAIResponse = {
+  message: {
+    content: string;
+  };
+};
 
 export async function embedText(text: string) {
 
@@ -38,11 +43,13 @@ export async function queryChat(question: string, context: string[], isDetailed:
     
     const chatParams = { messages: messages};
     
-    const response = await openai.chat(chatParams);
+    const response = await openai.chat(chatParams) as OpenAIResponse;
+
+    const answer: string = response.message.content;
     
-    console.log('Query successful: ', response)
+    console.log('Query successful: ', answer)
     
-    return response.message.content
+    return answer
   } catch(error) {
     console.error('Error querying openai, ', error)
   }
