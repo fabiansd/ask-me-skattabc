@@ -1,5 +1,6 @@
-import { query_history, users } from "@prisma/client";
+import { query_history, user_feedback, users } from "@prisma/client";
 import prismaClient from "../lib/prismaClient";
+import { UserFeedbackInput } from "../interface/feedback";
 
 
 export async function findUser(): Promise<users> {
@@ -50,6 +51,27 @@ export async function findUserChatHistory(): Promise<query_history[]> {
       { where: { user_id: !!user?.user_id ? user.user_id : 1 } }
     );
     return query_history;
+  } catch(error){
+    throw error;
+  }
+}
+
+export async function addUserFeedback( feedback: UserFeedbackInput) {
+  try {
+
+    const user = await prismaClient.users.findUnique(
+      { where: { username: 'fabian'} }
+    );
+
+    const feecback_item = {
+      user_id: user?.user_id,
+      happiness_feedback: feedback.happiness_feedback,
+      desired_features: feedback.desired_features,
+    } as user_feedback;
+    
+    await prismaClient.user_feedback.create(
+      { data: feecback_item }
+    );
   } catch(error){
     throw error;
   }

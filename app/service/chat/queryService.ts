@@ -16,11 +16,11 @@ async function query(request: NextRequest) {
 
     const searchVector: number[] = await embedText(searchText);
 
-    const esChunkSearch = await searchMatchVector(
+    /*const esChunkSearch = await searchMatchVector(
       searchVector,
       ELASTICSEARCH_INDEX_SKATT,
       ES_VECTOR_SEARCH_SIZE_SKATT
-    );
+    );*/
 
     const esParagraphSearch = await searchMatchVector(
       searchVector,
@@ -30,7 +30,7 @@ async function query(request: NextRequest) {
 
     const openaiResponse = await queryChat(
       searchText,
-      esChunkSearch,
+      esParagraphSearch,
       isDetailed
     );
 

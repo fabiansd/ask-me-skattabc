@@ -17,6 +17,11 @@ const Header = () => {
             <a href='/historikk' className="btn btn-ghost text-xl">Historikk</a>
             </ul>
         </div>
+        <div className="navbar-center hidden lg:flex">
+            <ul className="menu menu-horizontal px-1">
+            <a href='/feedback' className="btn btn-ghost text-xl">Feedback</a>
+            </ul>
+        </div>
         <div className="navbar-end">
             <div className='pr-8'>
                 <EsHealth/>

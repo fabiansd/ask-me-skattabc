@@ -47,7 +47,7 @@ export async function searchMatchVector(searchVector: number[], index: string, s
         field: "embedding",
         query_vector: searchVector,
         k: ES_KNN_NUMBER,
-        num_candidates: 50,
+        num_candidates: 100,
         boost: 0.1,
         }
       });
