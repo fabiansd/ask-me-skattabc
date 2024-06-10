@@ -20,7 +20,7 @@ const EsHealth = () => {
 
   useEffect(() => {
     pingBackend();
-    const interval = setInterval(pingBackend, 60000);  // Check every x/1000 seconds
+    const interval = setInterval(pingBackend, 60000*9);  // Check every x/1000 seconds
     return () => clearInterval(interval); 
   }, []);
 
