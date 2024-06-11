@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const userId = searchParams.get('userId');
+        const userId = searchParams.get('userId') || '4';
 
         if (!userId) {
             return new NextResponse(JSON.stringify({ error: 'User ID is required' }), { status: 400 });
