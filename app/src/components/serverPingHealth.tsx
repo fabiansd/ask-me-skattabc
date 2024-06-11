@@ -1,13 +1,16 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import UserContext from '../contexts/user';
 
-
+ 
 const EsHealth = () => {
   const [isOnline, setIsOnline] = useState(false);
 
+  const { user } = useContext(UserContext);
+
   const pingBackend = async () => {
     try {
-      const response = await fetch(`/api/health`);
+      const response = await fetch(`/api/health?username=${user?.username ? user?.username : 'default'}`);
       if (response.ok) {
         setIsOnline(true);
       } else {

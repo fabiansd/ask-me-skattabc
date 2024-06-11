@@ -1,4 +1,4 @@
-import addUserFeedbackService from '@/app/service/feedback/userFeedbackService';
+import addUserFeedbackService from '@/app/src/service/feedback/userFeedbackService';
 import { NextRequest } from 'next/server';
 
 

@@ -1,8 +1,13 @@
-import React from 'react';
-import EsHealth from '../esPingHealth';
+'use client'
+import React, { useContext } from 'react';
+import EsHealth from '../serverPingHealth';
+import UserContext from '../../contexts/user';
 
 const Header = () => {
-  return (
+
+    const { user } = useContext(UserContext);
+
+    return (
         <div className="navbar bg-base-200 px-10 p-2 shadow">
         <div className="navbar-start">
             <a href='/' className="btn btn-ghost text-xl">SkattGPT</a>
@@ -26,10 +31,10 @@ const Header = () => {
             <div className='pr-8'>
                 <EsHealth/>
             </div>
-            <a className="btn">Login</a>
+            <a href='/bruker' className="btn"> {user?.username ? user.username : 'Login' } </a>
         </div>
         </div>
-  );
+    );
 };
 
 export default Header;

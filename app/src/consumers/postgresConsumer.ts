@@ -3,10 +3,10 @@ import prismaClient from "../lib/prismaClient";
 import { UserFeedbackInput } from "../interface/feedback";
 
 
-export async function findUser(): Promise<users> {
+export async function findUserById(userId: number): Promise<users> {
   try {
     const user = await prismaClient.users.findUnique(
-      { where: { username: 'fabian'} }
+      { where: { user_id: userId} }
     );
 
     if (!user) {
@@ -19,12 +19,44 @@ export async function findUser(): Promise<users> {
   }
 }
 
-export async function addUserChatHistory(question: string, answer: string) {
+export async function findUserByName(username: string): Promise<users> {
+  try {
+    const user = await prismaClient.users.findUnique(
+      { where: { username: username} }
+    );
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+    console.log('Found user: ', user)
+    return user;
+  } catch(error){
+    throw error;
+  }
+}
+
+export async function createUser(username: string): Promise<users> {
+  try {
+    let user = await prismaClient.users.findUnique({
+      where: { username },
+    });
+
+    if (!user) {
+      user = await prismaClient.users.create({
+        data: { username },
+      });
+    }
+    console.log('User already exist: ', user)
+    return user;
+  } catch(error){
+    throw error;
+  }
+}
+
+export async function addUserChatHistory(question: string, answer: string, username: string) {
   try {
 
-    const user = await prismaClient.users.findUnique(
-      { where: { username: 'fabian'} }
-    );
+    const user = await findUserByName(username);
 
     await prismaClient.query_history.create(
       { data: 
@@ -40,12 +72,10 @@ export async function addUserChatHistory(question: string, answer: string) {
   }
 }
 
-export async function findUserChatHistory(): Promise<query_history[]> {
+export async function findUserChatHistory(username: string): Promise<query_history[]> {
   try {
 
-    const user = await prismaClient.users.findUnique(
-      { where: { username: 'fabian'} }
-    );
+    const user = await findUserByName(username);
     
     const query_history = await prismaClient.query_history.findMany(
       { where: { user_id: !!user?.user_id ? user.user_id : 1 } }
@@ -59,9 +89,7 @@ export async function findUserChatHistory(): Promise<query_history[]> {
 export async function addUserFeedback( feedback: UserFeedbackInput) {
   try {
 
-    const user = await prismaClient.users.findUnique(
-      { where: { username: 'fabian'} }
-    );
+    const user = await findUserByName(feedback.username);
 
     const feecback_item = {
       user_id: user?.user_id,

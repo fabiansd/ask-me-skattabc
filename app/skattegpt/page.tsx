@@ -1,12 +1,13 @@
 'use client'
-import { useEffect, useState } from "react";
-import GptResponseDisplay from "../components/textManagement/markdownTextDisplay";
-import ParagraphsDisplay from "../components/textManagement/paragraphsDisplay";
-import { SearchState } from "../interface/skattSokInterface";
-import HistoryDropdownSelect from "../components/localStorage/historyDropdownSelect.tsx";
-import DeleteLocalStorage from "../components/localStorage/clearLocalStorage";
-import ToggleSwitch from "../components/toogleModelDepth";
-import DownloadCSV from "../components/textManagement/csvRapport";
+import { useContext, useEffect, useState } from "react";
+import GptResponseDisplay from "../src/components/textManagement/markdownTextDisplay";
+import ParagraphsDisplay from "../src/components/textManagement/paragraphsDisplay";
+import { SearchState } from "../src/interface/skattSokInterface";
+import HistoryDropdownSelect from "../src/components/localStorage/historyDropdownSelect.tsx";
+import DeleteLocalStorage from "../src/components/localStorage/clearLocalStorage";
+import ToggleSwitch from "../src/components/toogleModelDepth";
+import DownloadCSV from "../src/components/textManagement/csvRapport";
+import UserContext from "../src/contexts/user";
 
 
 const initialSearchResponse: SearchState = {
@@ -21,6 +22,8 @@ export default function Search() {
     const [isDetailed, setIsDetailed] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [searchInput, setSearchInput] = useState('');
+
+    const { user } = useContext(UserContext);
 
     useEffect(() => {
         const savedHistoryList = JSON.parse(localStorage.getItem('searchHistory') || '[]');
@@ -61,7 +64,11 @@ export default function Search() {
             const response = await fetch(`/api/query`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ searchText: searchInput, isDetailed: isDetailed }),
+                body: JSON.stringify({ 
+                    searchText: searchInput, 
+                    isDetailed: isDetailed,
+                    username: user?.username ? user.username : 'default',
+                }),
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');

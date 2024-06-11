@@ -1,15 +1,23 @@
 'use client'
-import { useEffect, useState } from "react";
-import QueryHistory from "../components/textManagement/displayQueryHistory";
+import { useContext, useEffect, useState } from "react";
+import QueryHistory from "../src/components/textManagement/displayQueryHistory";
+import UserContext from "../src/contexts/user";
 
 
 export default function History() {
 
     const [history, setHistory] = useState([]);
+    const { user } = useContext(UserContext);
 
     const getQueryHistory = async () => {
         try {
-            const response = await fetch(`/api/postgres/query_history`);
+
+            if (!user) {
+                console.log('User is null, skipping fetch');
+                return;
+              }
+
+            const response = await fetch(`/api/postgres/query_history?username=${user?.username ? user.username : 'default'}`);
             const data = await response.json();
 
             if (!response.ok) {
@@ -24,7 +32,7 @@ export default function History() {
     
       useEffect(() => {
         getQueryHistory();
-      }, []);
+      }, [user]);
     
 
     return (     

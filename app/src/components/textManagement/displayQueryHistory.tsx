@@ -11,9 +11,11 @@ interface QueryHistoryProps {
 
 const QueryHistory = ( {history}: QueryHistoryProps) => {
 
+  const reversedHistory = [...history].reverse();
+
   return (
     <div className="text-left markdown-content px-60" style={{ whiteSpace: "pre-line" }}>
-        {history.map((entry) => (
+        {reversedHistory.map((entry) => (
             <div key={entry.history_id} className="relative p-2">
                 <div className="collapse bg-base-200">
                 <input type="checkbox" /> 

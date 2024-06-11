@@ -1,8 +1,10 @@
 'use client'
-import { useState } from "react";
-import { UserFeedbackInput } from "../interface/feedback";
+import { useContext, useState } from "react";
+import { UserFeedbackInput } from "../src/interface/feedback";
+import UserContext from "../src/contexts/user";
 
 const initialFeedback: UserFeedbackInput = {
+    username: 'default',
     happiness_feedback: '',
     desired_features: '',
 }
@@ -11,6 +13,7 @@ export default function Feedback() {
 
     const [feedback, setFeedback] = useState(initialFeedback);
     const [isLoading, setIsLoading] = useState(false);
+    const { user } = useContext(UserContext);
 
     const handeButtonClick = async () => {
         setIsLoading(true);
@@ -18,7 +21,9 @@ export default function Feedback() {
             const response = await fetch(`/api/postgres/feedback`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ feedback: feedback }),
+                body: JSON.stringify({ 
+                    feedback: feedback,
+                }),
             });
             if (!response.ok) {
                 throw new Error('Failed to add feedback');
@@ -42,6 +47,7 @@ export default function Feedback() {
         setFeedback({
             ...feedback,
             [name]: value,
+            username: user?.username ? user.username : 'default',
         });
     };
 

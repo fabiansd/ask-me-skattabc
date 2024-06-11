@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import query from '@/app/service/chat/queryService';
+import query from '@/app/src/service/chat/queryService';
 
 
 export async function POST(request: NextRequest) {

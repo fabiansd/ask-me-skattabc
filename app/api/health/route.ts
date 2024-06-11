@@ -1,14 +1,18 @@
-import { healthCheck } from '@/app/consumers/esSearchConsumer';
-import { findUser } from '@/app/consumers/postgresConsumer';
+import { healthCheck } from '@/app/src/consumers/esSearchConsumer';
+import { findUserById, findUserByName } from '@/app/src/consumers/postgresConsumer';
+import { NextRequest } from 'next/server';
 
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const username = searchParams.get('username');
+
     const healthResponse = await healthCheck()
 
-    const postgresResponse = await findUser();
+    const userResponse = await findUserByName(username ? username : 'default');
 
-    const response = Response.json({healthResponse});
+    const response = Response.json({healthResponse, userResponse});
     
     return response
   } catch (error) {

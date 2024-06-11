@@ -1,4 +1,4 @@
-import extractParagraphNotations from "@/app/lib/extractParagraphNotation";
+import extractParagraphNotations from "@/app/src/lib/extractParagraphNotation";
 
 describe('extractParagraphNotations', () => {
   it('should extract all paragraph notations with accompanying numbers', () => {

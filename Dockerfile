@@ -4,6 +4,11 @@
 ARG NODE_VERSION=21.7.2
 FROM node:${NODE_VERSION}-slim as base
 
+ARG DATABASE_URL
+ARG ELASTICSEARCH_URL
+ARG ELASTIC_PASSWORD
+ARG OPENAI_API_KEY
+
 LABEL fly_launch_runtime="Next.js"
 
 # Next.js app lives here
@@ -27,14 +32,11 @@ RUN npm ci --include=dev
 # Copy application code
 COPY --link . .
 
+RUN npx prisma generate && \
+    npx prisma db pull --url=$DATABASE_URL
+
 # Build application
-RUN --mount=type=secret,id=ELASTICSEARCH_URL \
-    --mount=type=secret,id=OPENAI_API_KEY \
-    --mount=type=secret,id=ELASTIC_PASSWORD \
-    ELASTICSEARCH_URL="$(cat /run/secrets/ELASTICSEARCH_URL)" \
-    OPENAI_API_KEY="$(cat /run/secrets/OPENAI_API_KEY)" \
-    ELASTIC_PASSWORD="$(cat /run/secrets/ELASTIC_PASSWORD)" \
-    npm run build
+RUN npm run build
 
 # Remove development dependencies
 RUN npm prune --omit=dev
