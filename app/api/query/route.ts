@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import query from '@/app/src/service/chat/queryService';
 
 
@@ -8,6 +8,6 @@ export async function POST(request: NextRequest) {
     return response
   } catch (error) {
     console.error('Prompt query error:', error);
-    Response.json({ error: 'Error generating answer' });
+    NextResponse.json({ error: 'Error generating answer' });
   }
 }

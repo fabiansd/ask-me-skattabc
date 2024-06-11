@@ -1,14 +1,14 @@
 import addUserFeedbackService from '@/app/src/service/feedback/userFeedbackService';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 
 export async function POST(request: NextRequest) {
   try {
     const { feedback } = await request.json();
     await addUserFeedbackService(feedback);
-    return Response.json({});
+    return NextResponse.json({});
   } catch (error) {
     console.error('Prompt query error:', error);
-    Response.json({ error: 'Error generating answer' });
+    NextResponse.json({ error: 'Error generating answer' });
   }
 }
