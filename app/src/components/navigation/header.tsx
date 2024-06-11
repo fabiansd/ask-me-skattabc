@@ -1,7 +1,7 @@
 'use client'
 import React, { useContext } from 'react';
-import EsHealth from '../serverPingHealth';
 import UserContext from '../../contexts/user';
+import Health from '../serverPingHealth';
 
 const Header = () => {
 
@@ -29,7 +29,7 @@ const Header = () => {
         </div>
         <div className="navbar-end">
             <div className='pr-8'>
-                <EsHealth/>
+                <Health/>
             </div>
             <a href='/bruker' className="btn"> {user?.username ? user.username : 'Login' } </a>
         </div>

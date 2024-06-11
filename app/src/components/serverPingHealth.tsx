@@ -2,15 +2,17 @@
 import React, { useState, useEffect, useContext } from 'react';
 import UserContext from '../contexts/user';
 
+export const dynamic = "force-dynamic";
+
  
-const EsHealth = () => {
+const Health = () => {
   const [isOnline, setIsOnline] = useState(false);
 
   const { user } = useContext(UserContext);
 
   const pingBackend = async () => {
     try {
-      const response = await fetch(`/api/health?username=${user?.username ? user?.username : 'default'}`);
+      const response = await fetch(`/api/health?username=${user?.username || 'default'}`);
       if (response.ok) {
         setIsOnline(true);
       } else {
@@ -25,7 +27,7 @@ const EsHealth = () => {
     pingBackend();
     const interval = setInterval(pingBackend, 60000*9);  // Check every x/1000 seconds
     return () => clearInterval(interval); 
-  }, []);
+  }, [user]);
 
   const statusStyle = isOnline
     ? 'badge-accent'
@@ -40,4 +42,4 @@ const EsHealth = () => {
   );
 };
 
-export default EsHealth;
+export default Health;

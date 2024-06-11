@@ -1,6 +1,7 @@
 import getQueryHistory from "@/app/src/service/history/queryHistoryService";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,6 +16,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(queryHistory);
   } catch (error) {
     console.error('ES Health check error: ', error);
-    NextResponse.json({ error: ' ES health check failed' });
+    NextResponse.json({ error: ' ES health check failed' }, { status: 500 });
   }
 }
