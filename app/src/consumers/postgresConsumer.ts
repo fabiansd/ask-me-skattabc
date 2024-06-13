@@ -1,6 +1,7 @@
 import { query_history, user_feedback, users } from "@prisma/client";
 import prismaClient from "../lib/prismaClient";
 import { UserFeedbackInput } from "../interface/feedback";
+import { QueryChatRequest } from "../interface/skattSokInterface";
 
 
 export async function findUserById(userId: number): Promise<users> {
@@ -53,17 +54,17 @@ export async function createUser(username: string): Promise<users> {
   }
 }
 
-export async function addUserChatHistory(question: string, answer: string, username: string) {
+export async function addUserChatHistory(queryChatRequest: QueryChatRequest, openaiResponse: string) {
   try {
 
-    const user = await findUserByName(username);
+    const user = await findUserByName(queryChatRequest.username);
 
     await prismaClient.query_history.create(
       { data: 
         {
           user_id: !!user?.user_id ? user.user_id : 1,
-          answer: answer,
-          question: question,
+          answer: openaiResponse,
+          question: queryChatRequest.searchText,
       } }
     );
     console.log('Found user: ', user)

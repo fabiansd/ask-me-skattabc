@@ -2,7 +2,7 @@
 import { useContext, useEffect, useState } from "react";
 import GptResponseDisplay from "../src/components/textManagement/markdownTextDisplay";
 import ParagraphsDisplay from "../src/components/textManagement/paragraphsDisplay";
-import { SearchState } from "../src/interface/skattSokInterface";
+import { QueryChatRequest, SearchState } from "../src/interface/skattSokInterface";
 import HistoryDropdownSelect from "../src/components/localStorage/historyDropdownSelect.tsx";
 import DeleteLocalStorage from "../src/components/localStorage/clearLocalStorage";
 import ToggleSwitch from "../src/components/toogleModelDepth";
@@ -22,25 +22,41 @@ export default function Search() {
     const [isDetailed, setIsDetailed] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [searchInput, setSearchInput] = useState('');
+    const [isClearHistoryDisabled, setIsClearHistoryDisabled] = useState(true);
 
     const { user } = useContext(UserContext);
 
     useEffect(() => {
-        const savedHistoryList = JSON.parse(localStorage.getItem('searchHistory') || '[]');
-        if (Array.isArray(savedHistoryList)) {
+        if (typeof window !== 'undefined') {
+            const savedHistoryList = getSearchHistory();
             setSearchHistory(savedHistoryList);
+            setIsClearHistoryDisabled(savedHistoryList.length === 0);
             if (savedHistoryList.length > 0) {
                 const latestSearch = savedHistoryList[savedHistoryList.length - 1];
                 setSearchResponse(latestSearch);
                 setSearchInput(latestSearch.searchInput);
             }
-        }
-    }, []);
+    }}, []);
 
     const saveSearchHistory = (newSearchResponse: SearchState) => {
         const updatedHistoryList = [...searchHistory, newSearchResponse];
         localStorage.setItem('searchHistory', JSON.stringify(updatedHistoryList));
         setSearchHistory(updatedHistoryList);
+        setIsClearHistoryDisabled(updatedHistoryList.length === 0);
+    };
+
+    const getSearchHistory = (): SearchState[] => {
+        if (typeof window !== 'undefined') {
+            const history = localStorage.getItem('searchHistory');
+            return history ? JSON.parse(history) as SearchState[] : [];
+        }
+        return [];
+    };
+
+    const clearSearchHistory = () => {
+        localStorage.removeItem('searchHistory');
+        setSearchHistory([]);
+        setIsClearHistoryDisabled(true);
     };
 
     const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +65,6 @@ export default function Search() {
 
     const handleToggle = (state: boolean) => {
         setIsDetailed(state);
-        console.log(isDetailed)
     };
 
     const handleHistorySelect = (selectedSearch: SearchState) => {
@@ -61,14 +76,17 @@ export default function Search() {
         setIsLoading(true);
         try {
             console.log('API call -> searchText: ', searchInput);
+            const queryChatRequest: QueryChatRequest = {
+                searchText: searchInput,
+                isDetailed: isDetailed,
+                username: user?.username ? user.username : 'default',
+                history: getSearchHistory()
+            }
+
             const response = await fetch(`/api/query`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    searchText: searchInput, 
-                    isDetailed: isDetailed,
-                    username: user?.username ? user.username : 'default',
-                }),
+                body: JSON.stringify(queryChatRequest)
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -117,8 +135,7 @@ export default function Search() {
                     textB="Detaljert" 
                 />
                 <HistoryDropdownSelect searchHistory={searchHistory} onSelect={handleHistorySelect}/>
-                <DownloadCSV searchResponse={searchResponse} />
-                <DeleteLocalStorage/>
+                <DeleteLocalStorage disabled={isClearHistoryDisabled} handleDelete={clearSearchHistory}/>
             </div>
             <div className="divider"></div>
             <div className="px-60">

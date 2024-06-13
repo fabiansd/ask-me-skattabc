@@ -6,21 +6,14 @@ import {
   ES_VECTOR_SEARCH_SIZE_SKATT, 
   ES_VECTOR_SEARCH_SIZE_SKATT_PARA 
 } from '@/app/src/constants/esParameters';
-import { NextRequest } from 'next/server';
 import { addUserChatHistory } from '../../consumers/postgresConsumer';
+import { QueryChatRequest } from '../../interface/skattSokInterface';
 
 
-async function query(request: NextRequest) {
-    const { searchText, isDetailed, username } = await request.json();
-    console.log('Search text: ', searchText);
+async function query(queryChatRequest: QueryChatRequest) {
+    console.log('Search text: ', queryChatRequest.searchText);
 
-    const searchVector: number[] = await embedText(searchText);
-
-    /*const esChunkSearch = await searchMatchVector(
-      searchVector,
-      ELASTICSEARCH_INDEX_SKATT,
-      ES_VECTOR_SEARCH_SIZE_SKATT
-    );*/
+    const searchVector: number[] = await embedText(queryChatRequest.searchText);
 
     const esParagraphSearch = await searchMatchVector(
       searchVector,
@@ -29,12 +22,11 @@ async function query(request: NextRequest) {
     );
 
     const openaiResponse = await queryChat(
-      searchText,
-      esParagraphSearch,
-      isDetailed
+      queryChatRequest,
+      esParagraphSearch
     );
 
-    !!openaiResponse && await addUserChatHistory(searchText, openaiResponse, username);
+    !!openaiResponse && await addUserChatHistory(queryChatRequest, openaiResponse);
 
     const response = Response.json({ openaiResponse, esParagraphSearch });
 

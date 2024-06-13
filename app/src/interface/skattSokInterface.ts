@@ -5,6 +5,9 @@ export interface SearchState {
     paragraphsResponse: string[];
 }
 
-export interface SearchStates {
-    searchStateList: SearchState[];
+export interface QueryChatRequest {
+    searchText: string,
+    isDetailed: boolean,
+    username: string,
+    history: SearchState[],
 }

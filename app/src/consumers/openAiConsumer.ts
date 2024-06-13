@@ -1,6 +1,7 @@
 import { ChatMessage, ChatResponse, OpenAI, OpenAIEmbedding, Settings, ToolCallLLMMessageOptions } from "llamaindex";
 import { DEFAULT_MODEL, OPENAI_EMBEDDING_MODEL } from "../constants/opanAiParameters";
-import { generateConcretePromt, generateDetailedPromt } from "../lib/promptGenerator";
+import { generateConcretePrompt, generateDetailedPromt } from "../lib/promptGenerator";
+import { QueryChatRequest } from "../interface/skattSokInterface";
 
 type OpenAIResponse = {
   message: {
@@ -26,18 +27,18 @@ export async function embedText(text: string) {
   }
 }
 
-export async function queryChat(question: string, context: string[], isDetailed: boolean) {
+export async function queryChat(queryChatRequest: QueryChatRequest, context: string[]) {
 
   try {
-    console.log('Query openai -> query: ', question)
+    console.log('Query openai -> query: ', queryChatRequest.searchText)
     const openai = new OpenAI({
-      model: DEFAULT_MODEL || 'gpt-4-turbo',
+      model: DEFAULT_MODEL,
       apiKey: process.env.OPENAI_API_KEY,
       temperature: 0,
     })
     console.log('Connection to openai successful ')
     
-    const query = isDetailed ? generateDetailedPromt(question, context) : generateConcretePromt(question, context)
+    const query = queryChatRequest.isDetailed ? generateDetailedPromt(queryChatRequest, context) : generateConcretePrompt(queryChatRequest, context)
     
     const messages: ChatMessage[] = [{role: 'user', content: query}];
     

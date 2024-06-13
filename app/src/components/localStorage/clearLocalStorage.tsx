@@ -2,26 +2,23 @@
 'use client';
 import React, { useState } from 'react';
 
-const HistoryDropdownSelect: React.FC = () => {
+interface ClearHistoryButtonProps {
+  disabled?: boolean;
+  handleDelete: () => void;
+}
 
-  const handleDelete = () => {
-    localStorage.clear();
-    alert('Local storage has been cleared');
-    window.location.reload();
-  };
-
-
+const ClearHistoryButton: React.FC<ClearHistoryButtonProps> = ({ disabled = false, handleDelete }) => {
   return (
     <div>
-      <div 
-        tabIndex={0} 
-        role="button" 
-        className="btn bg-red-700 hover:bg-red-800 text-white m-1 px-6 rounded mr-10"
-        onClick={handleDelete}>
-        {"Slett nylige"}
-      </div>
+      <button 
+        className="btn bg-red-500 hover:bg-red-600 text-white m-1 px-6 rounded mr-10"
+        onClick={!disabled ? handleDelete : undefined}
+        disabled={disabled}
+        >
+        Nytt emne
+      </button>
     </div>
   );
 };
 
-export default HistoryDropdownSelect;
+export default ClearHistoryButton;
