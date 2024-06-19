@@ -124,9 +124,6 @@ export default function Search() {
                     onChange={handleSearchInputChange}
                     onKeyDown={handleKeyPress}
                 />
-                <button className="btn bg-sky-700 hover:bg-sky-800 text-white font-bold m-1 px-6 rounded mr-10" disabled={isLoading || searchInput === ""} onClick={handeButtonClick}>
-                    Spør
-                </button>
             </div>
             <div className="flex justify-center pt-5">
                 <ToggleSwitch 
@@ -136,6 +133,9 @@ export default function Search() {
                 />
                 <HistoryDropdownSelect searchHistory={searchHistory} onSelect={handleHistorySelect}/>
                 <DeleteLocalStorage disabled={isClearHistoryDisabled} handleDelete={clearSearchHistory}/>
+                <button className="btn bg-sky-700 hover:bg-sky-800 text-white font-bold m-1 px-6 rounded mr-10" disabled={isLoading || searchInput === ""} onClick={handeButtonClick}>
+                    { isClearHistoryDisabled ? 'Nytt spørsmål' : 'Oppfølgingsspørsmål' }
+                </button>
             </div>
             <div className="divider"></div>
             <div className="px-60">

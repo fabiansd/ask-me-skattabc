@@ -18,3 +18,20 @@ In order to update the prisma schema of the postgres database run
 npx prisma db pull
 ```
 
+# Deploy
+
+## Issues
+
+The fly deploy command can fail and not be able to update the machines. My workaround is to destroy the machines and let the deploy command set them up anew:
+
+```bash
+flyctl machines list
+```
+
+Then delete the machines with the ID's
+
+```bash
+flyctl machine remove <id> --force
+```
+
+
