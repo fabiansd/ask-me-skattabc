@@ -1,0 +1,32 @@
+app = 'elasticsearch-skatteabc-new'
+primary_region = 'arn'
+kill_signal = 'SIGTERM'
+kill_timeout = '5m'
+
+[build]
+
+[mounts]
+  source = "elasticsearch_data"
+  destination = "/usr/share/elasticsearch/data"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 9200
+
+  [[services.ports]]
+    port = 9200
+
+  [[services.ports]]
+    port = 9300
+
+[http_service]
+  internal_port = 9200
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
