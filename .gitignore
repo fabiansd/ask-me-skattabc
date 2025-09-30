@@ -42,3 +42,7 @@ next-env.d.ts
 elasticsearch/notebook_client/data/
 elasticsearch/snapshot/
 *.json.gz
+
+# Large notebook files and checkpoints
+elasticsearch/notebook_client/notebooks/examples/*.ipynb
+elasticsearch/notebook_client/notebooks/examples/.ipynb_checkpoints/
