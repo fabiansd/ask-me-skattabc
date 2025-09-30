@@ -1,0 +1,41 @@
+# fly.toml app configuration file generated for elasticsearch-llm-spring-glitter-3589 on 2024-04-30T10:36:25+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'elasticsearch-llm-spring-glitter-3589'
+primary_region = 'arn'
+kill_signal = 'SIGINT'
+kill_timeout = '5m'
+
+[experimental]
+  auto_rollback = true
+
+[build]
+
+[[mounts]]
+  source = 'elasticsearch_data'
+  destination = '/usr/share/elasticsearch/data'
+
+[http_service]
+  internal_port = 9200
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+[[services]]
+  protocol = 'tcp'
+  internal_port = 9200
+
+  [[services.ports]]
+    port = 9200
+
+  [[services.ports]]
+    port = 9300
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1

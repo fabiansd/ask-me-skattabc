@@ -1,8 +1,8 @@
 # syntax = docker/dockerfile:1
 
-# Adjust NODE_VERSION as desired
-ARG NODE_VERSION=22.3.0
-FROM node:${NODE_VERSION}-slim as base
+# Use Node.js 22 LTS (latest stable)
+ARG NODE_VERSION=22-slim
+FROM node:${NODE_VERSION} as base
 
 ARG DATABASE_URL
 ARG ELASTICSEARCH_URL
@@ -37,8 +37,7 @@ RUN npm ci --include=dev
 COPY --link . .
 
 COPY --link prisma .
-RUN npx prisma generate && \
-    npx prisma db pull --url=$DATABASE_URL
+RUN DATABASE_URL=$DATABASE_URL npx prisma generate
 
 # Build application
 RUN npm run build

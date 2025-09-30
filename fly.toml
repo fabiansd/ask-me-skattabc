@@ -6,7 +6,7 @@
 app = 'ask-me-skattabc-young-violet-4122'
 primary_region = 'arn'
 kill_signal = 'SIGINT'
-kill_timeout = '60m'
+kill_timeout = '4m'
 
 [build]
 

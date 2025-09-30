@@ -1,0 +1,1 @@
+docker run -d -p 9200:9200 -p 9300:9300 --name elastic_search -e "discovery.type=single-node" -e "xpack.security.enabled=true" -e "ELASTIC_PASSWORD=abc" -v elasticsearch_elasticsearch-data:/usr/share/elasticsearch/data docker.elastic.co/elasticsearch/elasticsearch:8.12.2

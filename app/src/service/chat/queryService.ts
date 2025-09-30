@@ -12,6 +12,7 @@ import { getMockQueryResponse } from '../../../../tests/mockData';
 async function query(queryChatRequest: QueryChatRequest) {
     console.log('Search text: ', queryChatRequest.searchText);
     console.log('Query request: ', JSON.stringify(queryChatRequest, null, 2));
+    console.log('USE_MOCK_DATA env var:', process.env.USE_MOCK_DATA);
 
     if (process.env.USE_MOCK_DATA === 'true') {
         console.log('Using mock data');

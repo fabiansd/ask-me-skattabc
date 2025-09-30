@@ -51,8 +51,9 @@ export async function searchMatchVector(searchVector: number[], index: string, s
         boost: 0.1,
         }
       });
-    console.log('ES vector search retreived: ', esResponse)
-    return unwrapESResponse(esResponse)
+    const unwrappedResponse = unwrapESResponse(esResponse)
+    console.log(`ES vector search retrieved ${unwrappedResponse.length} vectors from index: ${index}`)
+    return unwrappedResponse
   } catch (error) {
     console.error("Elasticsearch search error:", error);
     throw error;

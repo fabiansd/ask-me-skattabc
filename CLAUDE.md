@@ -2,6 +2,36 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Local Development Setup
+
+### Prerequisites
+Ensure you have the following services running for full local development:
+
+1. **Elasticsearch Proxy** (for search functionality):
+   ```bash
+   flyctl proxy 9200:9200 --app elasticsearch-llm-spring-glitter-3589
+   ```
+
+2. **PostgreSQL Proxy** (for database connectivity):
+   ```bash
+   flyctl proxy 5432:5432 --app skatt-abc-db
+   ```
+
+### Environment Configuration
+Update your `.env.local` file to use local proxies:
+```bash
+ELASTICSEARCH_URL="http://localhost:9200"
+DATABASE_URL="postgres://postgres:llxxEOVwpmVIL0C@localhost:5432/ask_me_skattabc_young_violet_4122"
+```
+
+### Start Development
+In a separate terminal (after starting both proxies):
+```bash
+npm run dev
+```
+
+The proxies create secure tunnels to your Fly.io services, allowing your local development environment to connect as if they were running locally.
+
 ## Development Commands
 
 - `npm run dev` - Start development server
@@ -11,6 +41,42 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run lint` - Run ESLint
 - `npm run test` - Run Jest tests
 - `npx prisma db pull` - Update Prisma schema from PostgreSQL database
+
+## Fly.io Deployment Commands
+
+### Multi-App Deployment (from root directory)
+
+**Deploy Main Application:**
+```bash
+flyctl deploy --remote-only
+```
+
+**Deploy Elasticsearch Service:**
+```bash
+flyctl deploy --config elasticsearch/fly.toml --dockerfile elasticsearch/Dockerfile --remote-only
+```
+
+
+
+### Monorepo Structure
+
+This project uses a multi-app structure where each service has its own Fly.io configuration:
+
+```
+ask-me-skattabc/
+├── fly.toml                    # Main Next.js application
+├── Dockerfile                  # Main app Dockerfile
+└── elasticsearch/
+    ├── fly.toml               # ES app config
+    └── Dockerfile             # ES 8.12.2 with data
+```
+
+**Key Benefits:**
+- Deploy any service from root directory using `--config` and `--dockerfile` flags
+- Each service maintains independent configuration and versioning
+- No need to navigate between directories during deployment
+- Supports multiple environments (staging, production) per service
+
 
 ## Architecture Overview
 

@@ -14,6 +14,7 @@
     "@elastic/elasticsearch": "^8.13.1",
     "@prisma/client": "^5.15.0",
     "dompurify": "^3.1.1",
+    "elasticdump": "^6.124.1",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.2",
     "llamaindex": "^0.2.10",
@@ -49,8 +50,8 @@
     "secrets": [
       "ELASTICSEARCH_URL",
       "OPENAI_API_KEY",
-      "ELASTICSEARCH_USER",
-      "ELASTICSEARCH_PASSWORD"
+      "ELASTIC_PASSWORD",
+      "DATABASE_URL"
     ]
   }
 }

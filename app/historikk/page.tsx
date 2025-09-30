@@ -11,17 +11,11 @@ export default function History() {
 
     const getQueryHistory = async () => {
         try {
-
-            if (!user) {
-                console.log('User is null, skipping fetch');
-                return;
-              }
-
             const response = await fetch(`/api/postgres/query_history?username=${user?.username ? user.username : 'default'}`);
             const data = await response.json();
 
             if (!response.ok) {
-            throw new Error('Error fetching query history');
+              throw new Error('Error fetching query history');
             }
             setHistory(data);
             console.log('Fetch query history: ', data)
