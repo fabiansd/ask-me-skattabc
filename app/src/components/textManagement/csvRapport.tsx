@@ -1,6 +1,6 @@
-import React from 'react';
-import { CSVLink } from 'react-csv';
-import { SearchState } from '../../interface/skattSokInterface';
+import React from "react";
+import { CSVLink } from "react-csv";
+import { SearchState } from "../../interface/skattSokInterface";
 
 interface DownloadCSVProps {
   searchResponse: SearchState;
@@ -10,12 +10,15 @@ const DownloadCSV: React.FC<DownloadCSVProps> = ({ searchResponse }) => {
   const { queryResponse, paragraphsResponse } = searchResponse;
 
   const csvData = [
-    ['Type', 'Content'],
-    ['Query Response', queryResponse],
-    ...paragraphsResponse.map((paragraph, index) => [`Paragraph ${index + 1}`, paragraph]),
+    ["Type", "Content"],
+    ["Query Response", queryResponse],
+    ...paragraphsResponse.map((paragraph, index) => [
+      `Paragraph ${index + 1}`,
+      paragraph,
+    ]),
   ];
 
-  if (queryResponse === '') {
+  if (queryResponse === "") {
     return (
       <button
         className="btn text-white m-1 px-6 rounded mr-10 cursor-not-allowed"
