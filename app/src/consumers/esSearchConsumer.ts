@@ -1,10 +1,11 @@
 import { ELASTICSEARCH_INDEX_SKATT, ES_KNN_NUMBER } from "../constants/esParameters";
-import { client } from "../lib/esClient";
+import { getClient } from "../lib/esClient";
 import { unwrapESResponse } from "../lib/esUtil";
 
 
 export async function healthCheck() {
   try {
+    const client = getClient();
     const pingResponse = await client.ping()
     console.log('ES health check passed ')
     return pingResponse;
@@ -16,6 +17,7 @@ export async function healthCheck() {
 
 export async function searchMatchKeyword(searchText: string) {
   try {
+    const client = getClient();
     const response = await client.search({
       index: ELASTICSEARCH_INDEX_SKATT || 'index_skatt',
       size: 5,
@@ -40,6 +42,7 @@ export async function searchMatchKeyword(searchText: string) {
 
 export async function searchMatchVector(searchVector: number[], index: string, size: number) {
   try {
+    const client = getClient();
     const esResponse = await client.search({
       index: index,
       size: size,
