@@ -38,11 +38,18 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Elasticsearch data files (keep config, ignore data)
+# Data files - archive large datasets
 elasticsearch/notebook_client/data/
+elasticsearch/notebook_client/data_archive/
+elasticsearch/notebook_client/notebooks_archive/
 elasticsearch/snapshot/
-*.json.gz
 
-# Large notebook files and checkpoints
-elasticsearch/notebook_client/notebooks/examples/*.ipynb
-elasticsearch/notebook_client/notebooks/examples/.ipynb_checkpoints/
+# General data file patterns
+*.txt
+*.json
+*.pdf
+!package*.json
+!**/package*.json
+
+# Claude artifacts
+.claude/
