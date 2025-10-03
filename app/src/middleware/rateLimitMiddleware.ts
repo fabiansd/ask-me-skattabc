@@ -1,30 +1,54 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { rateLimiter, RATE_LIMIT_CONFIG } from '@/app/src/lib/rateLimiter';
 
 export async function withRateLimit(
   request: NextRequest,
-  handler: (request: NextRequest) => Promise<NextResponse>,
+  handler: (request: NextRequest) => Promise<Response>,
   endpoint: keyof typeof RATE_LIMIT_CONFIG = 'GENERAL_API'
 ) {
   const config = RATE_LIMIT_CONFIG[endpoint];
+
+  // Check IP rate limit
   const result = await rateLimiter.checkRateLimit(request, config);
+
+  // Check global limit for AI queries
+  if (endpoint === 'QUERY_API') {
+    const globalConfig = RATE_LIMIT_CONFIG.GLOBAL_CIRCUIT_BREAKER;
+    const globalResult = await rateLimiter.checkRateLimit(
+      { ...request, ip: 'GLOBAL_TOTAL' } as NextRequest,
+      globalConfig
+    );
+
+    if (!globalResult.allowed) {
+      const retryAfter = Math.ceil((globalResult.resetTime - Date.now()) / 1000);
+      return Response.json(
+        {
+          error: 'Service temporarily unavailable',
+          message: `Too many requests globally. Try again in ${retryAfter} seconds.`
+        },
+        {
+          status: 503,
+          headers: {
+            'Retry-After': retryAfter.toString(),
+            'X-Global-RateLimit-Remaining': '0'
+          }
+        }
+      );
+    }
+  }
 
   if (!result.allowed) {
     const retryAfter = Math.ceil((result.resetTime - Date.now()) / 1000);
-
-    return NextResponse.json(
+    return Response.json(
       {
         error: 'Rate limit exceeded',
-        message: `Too many requests. Try again in ${retryAfter} seconds.`,
-        retryAfter
+        message: `Too many requests. Try again in ${retryAfter} seconds.`
       },
       {
         status: 429,
         headers: {
           'Retry-After': retryAfter.toString(),
-          'X-RateLimit-Limit': config.maxRequests.toString(),
-          'X-RateLimit-Remaining': '0',
-          'X-RateLimit-Reset': result.resetTime.toString()
+          'X-RateLimit-Remaining': '0'
         }
       }
     );
@@ -32,9 +56,9 @@ export async function withRateLimit(
 
   const response = await handler(request);
 
+  // Add rate limit headers
   response.headers.set('X-RateLimit-Limit', config.maxRequests.toString());
   response.headers.set('X-RateLimit-Remaining', result.remaining.toString());
-  response.headers.set('X-RateLimit-Reset', result.resetTime.toString());
 
   return response;
 }
