@@ -2,6 +2,25 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🚨 SECURITY REQUIREMENTS - NEVER VIOLATE THESE
+
+**NEVER include actual secrets in code:**
+- NO real passwords, API keys, bearer tokens, or connection strings
+- NO actual database passwords or credentials
+- USE placeholder values like `YOUR_API_KEY`, `YOUR_PASSWORD`, `<token>`
+- USE environment variable references like `${{ secrets.API_TOKEN }}`
+- ALWAYS use `.env.example` patterns for documentation
+
+**Examples of what NOT to do:**
+- ❌ `DATABASE_URL="postgres://user:realpassword123@host:5432/db"`
+- ❌ `Authorization: Bearer sk-abc123realtoken`
+- ❌ `FLY_API_TOKEN: fo1_abc123`
+
+**Examples of what TO do:**
+- ✅ `DATABASE_URL="postgres://user:YOUR_PASSWORD@host:5432/db"`
+- ✅ `Authorization: Bearer ${{ secrets.API_TOKEN }}`
+- ✅ `FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}`
+
 ## Local Development Setup
 
 ### Prerequisites
@@ -167,3 +186,4 @@ OpenAI integration supports both detailed and concrete response modes, configure
 
 ### Search Implementation
 Elasticsearch implements k-NN vector search with configurable index sizes for different document types (SKATT vs SKATT_PARA indices).
+- CLAUDE.md
