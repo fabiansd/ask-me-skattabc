@@ -33,9 +33,9 @@ jobs:
       - name: Run database migrations
         run: npx prisma migrate deploy --schema=db-postgres/prisma/schema.prisma
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL_WORKFLOW }}
 
       - name: Verify migration status
         run: npx prisma migrate status --schema=db-postgres/prisma/schema.prisma
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL_WORKFLOW }}
