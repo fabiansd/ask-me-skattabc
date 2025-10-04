@@ -13,58 +13,80 @@ This is a Next.js application that provides AI-powered answers to Norwegian tax 
 
 ## Environment Variables
 
-Create `.env` with:
+The `.env` file contains default local development values:
 
 ```bash
-ELASTICSEARCH_URL=http://localhost:9200
+# Local database (automatically started with npm run dev)
+DATABASE_URL="postgresql://postgres:devpassword@localhost:5433/ask_me_skattabc_dev"
+
+# Elasticsearch (requires proxy to Fly.io)
+ELASTICSEARCH_URL="http://localhost:9200"
+
+# Placeholder values (override in .env.local with real keys)
+ELASTIC_PASSWORD="devpassword"
+OPENAI_API_KEY="your-openai-key-here"
+USE_MOCK_DATA=false
 ```
 
-Create a `.env.local` files with:
-
+Create `.env.local` for real API credentials:
 
 ```bash
-# PostgreSQL Database
-DATABASE_URL="postgres://username:password@host:port/database"
-
-# Elasticsearch
-ELASTIC_PASSWORD="your-elasticsearch-password"
-
-# OpenAI
-OPENAI_API_KEY="sk-proj-your-openai-key"
-
-# Development/Testing
-USE_MOCK_DATA=true  # This will enable / deisable mocking of all external api's
+# Real credentials (never commit this file)
+ELASTIC_PASSWORD="your-real-elastic-password"
+OPENAI_API_KEY="sk-proj-your-real-openai-key"
 ```
 
 ## Local Development Setup
 
-### Prerequisites
-Ensure you have the following services running for full local development:
-
-1. **Elasticsearch Proxy** (for search functionality):
-   ```bash
-   flyctl proxy 9200:9200 --app elasticsearch-llm-spring-glitter-3589
-   ```
-
-2. **PostgreSQL Proxy** (for database connectivity):
-   ```bash
-   flyctl proxy 5432:5432 --app skatt-abc-db
-   ```
-
-### Environment Configuration
-Update your `.env.local` file to use local proxies:
+### Quick Start
 ```bash
-ELASTICSEARCH_URL="http://localhost:9200"
-DATABASE_URL="postgres://postgres:llxxEOVwpmVIL0C@localhost:5432/ask_me_skattabc_young_violet_4122"
-```
+# Clone and install
+git clone <repo>
+npm install
 
-### Start Development
-In a separate terminal (after starting both proxies):
-```bash
+# Start everything (database + app)
 npm run dev
 ```
 
-The proxies create secure tunnels to your Fly.io services, allowing your local development environment to connect as if they were running locally.
+### What This Does
+- Starts local PostgreSQL with Podman/Docker
+- Runs Prisma migrations + loads test data
+- Starts Next.js app on http://localhost:3000
+- Press Ctrl+C to stop everything
+
+### Requirements
+**Container Runtime (choose one):**
+
+**Option A: Podman (recommended for company Macs)**
+```bash
+brew install podman
+podman machine init && podman machine start
+```
+
+**Option B: Docker**
+```bash
+# Install Docker Desktop or via Homebrew
+```
+
+**Elasticsearch Connection:**
+```bash
+# Start proxy to Fly.io Elasticsearch (in separate terminal)
+flyctl proxy 9200:9200 --app elasticsearch-llm-spring-glitter-3589
+```
+
+**API Keys:**
+Add real credentials to `.env.local` (see Environment Variables above)
+
+### Manual Commands
+```bash
+npm run dev:db:setup  # Setup database only
+npm run dev:app       # Start app only
+npm run dev:db:stop   # Stop database
+```
+
+### Environment Files
+- `.env` - Default local values (committed)
+- `.env.local` - Override with real API keys (never committed)
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 

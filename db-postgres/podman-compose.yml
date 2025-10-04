@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  postgres-dev:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=ask_me_skattabc_dev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=devpassword
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_dev_data:

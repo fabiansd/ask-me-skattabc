@@ -14,8 +14,13 @@ export async function withRateLimit(
   // Check global limit for AI queries
   if (endpoint === 'QUERY_API') {
     const globalConfig = RATE_LIMIT_CONFIG.GLOBAL_CIRCUIT_BREAKER;
+    // Create a mock request for global rate limiting
+    const globalRequest = {
+      headers: new Headers(),
+      ip: 'GLOBAL_TOTAL'
+    } as NextRequest;
     const globalResult = await rateLimiter.checkRateLimit(
-      { ...request, ip: 'GLOBAL_TOTAL' } as NextRequest,
+      globalRequest,
       globalConfig
     );
 
