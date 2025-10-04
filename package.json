@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "npm run dev:db:setup && npm run dev:app",
+    "dev:app": "next dev",
+    "dev:db:setup": "podman-compose -f db-postgres/podman-compose.yml up -d && echo 'Waiting for PostgreSQL...' && sleep 1 && npx prisma migrate dev --schema=db-postgres/prisma/schema.prisma && psql 'postgresql://postgres:devpassword@localhost:5433/ask_me_skattabc_dev' -f db-postgres/init-scripts/init.sql && echo 'Database ready with test data!'",
+    "dev:db:stop": "podman-compose -f db-postgres/podman-compose.yml down",
+    "postdev": "npm run dev:db:stop",
     "debug": "NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
     "start": "next start",

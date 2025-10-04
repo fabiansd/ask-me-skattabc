@@ -25,9 +25,13 @@ class InMemoryRateLimiter {
   }
 
   private getClientId(request: NextRequest): string {
-    const forwarded = request.headers.get('x-forwarded-for');
-    const ip = forwarded ? forwarded.split(',')[0] : request.ip || 'unknown';
-    return ip;
+    try {
+      const forwarded = request.headers?.get('x-forwarded-for');
+      const ip = forwarded ? forwarded.split(',')[0] : request.ip || 'unknown';
+      return ip;
+    } catch (error) {
+      return 'unknown';
+    }
   }
 
   async checkRateLimit(

@@ -1,0 +1,41 @@
+name: Database Migration
+
+on:
+  workflow_run:
+    workflows: ["Tests"]
+    branches: [main]
+    types:
+      - completed
+
+jobs:
+  migrate:
+    name: Run Database Migrations
+    runs-on: ubuntu-latest
+    concurrency: deploy-group
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate --schema=db-postgres/prisma/schema.prisma
+
+      - name: Run database migrations
+        run: npx prisma migrate deploy --schema=db-postgres/prisma/schema.prisma
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Verify migration status
+        run: npx prisma migrate status --schema=db-postgres/prisma/schema.prisma
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}

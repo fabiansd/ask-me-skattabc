@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  elasticsearch-dev:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - network.host=0.0.0.0
+      - ELASTIC_PASSWORD=devpassword
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_dev_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  elasticsearch_dev_data:

@@ -1,20 +1,23 @@
 import { healthCheck } from '@/app/src/consumers/esSearchConsumer';
-import { findUserByName } from '@/app/src/consumers/postgresConsumer';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const username = searchParams.get('username') || 'default';
-
     const healthResponse = await healthCheck();
-    const userResponse = await findUserByName(username);
 
-    return NextResponse.json({ healthResponse, userResponse });
+    return NextResponse.json({
+      status: 'healthy',
+      elasticsearch: healthResponse,
+      timestamp: new Date().toISOString()
+    });
   } catch (error) {
-    console.error('ES Health check error:', error);
-    return NextResponse.json({ error: 'ES health check failed' }, { status: 500 });
+    console.error('Health check error:', error);
+    return NextResponse.json({
+      status: 'unhealthy',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    }, { status: 500 });
   }
 }
