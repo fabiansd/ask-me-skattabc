@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     console.error('Health check error:', error);
     return NextResponse.json({
       status: 'unhealthy',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
     }, { status: 500 });
   }
