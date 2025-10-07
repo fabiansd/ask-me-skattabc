@@ -16,8 +16,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(queryHistory);
   } catch (error) {
     console.error('Query history error: ', error);
+    const { searchParams } = new URL(request.url);
 
-    if (error.message === 'User not found') {
+    if (error instanceof Error && error.message === 'User not found') {
       return NextResponse.json({
         message: `User '${searchParams.get('username')}' not found`,
         history: []
