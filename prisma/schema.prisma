@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL_PRISMA")
+  url      = env("DATABASE_URL")
 }
 
 model flyway_schema_history {
