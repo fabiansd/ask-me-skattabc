@@ -36,7 +36,6 @@ RUN npm ci --include=dev
 # Copy application code
 COPY --link . .
 
-COPY --link db-postgres/prisma ./prisma
 RUN DATABASE_URL=$DATABASE_URL npx prisma generate
 
 # Build application
