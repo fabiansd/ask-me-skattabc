@@ -1,6 +1,4 @@
 export const ELASTIC_USERNAME = 'elastic';
-export const ES_VECTOR_SEARCH_SIZE_SKATT = 10;
-export const ES_VECTOR_SEARCH_SIZE_SKATT_PARA = 20;
-export const ES_KNN_NUMBER = 20;
-export const ELASTICSEARCH_INDEX_SKATT = 'index_skatt';
-export const ELASTICSEARCH_INDEX_SKATT_PARA = 'index_skatteparagraf';
+export const ES_SEARCH_NUM_HITS = 45;
+export const ES_KNN_NUMBER = 60;
+export const ELASTICSEARCH_INDEX_SKATT = 'skatt_chunks_2025';

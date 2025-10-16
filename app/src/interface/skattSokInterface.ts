@@ -8,6 +8,7 @@ export interface SearchState {
 
 export interface QueryChatRequest {
   searchText: string;
+  tags?: string[];
   isDetailed: boolean;
   username: string;
   history: SearchState[];
