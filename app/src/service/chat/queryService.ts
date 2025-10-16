@@ -1,8 +1,8 @@
-import { searchMatchVector } from '@/app/src/consumers/esSearchConsumer';
+import { searchMatchSearchVectorKeyword, searchMatchVector } from '@/app/src/consumers/esSearchConsumer';
 import { embedText, queryChat } from '@/app/src/consumers/openAiConsumer';
 import {
-  ELASTICSEARCH_INDEX_SKATT_PARA,
-  ES_VECTOR_SEARCH_SIZE_SKATT_PARA
+  ELASTICSEARCH_INDEX_SKATT,
+  ES_SEARCH_NUM_HITS
 } from '@/app/src/constants/esParameters';
 import { addUserChatHistory } from '../../consumers/postgresConsumer';
 import { QueryChatRequest } from '../../interface/skattSokInterface';
@@ -23,13 +23,14 @@ async function query(queryChatRequest: QueryChatRequest) {
 
     console.log('searchVector: ', searchVector);
 
-    const esParagraphSearch = await searchMatchVector(
+    const esParagraphSearch = await searchMatchSearchVectorKeyword(
       searchVector,
-      ELASTICSEARCH_INDEX_SKATT_PARA,
-      ES_VECTOR_SEARCH_SIZE_SKATT_PARA
+      ELASTICSEARCH_INDEX_SKATT,
+      ES_SEARCH_NUM_HITS,
+      queryChatRequest.tags || []
     );
 
-    console.log('esParagraphSearch: ', esParagraphSearch);
+    console.log('Chunk nr 1: ', esParagraphSearch[0]);
 
     const openaiResponse = await queryChat(
       queryChatRequest,

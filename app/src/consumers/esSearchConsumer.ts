@@ -62,3 +62,38 @@ export async function searchMatchVector(searchVector: number[], index: string, s
     throw error;
   }
 }
+
+export async function searchMatchSearchVectorKeyword(searchVector: number[], index: string, size: number, keywords: string[] = []) {
+  try {
+    const client = getClient();
+    const keywordBoosts = keywords.map(kw => ({
+      match: { content: { query: kw, boost: 0.5 }}
+    }));
+
+    const esResponse = await client.search({
+      index: index,
+      size: size,
+      knn: {
+        field: "embedding",
+        query_vector: searchVector,
+        k: ES_KNN_NUMBER,
+        num_candidates: 100,
+        boost: 1.0,
+      },
+      ...(keywords?.length > 0 && {
+        query: {
+          bool: {
+            should: keywordBoosts
+          }
+        }
+      })
+    });
+    const unwrappedResponse = unwrapESResponse(esResponse)
+    console.log(`ES hybrid search retrieved ${unwrappedResponse.length} vectors from index: ${index}`)
+    return unwrappedResponse
+  } catch (error) {
+    console.error("Elasticsearch hybrid search error:", error);
+    throw error;
+  }
+}
+
