@@ -1,5 +1,6 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import GptResponseDisplay from "../src/components/textManagement/markdownTextDisplay";
 import ParagraphsDisplay from "../src/components/textManagement/paragraphsDisplay";
 import {
@@ -11,7 +12,7 @@ import DeleteLocalStorage from "../src/components/localStorage/clearLocalStorage
 import ToggleSwitch from "../src/components/toogleModelDepth";
 import DownloadCSV from "../src/components/textManagement/csvRapport";
 import { Icons } from "../src/components/icons/iconsWrapper";
-import UserContext from "../src/contexts/user";
+import { getUserId } from "../src/lib/getUserId";
 
 const initialSearchResponse: SearchState = {
   id: "",
@@ -31,7 +32,7 @@ export default function Search() {
   const [searchInput, setSearchInput] = useState("");
   const [isClearHistoryDisabled, setIsClearHistoryDisabled] = useState(true);
 
-  const { user } = useContext(UserContext);
+  const { data: session } = useSession();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -89,7 +90,7 @@ export default function Search() {
       const queryChatRequest: QueryChatRequest = {
         searchText: searchInput,
         isDetailed: isDetailed,
-        username: user?.username ? user.username : "default",
+        username: getUserId(session),
         history: getSearchHistory(),
       };
 

@@ -1,7 +1,8 @@
 'use client'
-import { useContext, useState } from "react";
+import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { UserFeedbackInput } from "../src/interface/feedback";
-import UserContext from "../src/contexts/user";
+import { getUserId } from "../src/lib/getUserId";
 
 const initialFeedback: UserFeedbackInput = {
     username: 'default',
@@ -13,7 +14,7 @@ export default function Feedback() {
 
     const [feedback, setFeedback] = useState(initialFeedback);
     const [isLoading, setIsLoading] = useState(false);
-    const { user } = useContext(UserContext);
+    const { data: session } = useSession();
 
     const handeButtonClick = async () => {
         setIsLoading(true);
@@ -47,7 +48,7 @@ export default function Feedback() {
         setFeedback({
             ...feedback,
             [name]: value,
-            username: user?.username ? user.username : 'default',
+            username: getUserId(session),
         });
     };
 

@@ -1,17 +1,18 @@
 'use client'
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useSession } from "next-auth/react";
 import QueryHistory from "../src/components/textManagement/displayQueryHistory";
-import UserContext from "../src/contexts/user";
+import { getUserId } from "../src/lib/getUserId";
 
 
 export default function History() {
 
     const [history, setHistory] = useState([]);
-    const { user } = useContext(UserContext);
+    const { data: session } = useSession();
 
-    const getQueryHistory = async () => {
+    const getQueryHistory = useCallback(async () => {
         try {
-            const response = await fetch(`/api/postgres/query_history?username=${user?.username ? user.username : 'default'}`);
+            const response = await fetch(`/api/postgres/query_history?username=${getUserId(session)}`);
             const data = await response.json();
 
             if (!response.ok) {
@@ -22,11 +23,13 @@ export default function History() {
         } catch (error) {
             console.error('Error fetching search query history:', error);
         }
-      };
+      }, [session]);
     
       useEffect(() => {
-        getQueryHistory();
-      }, [user]);
+        if (session !== undefined) {
+          getQueryHistory();
+        }
+      }, [session, getQueryHistory]);
     
 
     return (     
