@@ -1,11 +1,12 @@
 'use client'
-import React, { useContext } from 'react';
-import UserContext from '../../contexts/user';
+import React from 'react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 import Health from '../serverPingHealth';
+import { getUserId } from '../../lib/getUserId';
 
 const Header = () => {
 
-    const { user } = useContext(UserContext);
+    const { data: session } = useSession();
 
     return (
         <div className="navbar bg-base-200 px-10 p-2 shadow">
@@ -31,7 +32,13 @@ const Header = () => {
             <div className='pr-8'>
                 <Health/>
             </div>
-            <a href='/bruker' className="btn"> {user?.username ? user.username : 'Login' } </a>
+            {session ? (
+                <button onClick={() => signOut()} className="btn">
+                    {session.user?.name || getUserId(session)}
+                </button>
+            ) : (
+                <button onClick={() => signIn('google')} className="btn">Login</button>
+            )}
         </div>
         </div>
     );

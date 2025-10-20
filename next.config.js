@@ -9,6 +9,7 @@ const nextConfig = {
         "sharp",
         "onnxruntime-node",
       ],
+      instrumentationHook: true,
     },
     webpack: (config) => {
       config.externals.push({

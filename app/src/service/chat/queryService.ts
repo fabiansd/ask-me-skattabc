@@ -16,7 +16,9 @@ async function query(queryChatRequest: QueryChatRequest) {
 
     if (process.env.USE_MOCK_DATA === 'true') {
         console.log('Using mock data');
-        return Response.json(getMockQueryResponse());
+        const mockResponse = getMockQueryResponse();
+        await addUserChatHistory(queryChatRequest, mockResponse.openaiResponse);
+        return Response.json(mockResponse);
     }
 
     const searchVector: number[] = await embedText(queryChatRequest.searchText);

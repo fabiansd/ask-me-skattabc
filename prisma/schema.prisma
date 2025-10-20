@@ -48,8 +48,9 @@ model users {
   user_id       Int             @id @default(autoincrement())
   username      String          @unique @db.VarChar(50)
   email         String?         @unique @db.VarChar(255)
-  auth_provider String          @default("username") @db.VarChar(20)
+  auth_provider String          @default("default") @db.VarChar(20)
   google_id     String?         @unique @db.VarChar(255)
+  query_count   Int             @default(0)
   created_at    DateTime        @default(now()) @db.Timestamp(6)
   query_history query_history[]
   user_feedback user_feedback[]
