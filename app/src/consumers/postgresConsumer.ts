@@ -4,7 +4,6 @@ import { UserFeedbackInput } from "../interface/feedback";
 import { QueryChatRequest } from "../interface/skattSokInterface";
 
 
-// User lookup functions
 export async function findUserById(userId: number): Promise<users> {
   try {
     const user = await prismaClient.users.findUnique(
@@ -55,7 +54,6 @@ export async function findUserByGoogleId(googleId: string): Promise<users> {
   }
 }
 
-// User creation functions
 export async function createDefaultUser(username: string): Promise<users> {
   try {
     const user = await prismaClient.users.upsert({
@@ -83,7 +81,7 @@ export async function createGoogleUser(googleId: string, email: string, name: st
     if (!user) {
       user = await prismaClient.users.create({
         data: {
-          username: name || email,  // Use display name as username (human-readable)
+          username: name || email,
           email: email,
           auth_provider: 'google',
           google_id: googleId,
@@ -98,8 +96,6 @@ export async function createGoogleUser(googleId: string, email: string, name: st
   }
 }
 
-
-// Chat history functions
 export async function addUserChatHistory(queryChatRequest: QueryChatRequest, openaiResponse: string) {
   try {
     let user;
@@ -143,7 +139,6 @@ export async function findUserChatHistory(username: string): Promise<query_histo
   }
 }
 
-// User feedback functions
 export async function addUserFeedback( feedback: UserFeedbackInput) {
   try {
 
