@@ -17,5 +17,8 @@ ENV NODE_ENV=production
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
+# Copy Prisma schema for migrations
+COPY --from=builder /app/prisma ./prisma
+
 EXPOSE 3000
 CMD ["node", "server.js"]
