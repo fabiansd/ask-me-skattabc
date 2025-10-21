@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+
 import { rateLimiter, RATE_LIMIT_CONFIG } from '@/app/src/lib/rateLimiter';
 
 export async function withRateLimit(
@@ -17,26 +18,23 @@ export async function withRateLimit(
     // Create a mock request for global rate limiting
     const globalRequest = {
       headers: new Headers(),
-      ip: 'GLOBAL_TOTAL'
+      ip: 'GLOBAL_TOTAL',
     } as NextRequest;
-    const globalResult = await rateLimiter.checkRateLimit(
-      globalRequest,
-      globalConfig
-    );
+    const globalResult = await rateLimiter.checkRateLimit(globalRequest, globalConfig);
 
     if (!globalResult.allowed) {
       const retryAfter = Math.ceil((globalResult.resetTime - Date.now()) / 1000);
       return Response.json(
         {
           error: 'Service temporarily unavailable',
-          message: `Too many requests globally. Try again in ${retryAfter} seconds.`
+          message: `Too many requests globally. Try again in ${retryAfter} seconds.`,
         },
         {
           status: 503,
           headers: {
             'Retry-After': retryAfter.toString(),
-            'X-Global-RateLimit-Remaining': '0'
-          }
+            'X-Global-RateLimit-Remaining': '0',
+          },
         }
       );
     }
@@ -47,14 +45,14 @@ export async function withRateLimit(
     return Response.json(
       {
         error: 'Rate limit exceeded',
-        message: `Too many requests. Try again in ${retryAfter} seconds.`
+        message: `Too many requests. Try again in ${retryAfter} seconds.`,
       },
       {
         status: 429,
         headers: {
           'Retry-After': retryAfter.toString(),
-          'X-RateLimit-Remaining': '0'
-        }
+          'X-RateLimit-Remaining': '0',
+        },
       }
     );
   }

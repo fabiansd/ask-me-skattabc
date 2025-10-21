@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 .markdown-content a {
-    @apply text-sky-600 underline hover:text-sky-800;
-  }
+  @apply text-sky-600 underline hover:text-sky-800;
+}

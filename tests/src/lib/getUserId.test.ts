@@ -1,5 +1,6 @@
-import { getUserId } from "@/app/src/lib/getUserId";
-import { Session } from "next-auth";
+import { Session } from 'next-auth';
+
+import { getUserId } from '@/app/src/lib/getUserId';
 
 describe('getUserId', () => {
   it('should return user ID from Google session', () => {
@@ -7,9 +8,9 @@ describe('getUserId', () => {
       user: {
         id: 'google_123456789',
         name: 'Test User',
-        email: 'test@example.com'
+        email: 'test@example.com',
       },
-      expires: '2024-12-31'
+      expires: '2024-12-31',
     };
 
     const result = getUserId(mockSession);
@@ -25,7 +26,7 @@ describe('getUserId', () => {
 
   it('should return "default" when session exists but user is undefined', () => {
     const mockSession = {
-      expires: '2024-12-31'
+      expires: '2024-12-31',
       // No user property
     } as unknown as Session;
 
@@ -38,16 +39,16 @@ describe('getUserId', () => {
     const sessions = [
       {
         user: { id: 'google_abc123' },
-        expires: '2024-12-31'
+        expires: '2024-12-31',
       },
       {
         user: { id: 'github_xyz789' },
-        expires: '2024-12-31'
+        expires: '2024-12-31',
       },
       {
         user: { id: 'custom_user_001' },
-        expires: '2024-12-31'
-      }
+        expires: '2024-12-31',
+      },
     ] as Session[];
 
     const results = sessions.map(session => getUserId(session));
@@ -59,9 +60,9 @@ describe('getUserId', () => {
     const mockSession: Session = {
       user: {
         id: '',
-        name: 'Test User'
+        name: 'Test User',
       },
-      expires: '2024-12-31'
+      expires: '2024-12-31',
     };
 
     const result = getUserId(mockSession);
@@ -73,9 +74,9 @@ describe('getUserId', () => {
     const mockSession: Session = {
       user: {
         id: '   ',
-        name: 'Test User'
+        name: 'Test User',
       },
-      expires: '2024-12-31'
+      expires: '2024-12-31',
     };
 
     const result = getUserId(mockSession);

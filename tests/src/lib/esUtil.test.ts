@@ -1,4 +1,4 @@
-import { unwrapESResponse } from "@/app/src/lib/esUtil";
+import { unwrapESResponse } from '@/app/src/lib/esUtil';
 
 describe('esUtil', () => {
   describe('unwrapESResponse', () => {
@@ -8,21 +8,21 @@ describe('esUtil', () => {
           hits: [
             {
               _source: {
-                content: 'Første dokument om skatteloven'
-              }
+                content: 'Første dokument om skatteloven',
+              },
             },
             {
               _source: {
-                content: 'Andre dokument om mva'
-              }
+                content: 'Andre dokument om mva',
+              },
             },
             {
               _source: {
-                content: 'Tredje dokument om fradrag'
-              }
-            }
-          ]
-        }
+                content: 'Tredje dokument om fradrag',
+              },
+            },
+          ],
+        },
       };
 
       const result = unwrapESResponse(mockESResponse);
@@ -36,8 +36,8 @@ describe('esUtil', () => {
     it('should handle empty hits array', () => {
       const mockESResponse = {
         hits: {
-          hits: []
-        }
+          hits: [],
+        },
       };
 
       const result = unwrapESResponse(mockESResponse);
@@ -52,11 +52,11 @@ describe('esUtil', () => {
           hits: [
             {
               _source: {
-                content: 'Enkelt dokument'
-              }
-            }
-          ]
-        }
+                content: 'Enkelt dokument',
+              },
+            },
+          ],
+        },
       };
 
       const result = unwrapESResponse(mockESResponse);
@@ -71,16 +71,16 @@ describe('esUtil', () => {
           hits: [
             {
               _source: {
-                content: 'Dokument med æøå og § 5-1 skatteloven'
-              }
+                content: 'Dokument med æøå og § 5-1 skatteloven',
+              },
             },
             {
               _source: {
-                content: 'Tekst med "sitater" og (parenteser)'
-              }
-            }
-          ]
-        }
+                content: 'Tekst med "sitater" og (parenteser)',
+              },
+            },
+          ],
+        },
       };
 
       const result = unwrapESResponse(mockESResponse);
@@ -96,11 +96,11 @@ describe('esUtil', () => {
           hits: [
             {
               _source: {
-                content: 'Linje 1\nLinje 2\n\nLinje 4 med ekstra mellomrom'
-              }
-            }
-          ]
-        }
+                content: 'Linje 1\nLinje 2\n\nLinje 4 med ekstra mellomrom',
+              },
+            },
+          ],
+        },
       };
 
       const result = unwrapESResponse(mockESResponse);
@@ -114,16 +114,16 @@ describe('esUtil', () => {
           hits: [
             {
               _source: {
-                content: ''
-              }
+                content: '',
+              },
             },
             {
               _source: {
-                content: 'Normal innhold'
-              }
-            }
-          ]
-        }
+                content: 'Normal innhold',
+              },
+            },
+          ],
+        },
       };
 
       const result = unwrapESResponse(mockESResponse);
@@ -141,9 +141,9 @@ describe('esUtil', () => {
             { _source: { content: 'Andre' } },
             { _source: { content: 'Tredje' } },
             { _source: { content: 'Fjerde' } },
-            { _source: { content: 'Femte' } }
-          ]
-        }
+            { _source: { content: 'Femte' } },
+          ],
+        },
       };
 
       const result = unwrapESResponse(mockESResponse);
@@ -158,11 +158,11 @@ describe('esUtil', () => {
           hits: [
             {
               _source: {
-                content: largeContent
-              }
-            }
-          ]
-        }
+                content: largeContent,
+              },
+            },
+          ],
+        },
       };
 
       const result = unwrapESResponse(mockESResponse);

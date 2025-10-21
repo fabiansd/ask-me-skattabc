@@ -1,5 +1,6 @@
-import { rateLimiter, RATE_LIMIT_CONFIG } from "@/app/src/lib/rateLimiter";
 import { NextRequest } from 'next/server';
+
+import { rateLimiter, RATE_LIMIT_CONFIG } from '@/app/src/lib/rateLimiter';
 
 // Mock NextRequest for testing
 function createMockRequest(ip?: string, headers?: Record<string, string>): NextRequest {
@@ -11,8 +12,8 @@ function createMockRequest(ip?: string, headers?: Record<string, string>): NextR
   return {
     ip: ip || '127.0.0.1',
     headers: {
-      get: (key: string) => mockHeaders.get(key) || null
-    }
+      get: (key: string) => mockHeaders.get(key) || null,
+    },
   } as unknown as NextRequest;
 }
 
@@ -76,7 +77,9 @@ describe('rateLimiter', () => {
     });
 
     it('should extract IP from x-forwarded-for header', async () => {
-      const request = createMockRequest('127.0.0.1', { 'x-forwarded-for': '203.0.113.1,198.51.100.1' });
+      const request = createMockRequest('127.0.0.1', {
+        'x-forwarded-for': '203.0.113.1,198.51.100.1',
+      });
       const config = { windowMs: 60000, maxRequests: 1 };
 
       const result1 = await rateLimiter.checkRateLimit(request, config);

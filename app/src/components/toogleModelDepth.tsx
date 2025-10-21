@@ -17,13 +17,9 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ onToggle, textA, textB }) =
 
   return (
     <label className="swap btn-ghost m-1 px-6 rounded mr-10">
-        <input 
-          type="checkbox" 
-          checked={!isTextA} 
-          onChange={handleToggle} 
-        />
-        <div className="swap-on">{textB}</div>
-        <div className="swap-off">{textA}</div>
+      <input type="checkbox" checked={!isTextA} onChange={handleToggle} />
+      <div className="swap-on">{textB}</div>
+      <div className="swap-off">{textA}</div>
     </label>
   );
 };

@@ -1,22 +1,26 @@
-import query from "@/app/src/service/chat/queryService";
-import { QueryChatRequest } from "@/app/src/interface/skattSokInterface";
+import { searchMatchSearchVectorKeyword } from '@/app/src/consumers/esSearchConsumer';
+import { embedText, queryChat } from '@/app/src/consumers/openAiConsumer';
+import { addUserChatHistory } from '@/app/src/consumers/postgresConsumer';
+import { QueryChatRequest } from '@/app/src/interface/skattSokInterface';
+import query from '@/app/src/service/chat/queryService';
 
 // Mock all external dependencies
-jest.mock("@/app/src/consumers/esSearchConsumer");
-jest.mock("@/app/src/consumers/openAiConsumer");
-jest.mock("@/app/src/consumers/postgresConsumer");
-jest.mock("../../mockData");
+jest.mock('@/app/src/consumers/esSearchConsumer');
+jest.mock('@/app/src/consumers/openAiConsumer');
+jest.mock('@/app/src/consumers/postgresConsumer');
+jest.mock('../../mockData');
 
-import { searchMatchSearchVectorKeyword } from "@/app/src/consumers/esSearchConsumer";
-import { embedText, queryChat } from "@/app/src/consumers/openAiConsumer";
-import { addUserChatHistory } from "@/app/src/consumers/postgresConsumer";
-import { getMockQueryResponse } from "../../mockData";
+import { getMockQueryResponse } from '../../mockData';
 
-const mockSearchMatchSearchVectorKeyword = searchMatchSearchVectorKeyword as jest.MockedFunction<typeof searchMatchSearchVectorKeyword>;
+const mockSearchMatchSearchVectorKeyword = searchMatchSearchVectorKeyword as jest.MockedFunction<
+  typeof searchMatchSearchVectorKeyword
+>;
 const mockEmbedText = embedText as jest.MockedFunction<typeof embedText>;
 const mockQueryChat = queryChat as jest.MockedFunction<typeof queryChat>;
 const mockAddUserChatHistory = addUserChatHistory as jest.MockedFunction<typeof addUserChatHistory>;
-const mockGetMockQueryResponse = getMockQueryResponse as jest.MockedFunction<typeof getMockQueryResponse>;
+const mockGetMockQueryResponse = getMockQueryResponse as jest.MockedFunction<
+  typeof getMockQueryResponse
+>;
 
 describe('queryService', () => {
   const mockRequest: QueryChatRequest = {
@@ -24,7 +28,7 @@ describe('queryService', () => {
     isDetailed: false,
     username: 'testuser',
     history: [],
-    tags: ['mva']
+    tags: ['mva'],
   };
 
   beforeEach(() => {
@@ -40,7 +44,7 @@ describe('queryService', () => {
     it('should return mock data and save to history', async () => {
       const mockResponse = {
         openaiResponse: 'Mock OpenAI response',
-        esParagraphSearch: ['Mock ES paragraph']
+        esParagraphSearch: ['Mock ES paragraph'],
       };
       mockGetMockQueryResponse.mockReturnValue(mockResponse);
       mockAddUserChatHistory.mockResolvedValue(undefined);
@@ -56,7 +60,7 @@ describe('queryService', () => {
     it('should not call external services when using mock data', async () => {
       const mockResponse = {
         openaiResponse: 'Mock response',
-        esParagraphSearch: []
+        esParagraphSearch: [],
       };
       mockGetMockQueryResponse.mockReturnValue(mockResponse);
 
@@ -94,7 +98,7 @@ describe('queryService', () => {
 
       expect(responseData).toEqual({
         openaiResponse: mockOpenAiResponse,
-        esParagraphSearch: mockSearchResults
+        esParagraphSearch: mockSearchResults,
       });
     });
 
@@ -176,5 +180,4 @@ describe('queryService', () => {
       await expect(query(mockRequest)).rejects.toThrow('OpenAI failed');
     });
   });
-
 });

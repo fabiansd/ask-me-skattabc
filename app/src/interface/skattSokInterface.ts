@@ -3,7 +3,7 @@ export interface SearchState {
   searchInput: string;
   queryResponse: string;
   paragraphsResponse: string[];
-  chatFeedback?: "thumbsUp" | "thumbsDown" | null;
+  chatFeedback?: 'thumbsUp' | 'thumbsDown' | null;
 }
 
 export interface QueryChatRequest {

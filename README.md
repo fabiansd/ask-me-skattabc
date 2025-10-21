@@ -65,6 +65,7 @@ flyctl proxy 5432:5432 --app skatt-abc-db
 ## Local Development Setup
 
 ### Quick Start
+
 ```bash
 # Clone and install
 git clone <repo>
@@ -78,20 +79,22 @@ npm run dev
 ```
 
 ### What This Does
+
 - Starts local PostgreSQL with Podman/Docker
 - Runs Prisma migrations + loads test data
 - Starts Next.js app on http://localhost:3000
 - Press Ctrl+C to stop everything
 
-
 ## Fly.io Deployment
 
 ### Deploy Main Application
+
 ```bash
 flyctl deploy --remote-only
 ```
 
 ### Deploy Elasticsearch Service
+
 ```bash
 flyctl deploy --config elasticsearch/fly.toml --dockerfile elasticsearch/Dockerfile --remote-only
 ```
@@ -108,6 +111,7 @@ flyctl machine remove <id> --force
 ## Architecture
 
 ### Query Processing Flow
+
 1. **User Query**: Text input received via `/api/query` endpoint
 2. **Vector Embedding**: Text is embedded using OpenAI's embedding model
 3. **Semantic Search**: Elasticsearch performs vector similarity search against tax document paragraphs
@@ -115,6 +119,7 @@ flyctl machine remove <id> --force
 5. **Data Persistence**: Query history and user feedback are stored in PostgreSQL
 
 ### Database Schema
+
 - **PostgreSQL**: Stores user accounts, query history, and user feedback
 - **Elasticsearch**: Contains indexed SkatteABC tax documents with vector embeddings
-- **Local Storage**: Temporary conversation history for follow-up questions
+- **Local Storage**: Temporary conversation history for follow-up questionsTest change

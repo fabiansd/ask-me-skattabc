@@ -1,11 +1,14 @@
-import getQueryHistory from "@/app/src/service/history/queryHistoryService";
-import { query_history } from "@prisma/client";
+import { query_history } from '@prisma/client';
+
+import { findUserChatHistory } from '@/app/src/consumers/postgresConsumer';
+import getQueryHistory from '@/app/src/service/history/queryHistoryService';
 
 // Mock the postgres consumer
-jest.mock("@/app/src/consumers/postgresConsumer");
-import { findUserChatHistory } from "@/app/src/consumers/postgresConsumer";
+jest.mock('@/app/src/consumers/postgresConsumer');
 
-const mockFindUserChatHistory = findUserChatHistory as jest.MockedFunction<typeof findUserChatHistory>;
+const mockFindUserChatHistory = findUserChatHistory as jest.MockedFunction<
+  typeof findUserChatHistory
+>;
 
 describe('queryHistoryService', () => {
   beforeEach(() => {
@@ -22,7 +25,7 @@ describe('queryHistoryService', () => {
           question: 'Hva er mva på bil?',
           answer: 'MVA på bil er 25%',
           feedback: null,
-          created_at: new Date('2024-01-01T10:00:00Z')
+          created_at: new Date('2024-01-01T10:00:00Z'),
         },
         {
           history_id: 2,
@@ -30,8 +33,8 @@ describe('queryHistoryService', () => {
           question: 'Hvordan beregne skattefradrag?',
           answer: 'Skattefradrag beregnes...',
           feedback: true,
-          created_at: new Date('2024-01-01T11:00:00Z')
-        }
+          created_at: new Date('2024-01-01T11:00:00Z'),
+        },
       ];
 
       mockFindUserChatHistory.mockResolvedValue(mockHistoryData);
@@ -61,23 +64,27 @@ describe('queryHistoryService', () => {
       const username1 = 'user1';
       const username2 = 'user2';
 
-      const user1History: query_history[] = [{
-        history_id: 1,
-        user_id: 456,
-        question: 'User 1 question',
-        answer: 'User 1 answer',
-        feedback: null,
-        created_at: new Date()
-      }];
+      const user1History: query_history[] = [
+        {
+          history_id: 1,
+          user_id: 456,
+          question: 'User 1 question',
+          answer: 'User 1 answer',
+          feedback: null,
+          created_at: new Date(),
+        },
+      ];
 
-      const user2History: query_history[] = [{
-        history_id: 2,
-        user_id: 789,
-        question: 'User 2 question',
-        answer: 'User 2 answer',
-        feedback: null,
-        created_at: new Date()
-      }];
+      const user2History: query_history[] = [
+        {
+          history_id: 2,
+          user_id: 789,
+          question: 'User 2 question',
+          answer: 'User 2 answer',
+          feedback: null,
+          created_at: new Date(),
+        },
+      ];
 
       // Test user1
       mockFindUserChatHistory.mockResolvedValueOnce(user1History);
@@ -96,14 +103,16 @@ describe('queryHistoryService', () => {
 
     it('should handle usernames with special characters', async () => {
       const specialUsername = 'user@domain.com';
-      const mockHistory: query_history[] = [{
-        history_id: 1,
-        user_id: 999,
-        question: 'Test question',
-        answer: 'Test answer',
-        feedback: null,
-        created_at: new Date()
-      }];
+      const mockHistory: query_history[] = [
+        {
+          history_id: 1,
+          user_id: 999,
+          question: 'Test question',
+          answer: 'Test answer',
+          feedback: null,
+          created_at: new Date(),
+        },
+      ];
 
       mockFindUserChatHistory.mockResolvedValue(mockHistory);
 
@@ -158,8 +167,8 @@ describe('queryHistoryService', () => {
           question: 'Complex question with æøå characters',
           answer: 'Answer with "quotes" and special chars: § & %',
           feedback: false,
-          created_at: new Date('2024-03-15T14:30:45.123Z')
-        }
+          created_at: new Date('2024-03-15T14:30:45.123Z'),
+        },
       ];
 
       mockFindUserChatHistory.mockResolvedValue(complexHistory);

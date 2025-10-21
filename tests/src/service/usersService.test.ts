@@ -1,9 +1,9 @@
-import { getUserById, createUserIfNotExist } from "@/app/src/service/users/usersService";
-import { users } from "@prisma/client";
+import { users } from '@prisma/client';
 
-// Mock the postgres consumer
-jest.mock("@/app/src/consumers/postgresConsumer");
-import { createDefaultUser, findUserById } from "@/app/src/consumers/postgresConsumer";
+import { createDefaultUser, findUserById } from '@/app/src/consumers/postgresConsumer';
+import { createUserIfNotExist, getUserById } from '@/app/src/service/users/usersService';
+
+jest.mock('@/app/src/consumers/postgresConsumer');
 
 const mockCreateDefaultUser = createDefaultUser as jest.MockedFunction<typeof createDefaultUser>;
 const mockFindUserById = findUserById as jest.MockedFunction<typeof findUserById>;
@@ -22,7 +22,7 @@ describe('usersService', () => {
         auth_provider: 'google',
         google_id: 'google_123',
         query_count: 5,
-        created_at: new Date('2024-01-01')
+        created_at: new Date('2024-01-01'),
       };
 
       mockFindUserById.mockResolvedValue(mockUser);
@@ -42,7 +42,7 @@ describe('usersService', () => {
         auth_provider: 'google',
         google_id: 'google_user_123',
         query_count: 10,
-        created_at: new Date()
+        created_at: new Date(),
       };
 
       const defaultUser: users = {
@@ -52,7 +52,7 @@ describe('usersService', () => {
         auth_provider: 'default',
         google_id: null,
         query_count: 3,
-        created_at: new Date()
+        created_at: new Date(),
       };
 
       // Test Google user
@@ -95,7 +95,7 @@ describe('usersService', () => {
         auth_provider: 'default',
         google_id: null,
         query_count: 0,
-        created_at: new Date('2024-01-01')
+        created_at: new Date('2024-01-01'),
       };
 
       mockCreateDefaultUser.mockResolvedValue(mockUser);
@@ -116,7 +116,7 @@ describe('usersService', () => {
         auth_provider: 'google',
         google_id: googleUsername,
         query_count: 0,
-        created_at: new Date('2024-01-01')
+        created_at: new Date('2024-01-01'),
       };
 
       mockCreateDefaultUser.mockResolvedValue(mockUser);
@@ -128,12 +128,7 @@ describe('usersService', () => {
     });
 
     it('should handle different username formats', async () => {
-      const usernames = [
-        'default',
-        'google_123456789',
-        'github_user_abc',
-        'custom@example.com'
-      ];
+      const usernames = ['default', 'google_123456789', 'github_user_abc', 'custom@example.com'];
 
       for (const username of usernames) {
         const mockUser: users = {
@@ -143,7 +138,7 @@ describe('usersService', () => {
           auth_provider: username.startsWith('google_') ? 'google' : 'default',
           google_id: username.startsWith('google_') ? username : null,
           query_count: 0,
-          created_at: new Date()
+          created_at: new Date(),
         };
 
         mockCreateDefaultUser.mockResolvedValueOnce(mockUser);
@@ -172,7 +167,7 @@ describe('usersService', () => {
         auth_provider: 'default',
         google_id: null,
         query_count: 0,
-        created_at: new Date()
+        created_at: new Date(),
       };
 
       mockCreateDefaultUser.mockResolvedValue(mockUser);
@@ -192,7 +187,7 @@ describe('usersService', () => {
         auth_provider: 'google',
         google_id: 'google_special_123',
         query_count: 42,
-        created_at: new Date('2024-03-15T14:30:45.123Z')
+        created_at: new Date('2024-03-15T14:30:45.123Z'),
       };
 
       mockCreateDefaultUser.mockResolvedValue(mockUser);

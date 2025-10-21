@@ -1,18 +1,16 @@
 // historyDropdownSelect.tsx
-"use client";
-import React from "react";
-import { SearchState } from "../../interface/skattSokInterface";
-import { Icons } from "../icons/iconsWrapper";
+'use client';
+import React from 'react';
+
+import { SearchState } from '../../interface/skattSokInterface';
+import { Icons } from '../icons/iconsWrapper';
 
 interface HistoryDropdownProps {
   searchHistory: SearchState[];
   onSelect: (search: SearchState) => void;
 }
 
-const HistoryDropdownSelect: React.FC<HistoryDropdownProps> = ({
-  searchHistory,
-  onSelect,
-}) => {
+const HistoryDropdownSelect: React.FC<HistoryDropdownProps> = ({ searchHistory, onSelect }) => {
   const handleItemClick = (selectedSearch: SearchState) => {
     onSelect(selectedSearch);
   };
@@ -22,7 +20,7 @@ const HistoryDropdownSelect: React.FC<HistoryDropdownProps> = ({
   return (
     <div className="dropdown">
       <div tabIndex={0} role="button" className="btn m-1 px-6 rounded mr-10">
-        {"Logg"}
+        {'Logg'}
       </div>
       <ul className="dropdown-content z-[1] menu p-2 shadow bg-base-300 rounded-box w-64 max-h-200 overflow-y-auto">
         {reversedHistory.length > 0 ? (
@@ -35,10 +33,10 @@ const HistoryDropdownSelect: React.FC<HistoryDropdownProps> = ({
               >
                 <span>{search.searchInput}</span>
                 <span>
-                  {search.chatFeedback === "thumbsUp" && (
+                  {search.chatFeedback === 'thumbsUp' && (
                     <Icons.ThumbsUp className="w-4 h-4 text-green-600" />
                   )}
-                  {search.chatFeedback === "thumbsDown" && (
+                  {search.chatFeedback === 'thumbsDown' && (
                     <Icons.ThumbsDown className="w-4 h-4 text-red-600" />
                   )}
                 </span>
