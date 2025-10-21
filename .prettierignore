@@ -1,0 +1,13 @@
+node_modules
+.next
+.env*
+*.log
+*.lock
+package-lock.json
+yarn.lock
+dist
+build
+coverage
+.nyc_output
+*.min.js
+*.min.css

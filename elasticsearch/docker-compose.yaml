@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
@@ -6,13 +6,13 @@ services:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
       - xpack.security.enabled=false
-      - "ES_PATH_REPO=/usr/share/elasticsearch/snapshots"
+      - 'ES_PATH_REPO=/usr/share/elasticsearch/snapshots'
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
       - ./snapshot:/usr/share/elasticsearch/snapshots
     ports:
-      - "${IP:-0.0.0.0}:9200:9200"
-      - "${IP:-0.0.0.0}:9300:9300"
+      - '${IP:-0.0.0.0}:9200:9200'
+      - '${IP:-0.0.0.0}:9300:9300'
     networks:
       - common-net
   kibana:
@@ -24,7 +24,7 @@ services:
     depends_on:
       - elasticsearch
     ports:
-      - "${IP:-0.0.0.0}:5601:5601"
+      - '${IP:-0.0.0.0}:5601:5601'
 networks:
   common-net:
     name: rag-network

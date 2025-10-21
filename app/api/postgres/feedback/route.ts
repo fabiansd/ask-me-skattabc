@@ -1,6 +1,6 @@
-import addUserFeedbackService from '@/app/src/service/feedback/userFeedbackService';
 import { NextRequest, NextResponse } from 'next/server';
 
+import addUserFeedbackService from '@/app/src/service/feedback/userFeedbackService';
 
 export async function POST(request: NextRequest) {
   try {

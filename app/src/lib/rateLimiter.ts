@@ -50,7 +50,7 @@ class InMemoryRateLimiter {
       return {
         allowed: true,
         remaining: options.maxRequests - 1,
-        resetTime
+        resetTime,
       };
     }
 
@@ -58,7 +58,7 @@ class InMemoryRateLimiter {
       return {
         allowed: false,
         remaining: 0,
-        resetTime: entry.resetTime
+        resetTime: entry.resetTime,
       };
     }
 
@@ -66,7 +66,7 @@ class InMemoryRateLimiter {
     return {
       allowed: true,
       remaining: options.maxRequests - entry.count,
-      resetTime: entry.resetTime
+      resetTime: entry.resetTime,
     };
   }
 
@@ -98,7 +98,7 @@ class InMemoryRateLimiter {
           resetTime: 0,
           globalRemaining: 0,
           globalResetTime: globalEntry.resetTime,
-          blockedBy: 'global'
+          blockedBy: 'global',
         };
       } else {
         globalEntry.count++;
@@ -112,9 +112,11 @@ class InMemoryRateLimiter {
       const globalEntry = this.store.get('GLOBAL_TOTAL');
       return {
         ...ipResult,
-        globalRemaining: globalEntry ? globalConfig.maxRequests - globalEntry.count : globalConfig.maxRequests,
+        globalRemaining: globalEntry
+          ? globalConfig.maxRequests - globalEntry.count
+          : globalConfig.maxRequests,
         globalResetTime: globalEntry?.resetTime,
-        blockedBy: ipResult.allowed ? undefined : 'ip'
+        blockedBy: ipResult.allowed ? undefined : 'ip',
       };
     }
 
@@ -131,14 +133,14 @@ export const rateLimiter = new InMemoryRateLimiter();
 export const RATE_LIMIT_CONFIG = {
   QUERY_API: {
     windowMs: 15 * 60 * 1000, // 15 minutes
-    maxRequests: 50 // 50 requests per 15 minutes for AI queries
+    maxRequests: 50, // 50 requests per 15 minutes for AI queries
   },
   GENERAL_API: {
     windowMs: 15 * 60 * 1000, // 15 minutes
-    maxRequests: 100 // 100 requests per 15 minutes for other APIs
+    maxRequests: 100, // 100 requests per 15 minutes for other APIs
   },
   GLOBAL_CIRCUIT_BREAKER: {
     windowMs: 60 * 60 * 1000, // 1 hour
-    maxRequests: 200 // 200 AI queries per hour across all IPs (max $12/hour protection)
-  }
+    maxRequests: 200, // 200 AI queries per hour across all IPs (max $12/hour protection)
+  },
 } as const;

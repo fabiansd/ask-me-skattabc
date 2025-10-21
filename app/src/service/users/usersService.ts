@@ -1,13 +1,11 @@
-import { createDefaultUser, findUserById } from "@/app/src/consumers/postgresConsumer";
-import { users } from "@prisma/client";
+import { users } from '@prisma/client';
 
+import { createDefaultUser, findUserById } from '@/app/src/consumers/postgresConsumer';
 
 export async function getUserById(userId: number): Promise<users> {
-
-    return await findUserById(userId);
+  return await findUserById(userId);
 }
 
 export async function createUserIfNotExist(username: string): Promise<users> {
-
-    return await createDefaultUser(username);
+  return await createDefaultUser(username);
 }

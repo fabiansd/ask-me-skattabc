@@ -1,41 +1,36 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import GptResponseDisplay from "../src/components/textManagement/markdownTextDisplay";
-import ParagraphsDisplay from "../src/components/textManagement/paragraphsDisplay";
-import {
-  QueryChatRequest,
-  SearchState,
-} from "../src/interface/skattSokInterface";
-import HistoryDropdownSelect from "../src/components/localStorage/historyDropdownSelect.tsx";
-import DeleteLocalStorage from "../src/components/localStorage/clearLocalStorage";
-import ToggleSwitch from "../src/components/toogleModelDepth";
-import DownloadCSV from "../src/components/textManagement/csvRapport";
-import { Icons } from "../src/components/icons/iconsWrapper";
-import { getUserId } from "../src/lib/getUserId";
+'use client';
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
+
+import { Icons } from '../src/components/icons/iconsWrapper';
+import DeleteLocalStorage from '../src/components/localStorage/clearLocalStorage';
+import HistoryDropdownSelect from '../src/components/localStorage/historyDropdownSelect.tsx';
+import GptResponseDisplay from '../src/components/textManagement/markdownTextDisplay';
+import ParagraphsDisplay from '../src/components/textManagement/paragraphsDisplay';
+import ToggleSwitch from '../src/components/toogleModelDepth';
+import { QueryChatRequest, SearchState } from '../src/interface/skattSokInterface';
+import { getUserId } from '../src/lib/getUserId';
 
 const initialSearchResponse: SearchState = {
-  id: "",
-  searchInput: "",
-  queryResponse: "",
-  paragraphsResponse: [""],
+  id: '',
+  searchInput: '',
+  queryResponse: '',
+  paragraphsResponse: [''],
   chatFeedback: null,
 };
 
 export default function Search() {
-  const [searchResponse, setSearchResponse] = useState<SearchState>(
-    initialSearchResponse
-  );
+  const [searchResponse, setSearchResponse] = useState<SearchState>(initialSearchResponse);
   const [searchHistory, setSearchHistory] = useState<SearchState[]>([]);
   const [isDetailed, setIsDetailed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearchInput] = useState('');
   const [isClearHistoryDisabled, setIsClearHistoryDisabled] = useState(true);
 
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       const savedHistoryList = getSearchHistory();
       setSearchHistory(savedHistoryList);
       setIsClearHistoryDisabled(savedHistoryList.length === 0);
@@ -49,28 +44,26 @@ export default function Search() {
 
   const saveSearchHistory = (newSearchResponse: SearchState) => {
     const updatedHistoryList = [...searchHistory, newSearchResponse];
-    localStorage.setItem("searchHistory", JSON.stringify(updatedHistoryList));
+    localStorage.setItem('searchHistory', JSON.stringify(updatedHistoryList));
     setSearchHistory(updatedHistoryList);
     setIsClearHistoryDisabled(updatedHistoryList.length === 0);
   };
 
   const getSearchHistory = (): SearchState[] => {
-    if (typeof window !== "undefined") {
-      const history = localStorage.getItem("searchHistory");
+    if (typeof window !== 'undefined') {
+      const history = localStorage.getItem('searchHistory');
       return history ? (JSON.parse(history) as SearchState[]) : [];
     }
     return [];
   };
 
   const clearSearchHistory = () => {
-    localStorage.removeItem("searchHistory");
+    localStorage.removeItem('searchHistory');
     setSearchHistory([]);
     setIsClearHistoryDisabled(true);
   };
 
-  const handleSearchInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(event.target.value);
   };
 
@@ -86,7 +79,7 @@ export default function Search() {
   const handleButtonClick = async () => {
     setIsLoading(true);
     try {
-      console.log("API call -> searchText: ", searchInput);
+      console.log('API call -> searchText: ', searchInput);
       const queryChatRequest: QueryChatRequest = {
         searchText: searchInput,
         isDetailed: isDetailed,
@@ -95,15 +88,15 @@ export default function Search() {
       };
 
       const response = await fetch(`/api/query`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(queryChatRequest),
       });
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error('Network response was not ok');
       }
       const data = await response.json();
-      console.log("Client API call successful: ", data);
+      console.log('Client API call successful: ', data);
       const newSearchResponse = {
         id: Date.now().toString(),
         searchInput: searchInput,
@@ -112,27 +105,27 @@ export default function Search() {
       };
       setSearchResponse(newSearchResponse);
       saveSearchHistory(newSearchResponse);
-      localStorage.setItem("searchResponse", JSON.stringify(newSearchResponse));
+      localStorage.setItem('searchResponse', JSON.stringify(newSearchResponse));
     } catch (error) {
-      console.error("Error fetching search results:", error);
+      console.error('Error fetching search results:', error);
     }
     setIsLoading(false);
   };
 
-  const handleChatFeedback = (feedback: "thumbsUp" | "thumbsDown") => {
+  const handleChatFeedback = (feedback: 'thumbsUp' | 'thumbsDown') => {
     const ratedChatResponse = { ...searchResponse, chatFeedback: feedback };
     setSearchResponse(ratedChatResponse);
 
     const currentSearchHistory = getSearchHistory();
-    const updatedSearchHistory = currentSearchHistory.map((item) =>
+    const updatedSearchHistory = currentSearchHistory.map(item =>
       item.id === searchResponse.id ? ratedChatResponse : item
     );
-    localStorage.setItem("searchHistory", JSON.stringify(updatedSearchHistory));
+    localStorage.setItem('searchHistory', JSON.stringify(updatedSearchHistory));
     setSearchHistory(updatedSearchHistory);
   };
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       handleButtonClick();
     }
   };
@@ -150,25 +143,15 @@ export default function Search() {
         />
       </div>
       <div className="flex justify-center pt-5">
-        <ToggleSwitch
-          onToggle={handleToggle}
-          textA="Konkret"
-          textB="Detaljert"
-        />
-        <HistoryDropdownSelect
-          searchHistory={searchHistory}
-          onSelect={handleHistorySelect}
-        />
-        <DeleteLocalStorage
-          disabled={isClearHistoryDisabled}
-          handleDelete={clearSearchHistory}
-        />
+        <ToggleSwitch onToggle={handleToggle} textA="Konkret" textB="Detaljert" />
+        <HistoryDropdownSelect searchHistory={searchHistory} onSelect={handleHistorySelect} />
+        <DeleteLocalStorage disabled={isClearHistoryDisabled} handleDelete={clearSearchHistory} />
         <button
           className="btn bg-sky-700 hover:bg-sky-800 text-white font-bold m-1 px-6 rounded mr-10"
-          disabled={isLoading || searchInput === ""}
+          disabled={isLoading || searchInput === ''}
           onClick={handleButtonClick}
         >
-          {isClearHistoryDisabled ? "Nytt spørsmål" : "Oppfølgingsspørsmål"}
+          {isClearHistoryDisabled ? 'Nytt spørsmål' : 'Oppfølgingsspørsmål'}
         </button>
       </div>
       <div className="divider"></div>
@@ -183,13 +166,13 @@ export default function Search() {
               <p className="pt-3 pr-3">Fikk du svar på spørsmålet ditt?</p>
               <button
                 className="btn btn-sm bg-green-600 hover:bg-green-700 text-white m-1 px-6 rounded"
-                onClick={() => handleChatFeedback("thumbsUp")}
+                onClick={() => handleChatFeedback('thumbsUp')}
               >
                 <Icons.ThumbsUp className="w-5 h-5" />
               </button>
               <button
                 className="btn btn-sm bg-red-600 hover:bg-red-700 text-white  m-1 px-6 rounded"
-                onClick={() => handleChatFeedback("thumbsDown")}
+                onClick={() => handleChatFeedback('thumbsDown')}
               >
                 <Icons.ThumbsDown className="w-5 h-5" />
               </button>

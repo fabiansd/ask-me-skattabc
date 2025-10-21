@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -8,13 +8,12 @@ interface GptResponseDisplayProps {
 }
 
 function generateSkattelovLink(paragraf: string): string {
-  const baseURL = "https://lovdata.no/lov/1999-03-26-14/§";
+  const baseURL = 'https://lovdata.no/lov/1999-03-26-14/§';
   return `${baseURL}${paragraf}`;
 }
 
 function replaceParagraphsWithLinks(text: string): string {
-
-  if (!text || typeof text !== "string") {
+  if (!text || typeof text !== 'string') {
     return '';
   }
 
@@ -26,13 +25,11 @@ function replaceParagraphsWithLinks(text: string): string {
   });
 }
 
-
-
 const GptResponseDisplay = ({ searchResponse }: GptResponseDisplayProps) => {
   const processedText = replaceParagraphsWithLinks(searchResponse);
 
   return (
-    <div className="text-left markdown-content" style={{ whiteSpace: "pre-line" }}>
+    <div className="text-left markdown-content" style={{ whiteSpace: 'pre-line' }}>
       <ReactMarkdown>{processedText}</ReactMarkdown>
     </div>
   );

@@ -7,8 +7,8 @@ export const getMockQueryResponse = () => ({
 
 This foolproof tax strategy has been used by dwarfs for centuries.`,
   esParagraphSearch: [
-    "§ DWARF-1 Underpants Collection Tax Law - All collected underpants shall be considered valuable assets for tax purposes.",
-    "§ DWARF-2 Cave Storage Deductions - Underground storage of textile goods provides unlimited tax deductions.",
-    "§ DWARF-3 Profit Maximization Through Mystery - The unknown step between collection and profit is tax-exempt."
-  ]
+    '§ DWARF-1 Underpants Collection Tax Law - All collected underpants shall be considered valuable assets for tax purposes.',
+    '§ DWARF-2 Cave Storage Deductions - Underground storage of textile goods provides unlimited tax deductions.',
+    '§ DWARF-3 Profit Maximization Through Mystery - The unknown step between collection and profit is tax-exempt.',
+  ],
 });

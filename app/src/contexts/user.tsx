@@ -1,6 +1,6 @@
-'use client'
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+'use client';
 import { users } from '@prisma/client'; // Import the User type from Prisma
+import React, { createContext, useState, useEffect, ReactNode } from 'react';
 
 interface UserContextType {
   user: users | null;
@@ -17,8 +17,8 @@ const UserContext = createContext<UserContextType>({
 });
 
 interface UserProviderProps {
-    children: ReactNode;
-  }
+  children: ReactNode;
+}
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<users | null>(null);

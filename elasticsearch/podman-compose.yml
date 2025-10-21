@@ -9,12 +9,12 @@ services:
       - network.host=0.0.0.0
       - ELASTIC_PASSWORD=devpassword
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - '9200:9200'
+      - '9300:9300'
     volumes:
       - elasticsearch_dev_data:/usr/share/elasticsearch/data
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200 || exit 1"]
+      test: ['CMD-SHELL', 'curl -f http://localhost:9200 || exit 1']
       interval: 30s
       timeout: 10s
       retries: 5
