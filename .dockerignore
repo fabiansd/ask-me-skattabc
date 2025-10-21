@@ -34,3 +34,27 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Development databases and services (local only)
+db-postgres/
+elasticsearch/
+
+# Documentation and dev files
+README.md
+docs/
+*.md
+CLAUDE.md
+
+# IDE and OS
+.vscode
+.idea
+*.swp
+*.swo
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Additional logs
+*.log
