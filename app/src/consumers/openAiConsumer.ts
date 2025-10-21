@@ -36,8 +36,6 @@ export async function queryChat(queryChatRequest: QueryChatRequest, context: str
       apiKey: process.env.OPENAI_API_KEY,
       temperature: 0,
     })
-    console.log('Connection to openai successful ')
-    
     const query = queryChatRequest.isDetailed ? generateDetailedPromt(queryChatRequest, context) : generateConcretePrompt(queryChatRequest, context)
     
     const messages: ChatMessage[] = [{role: 'user', content: query}];

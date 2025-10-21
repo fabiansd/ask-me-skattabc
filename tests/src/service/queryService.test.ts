@@ -5,12 +5,12 @@ import { QueryChatRequest } from "@/app/src/interface/skattSokInterface";
 jest.mock("@/app/src/consumers/esSearchConsumer");
 jest.mock("@/app/src/consumers/openAiConsumer");
 jest.mock("@/app/src/consumers/postgresConsumer");
-jest.mock("../mockData");
+jest.mock("../../mockData");
 
 import { searchMatchSearchVectorKeyword } from "@/app/src/consumers/esSearchConsumer";
 import { embedText, queryChat } from "@/app/src/consumers/openAiConsumer";
 import { addUserChatHistory } from "@/app/src/consumers/postgresConsumer";
-import { getMockQueryResponse } from "../mockData";
+import { getMockQueryResponse } from "../../mockData";
 
 const mockSearchMatchSearchVectorKeyword = searchMatchSearchVectorKeyword as jest.MockedFunction<typeof searchMatchSearchVectorKeyword>;
 const mockEmbedText = embedText as jest.MockedFunction<typeof embedText>;
