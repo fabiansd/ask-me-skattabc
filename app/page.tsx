@@ -1,9 +1,10 @@
 'use client';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+
+import DeleteLocalStorage from './src/components/buttons/newConversationButton';
 import QuestionThumb from './src/components/buttons/questionThumb';
 import ToggleSwitch from './src/components/buttons/toogleModelDepth';
-import DeleteLocalStorage from './src/components/buttons/newConversationButton';
 import GptResponseDisplay from './src/components/textManagement/markdownTextDisplay';
 import { QueryChatRequest, SearchState } from './src/interface/skattSokInterface';
 import { getUserId } from './src/service/users/getUserId';

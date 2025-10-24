@@ -1,4 +1,5 @@
 import { query_history, user_feedback, users } from '@prisma/client';
+
 import prismaClient from '../clients/prismaClient';
 import { UserFeedbackInput } from '../interface/feedback';
 import { QueryChatRequest } from '../interface/skattSokInterface';

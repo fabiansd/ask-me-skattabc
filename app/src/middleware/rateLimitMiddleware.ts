@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
-import { rateLimiter, RATE_LIMIT_CONFIG } from '@/app/src/middleware/rateLimiter';
+
+import { RATE_LIMIT_CONFIG, rateLimiter } from '@/app/src/middleware/rateLimiter';
 
 export async function withRateLimit(
   request: NextRequest,

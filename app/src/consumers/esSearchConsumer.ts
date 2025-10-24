@@ -1,6 +1,6 @@
-import { ELASTICSEARCH_INDEX_SKATT, ES_KNN_NUMBER } from '../constants/esParameters';
 import { getClient } from '../clients/esClient';
 import { unwrapESResponse } from '../clients/esUtil';
+import { ELASTICSEARCH_INDEX_SKATT, ES_KNN_NUMBER } from '../constants/esParameters';
 
 export async function healthCheck() {
   try {
