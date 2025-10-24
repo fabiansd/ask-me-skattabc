@@ -1,8 +1,6 @@
 'use client';
-import { useSession, signIn, signOut } from 'next-auth/react';
-import React from 'react';
-
-import { getUserId } from '../../lib/getUserId';
+import { signIn, signOut, useSession } from 'next-auth/react';
+import { getUserId } from '../../service/users/getUserId';
 import Health from '../serverPingHealth';
 
 const Header = () => {
@@ -17,13 +15,6 @@ const Header = () => {
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
-          <a href="/skattegpt" className="btn btn-ghost text-xl">
-            Chat
-          </a>
-        </ul>
-      </div>
-      <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">
           <a href="/historikk" className="btn btn-ghost text-xl">
             Historikk
           </a>
@@ -31,8 +22,8 @@ const Header = () => {
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
-          <a href="/feedback" className="btn btn-ghost text-xl">
-            Feedback
+          <a href="/info" className="btn btn-ghost text-xl">
+            Informasjon
           </a>
         </ul>
       </div>

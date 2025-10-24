@@ -1,8 +1,7 @@
 'use client';
 import { useSession } from 'next-auth/react';
-import React, { useState, useEffect, useCallback } from 'react';
-
-import { getUserId } from '../lib/getUserId';
+import { useCallback, useEffect, useState } from 'react';
+import { getUserId } from '../service/users/getUserId';
 
 export const dynamic = 'force-dynamic';
 
