@@ -2,12 +2,12 @@
 'use client';
 import React from 'react';
 
-interface ClearHistoryButtonProps {
+interface NewConversationButtonProps {
   disabled?: boolean;
   handleDelete: () => void;
 }
 
-const ClearHistoryButton: React.FC<ClearHistoryButtonProps> = ({
+const NewConversationButton: React.FC<NewConversationButtonProps> = ({
   disabled = false,
   handleDelete,
 }) => {
@@ -24,4 +24,4 @@ const ClearHistoryButton: React.FC<ClearHistoryButtonProps> = ({
   );
 };
 
-export default ClearHistoryButton;
+export default NewConversationButton;

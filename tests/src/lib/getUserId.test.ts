@@ -1,6 +1,6 @@
 import { Session } from 'next-auth';
 
-import { getUserId } from '@/app/src/lib/getUserId';
+import { getUserId } from '../../../app/src/service/users/getUserId';
 
 describe('getUserId', () => {
   it('should return user ID from Google session', () => {

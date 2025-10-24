@@ -1,12 +1,15 @@
 import { query_history, user_feedback, users } from '@prisma/client';
 
+import prismaClient from '../clients/prismaClient';
 import { UserFeedbackInput } from '../interface/feedback';
 import { QueryChatRequest } from '../interface/skattSokInterface';
-import prismaClient from '../lib/prismaClient';
 
+// User lookup functions
 export async function findUserById(userId: number): Promise<users> {
   try {
-    const user = await prismaClient.users.findUnique({ where: { user_id: userId } });
+    const user = await prismaClient.users.findUnique({
+      where: { user_id: userId },
+    });
 
     if (!user) {
       throw new Error('User not found');
@@ -83,7 +86,7 @@ export async function createGoogleUser(
     if (!user) {
       user = await prismaClient.users.create({
         data: {
-          username: name || email,
+          username: name || email, // Use display name as username (human-readable)
           email: email,
           auth_provider: 'google',
           google_id: googleId,
@@ -98,6 +101,7 @@ export async function createGoogleUser(
   }
 }
 
+// Chat history functions
 export async function addUserChatHistory(
   queryChatRequest: QueryChatRequest,
   openaiResponse: string
@@ -143,6 +147,7 @@ export async function findUserChatHistory(username: string): Promise<query_histo
   }
 }
 
+// User feedback functions
 export async function addUserFeedback(feedback: UserFeedbackInput) {
   try {
     const user = await findDefaultUser(feedback.username);

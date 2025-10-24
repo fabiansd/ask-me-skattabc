@@ -1,9 +1,9 @@
 'use client';
 import { useSession } from 'next-auth/react';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import QueryHistory from '../src/components/textManagement/displayQueryHistory';
-import { getUserId } from '../src/lib/getUserId';
+import { getUserId } from '../src/service/users/getUserId';
 
 export default function History() {
   const [history, setHistory] = useState([]);

@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 
 import { UserFeedbackInput } from '../src/interface/feedback';
-import { getUserId } from '../src/lib/getUserId';
+import { getUserId } from '../src/service/users/getUserId';
 
 const initialFeedback: UserFeedbackInput = {
   username: 'default',
@@ -11,7 +11,7 @@ const initialFeedback: UserFeedbackInput = {
   desired_features: '',
 };
 
-export default function Feedback() {
+export default function Info() {
   const [feedback, setFeedback] = useState(initialFeedback);
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();

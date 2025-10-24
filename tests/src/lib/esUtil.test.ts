@@ -1,4 +1,4 @@
-import { unwrapESResponse } from '@/app/src/lib/esUtil';
+import { unwrapESResponse } from '../../../app/src/clients/esUtil';
 
 describe('esUtil', () => {
   describe('unwrapESResponse', () => {

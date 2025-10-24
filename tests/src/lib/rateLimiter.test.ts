@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 
-import { rateLimiter, RATE_LIMIT_CONFIG } from '@/app/src/lib/rateLimiter';
+import { RATE_LIMIT_CONFIG, rateLimiter } from '../../../app/src/middleware/rateLimiter';
 
 // Mock NextRequest for testing
 function createMockRequest(ip?: string, headers?: Record<string, string>): NextRequest {
