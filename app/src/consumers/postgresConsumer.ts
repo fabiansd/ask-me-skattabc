@@ -1,7 +1,8 @@
-import { query_history, user_feedback, users } from '@prisma/client';
+import { user_feedback, users } from '@prisma/client';
 
 import prismaClient from '../clients/prismaClient';
 import { UserFeedbackInput } from '../interface/feedback';
+import { ConversationMessage, ConversationsList } from '../interface/history';
 import { QueryChatRequest } from '../interface/skattSokInterface';
 
 // User lookup functions
@@ -101,53 +102,144 @@ export async function createGoogleUser(
   }
 }
 
-// Chat history functions
 export async function addUserChatHistory(
   queryChatRequest: QueryChatRequest,
-  openaiResponse: string
-) {
+  openaiResponse: string,
+  authId: string
+): Promise<number> {
   try {
     let user;
 
-    if (queryChatRequest.username === 'default') {
-      user = await findDefaultUser(queryChatRequest.username);
+    if (authId === 'default') {
+      user = await findDefaultUser(authId);
     } else {
-      user = await findUserByGoogleId(queryChatRequest.username);
+      user = await findUserByGoogleId(authId);
     }
+
+    let conversationId = queryChatRequest.conversation_id;
+
+    if (!conversationId) {
+      const conversation = await prismaClient.conversations.create({
+        data: {
+          user_id: user.user_id,
+          title: queryChatRequest.searchText.substring(0, 100), // First 100 chars as title
+        },
+      });
+      conversationId = conversation.conversation_id;
+    }
+
+    await prismaClient.messages.create({
+      data: {
+        conversation_id: conversationId,
+        role: 'user',
+        content: queryChatRequest.searchText,
+      },
+    });
+
+    await prismaClient.messages.create({
+      data: {
+        conversation_id: conversationId,
+        role: 'assistant',
+        content: openaiResponse,
+      },
+    });
 
     await prismaClient.query_history.create({
       data: {
+        conversation_id: conversationId,
         user_id: user.user_id,
         answer: openaiResponse,
         question: queryChatRequest.searchText,
       },
     });
-    console.log('Found user: ', user);
+
+    console.log('Added to conversation:', conversationId);
+    return conversationId!;
   } catch (error) {
     throw error;
   }
 }
 
-export async function findUserChatHistory(username: string): Promise<query_history[]> {
+export async function findUserConversationHistory(
+  authIdentifier: string,
+  conversation_id?: number
+): Promise<ConversationMessage[]> {
+  if (!conversation_id) return [];
+
   try {
     let user;
 
-    if (username === 'default') {
-      user = await findDefaultUser(username);
+    if (authIdentifier === 'default') {
+      user = await findDefaultUser(authIdentifier);
     } else {
-      user = await findUserByGoogleId(username);
+      user = await findUserByGoogleId(authIdentifier);
     }
 
-    const query_history = await prismaClient.query_history.findMany({
-      where: { user_id: user.user_id },
+    const messages = await prismaClient.messages.findMany({
+      where: {
+        conversation: {
+          conversation_id: conversation_id,
+          user_id: user.user_id,
+        },
+      },
+      orderBy: {
+        created_at: 'asc',
+      },
     });
-    return query_history;
+
+    return messages;
   } catch (error) {
-    throw error;
+    return [];
   }
 }
 
-// User feedback functions
+export async function findUserConversations(authIdentifier: string): Promise<ConversationsList[]> {
+  try {
+    let user;
+
+    if (authIdentifier === 'default') {
+      user = await findDefaultUser(authIdentifier);
+    } else {
+      user = await findUserByGoogleId(authIdentifier);
+    }
+
+    console.log('Found user:', user);
+
+    const conversations = await prismaClient.conversations.findMany({
+      where: {
+        user_id: user.user_id,
+      },
+      include: {
+        messages: {
+          orderBy: {
+            created_at: 'desc',
+          },
+          take: 1,
+        },
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    console.log('Raw conversations from DB:', conversations);
+
+    // Transform to ConversationsList format
+    const conversationsList: ConversationsList[] = conversations.map(conv => ({
+      id: conv.conversation_id,
+      title: conv.title || `Samtale ${conv.conversation_id}`,
+      lastMessage: conv.messages?.[0]?.content || 'Ingen meldinger',
+      timestamp: conv.created_at.toLocaleDateString(),
+    }));
+
+    console.log('Transformed conversations:', conversationsList);
+    return conversationsList;
+  } catch (error) {
+    console.error('Error in findUserConversations:', error);
+    return [];
+  }
+}
+
 export async function addUserFeedback(feedback: UserFeedbackInput) {
   try {
     const user = await findDefaultUser(feedback.username);

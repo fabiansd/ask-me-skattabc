@@ -1,13 +1,13 @@
 import { query_history } from '@prisma/client';
 
-import { findUserChatHistory } from '@/app/src/consumers/postgresConsumer';
-import getQueryHistory from '@/app/src/service/history/queryHistoryService';
+import { findUserQueryHistory } from '@/app/src/consumers/postgresConsumer';
+import getQueryHistory from '@/app/src/service/history/historyService';
 
 // Mock the postgres consumer
 jest.mock('@/app/src/consumers/postgresConsumer');
 
-const mockFindUserChatHistory = findUserChatHistory as jest.MockedFunction<
-  typeof findUserChatHistory
+const mockFindUserChatHistory = findUserQueryHistory as jest.MockedFunction<
+  typeof findUserQueryHistory
 >;
 
 describe('queryHistoryService', () => {

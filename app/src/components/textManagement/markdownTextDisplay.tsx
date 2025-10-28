@@ -1,38 +1,56 @@
 'use client';
-
-import React from 'react';
+import { useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 
-interface GptResponseDisplayProps {
-  searchResponse: string;
+import { ConversationMessage } from '../../interface/history';
+import { replaceParagraphsWithLinks } from '../../lib/skatteparagraferReferering';
+
+interface ChatDisplayProps {
+  conversationMessages: ConversationMessage[];
 }
 
-function generateSkattelovLink(paragraf: string): string {
-  const baseURL = 'https://lovdata.no/lov/1999-03-26-14/§';
-  return `${baseURL}${paragraf}`;
-}
+const ChatDisplay = ({ conversationMessages }: ChatDisplayProps) => {
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
-function replaceParagraphsWithLinks(text: string): string {
-  if (!text || typeof text !== 'string') {
-    return '';
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    if (chatContainerRef.current && conversationMessages.length > 0) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [conversationMessages]);
+
+  if (conversationMessages.length === 0) {
+    return <div className="text-center text-base-content/60 py-8">Spør meg om noe</div>;
   }
 
-  const paragrafRegex = /§\s*(\d+-\d+)/g;
-
-  return text.replace(paragrafRegex, (match, paragraf) => {
-    const link = generateSkattelovLink(paragraf);
-    return `[${match}](${link})`;
-  });
-}
-
-const GptResponseDisplay = ({ searchResponse }: GptResponseDisplayProps) => {
-  const processedText = replaceParagraphsWithLinks(searchResponse);
-
   return (
-    <div className="text-left markdown-content" style={{ whiteSpace: 'pre-line' }}>
-      <ReactMarkdown>{processedText}</ReactMarkdown>
+    <div
+      ref={chatContainerRef}
+      className="h-[calc(100vh-20rem)] overflow-y-auto scroll-smooth bg-base-100 rounded-lg p-4"
+    >
+      <div className="space-y-4 w-full">
+        {conversationMessages.map(message => (
+          <div key={message.message_id} className="w-full flex justify-center">
+            <div
+              className={`p-4 rounded-lg w-full ${
+                message.role === 'user' ? 'bg-base-300' : 'bg-base-200'
+              }`}
+            >
+              <div className="text-sm font-medium mb-2 text-base-content/80">
+                {message.role === 'user' ? 'Du:' : 'Assistent:'}
+              </div>
+              <div
+                className="text-left markdown-content text-base-content"
+                style={{ whiteSpace: 'pre-line' }}
+              >
+                <ReactMarkdown>{replaceParagraphsWithLinks(message.content)}</ReactMarkdown>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
-export default GptResponseDisplay;
+export default ChatDisplay;

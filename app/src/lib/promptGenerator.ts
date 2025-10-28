@@ -2,7 +2,8 @@ import { QueryChatRequest } from '../interface/skattSokInterface';
 
 export function generateConcretePrompt(
   queryChatRequest: QueryChatRequest,
-  context: string[]
+  context: string[],
+  conversationHistory?: any[]
 ): string {
   let query =
     'Du er en ekspert på norske skattelover og skal svare konkret og kort på spørsmålet ' +
@@ -11,11 +12,14 @@ export function generateConcretePrompt(
 
   query += `\n\nSpørsmål: ${queryChatRequest.searchText}`;
 
-  if (queryChatRequest.history && queryChatRequest.history.length > 0) {
+  if (conversationHistory && conversationHistory.length > 0) {
     query += '\n\nTidligere spørsmål og svar:';
-    for (const historyItem of queryChatRequest.history) {
-      query += `\n- Spørsmål: ${historyItem.searchInput}`;
-      query += `\n- Svar: ${historyItem.queryResponse}`;
+    for (const msg of conversationHistory) {
+      if (msg.role === 'user') {
+        query += `\n- Spørsmål: ${msg.content}`;
+      } else if (msg.role === 'assistant') {
+        query += `\n- Svar: ${msg.content}`;
+      }
     }
   }
 
@@ -28,7 +32,8 @@ export function generateConcretePrompt(
 
 export function generateDetailedPromt(
   queryChatRequest: QueryChatRequest,
-  context: string[]
+  context: string[],
+  conversationHistory?: any[]
 ): string {
   let query =
     'Du er en ekspert på norske skattelover og skal svare utedypende på spørsmålet på norsk' +
@@ -38,11 +43,14 @@ export function generateDetailedPromt(
 
   query += `\n\nSpørsmål: ${queryChatRequest.searchText}`;
 
-  if (queryChatRequest.history && queryChatRequest.history.length > 0) {
+  if (conversationHistory && conversationHistory.length > 0) {
     query += '\n\nTidligere spørsmål og svar:';
-    for (const historyItem of queryChatRequest.history) {
-      query += `\n- Spørsmål: ${historyItem.searchInput}`;
-      query += `\n- Svar: ${historyItem.queryResponse}`;
+    for (const msg of conversationHistory) {
+      if (msg.role === 'user') {
+        query += `\n- Spørsmål: ${msg.content}`;
+      } else if (msg.role === 'assistant') {
+        query += `\n- Svar: ${msg.content}`;
+      }
     }
   }
 

@@ -1,65 +1,49 @@
 'use client';
 import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import DeleteLocalStorage from './src/components/buttons/newConversationButton';
-import QuestionThumb from './src/components/buttons/questionThumb';
 import ToggleSwitch from './src/components/buttons/toogleModelDepth';
-import GptResponseDisplay from './src/components/textManagement/markdownTextDisplay';
-import { QueryChatRequest, SearchState } from './src/interface/skattSokInterface';
+import ChatLayout from './src/components/layout/ChatLayout';
+import ChatDisplay from './src/components/textManagement/markdownTextDisplay';
+import { ConversationProvider, useConversation } from './src/contexts/ConversationContext';
+import { ConversationMessage } from './src/interface/history';
+import { QueryChatRequest } from './src/interface/skattSokInterface';
 import { getUserId } from './src/service/users/getUserId';
 
-const initialSearchResponse: SearchState = {
-  id: '',
-  searchInput: '',
-  queryResponse: '',
-  paragraphsResponse: [''],
-  chatFeedback: null,
-};
-
-export default function Search() {
-  const [searchResponse, setSearchResponse] = useState<SearchState>(initialSearchResponse);
-  const [searchHistory, setSearchHistory] = useState<SearchState[]>([]);
+function SearchContent() {
   const [isDetailed, setIsDetailed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [searchInput, setSearchInput] = useState('');
-  const [isClearHistoryDisabled, setIsClearHistoryDisabled] = useState(true);
+  const [conversationMessages, setConversationMessages] = useState<ConversationMessage[]>([]);
 
   const { data: session } = useSession();
+  const { currentConversationId, setCurrentConversationId } = useConversation();
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedHistoryList = getSearchHistory();
-      setSearchHistory(savedHistoryList);
-      setIsClearHistoryDisabled(savedHistoryList.length === 0);
-      if (savedHistoryList.length > 0) {
-        const latestSearch = savedHistoryList[savedHistoryList.length - 1];
-        setSearchResponse(latestSearch);
-        setSearchInput(latestSearch.searchInput);
+  // Fetch conversation messages function
+  const fetchConversationMessages = useCallback(async () => {
+    if (currentConversationId && session) {
+      try {
+        const response = await fetch(
+          `/api/conversations/${currentConversationId}/messages?auth_id=${getUserId(session)}`
+        );
+        if (response.ok) {
+          const data: ConversationMessage[] = await response.json();
+          setConversationMessages(data);
+          console.log('🟡 [HISTORY] Loaded conversation messages:', data.length);
+        }
+      } catch (error) {
+        console.error('Error fetching conversation messages:', error);
       }
+    } else {
+      // Clear messages when no conversation selected
+      setConversationMessages([]);
     }
-  }, []);
+  }, [currentConversationId, session]);
 
-  const saveSearchHistory = (newSearchResponse: SearchState) => {
-    const updatedHistoryList = [...searchHistory, newSearchResponse];
-    localStorage.setItem('searchHistory', JSON.stringify(updatedHistoryList));
-    setSearchHistory(updatedHistoryList);
-    setIsClearHistoryDisabled(updatedHistoryList.length === 0);
-  };
-
-  const getSearchHistory = (): SearchState[] => {
-    if (typeof window !== 'undefined') {
-      const history = localStorage.getItem('searchHistory');
-      return history ? (JSON.parse(history) as SearchState[]) : [];
-    }
-    return [];
-  };
-
-  const clearSearchHistory = () => {
-    localStorage.removeItem('searchHistory');
-    setSearchHistory([]);
-    setIsClearHistoryDisabled(true);
-  };
+  // Fetch conversation messages when conversation changes
+  useEffect(() => {
+    fetchConversationMessages();
+  }, [fetchConversationMessages]);
 
   const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(event.target.value);
@@ -70,17 +54,21 @@ export default function Search() {
   };
 
   const handleButtonClick = async () => {
+    if (!session) {
+      console.error('No session available');
+      return;
+    }
+
+    console.log('🔵 [INPUT] Question submitted:', searchInput);
     setIsLoading(true);
     try {
-      console.log('API call -> searchText: ', searchInput);
       const queryChatRequest: QueryChatRequest = {
         searchText: searchInput,
         isDetailed: isDetailed,
-        username: getUserId(session),
-        history: getSearchHistory(),
+        conversation_id: currentConversationId || undefined,
       };
 
-      const response = await fetch(`/api/query`, {
+      const response = await fetch(`/api/query?auth_id=${getUserId(session)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(queryChatRequest),
@@ -89,18 +77,17 @@ export default function Search() {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
-      console.log('Client API call successful: ', data);
-      const newSearchResponse = {
-        id: Date.now().toString(),
-        searchInput: searchInput,
-        queryResponse: data.openaiResponse,
-        paragraphsResponse: data.esParagraphSearch,
-      };
-      setSearchResponse(newSearchResponse);
-      saveSearchHistory(newSearchResponse);
-      localStorage.setItem('searchResponse', JSON.stringify(newSearchResponse));
+      console.log('🟢 [API] Query response received:', data);
+
+      // If this was a new conversation, save the returned conversation_id
+      if (!currentConversationId && data.conversation_id) {
+        setCurrentConversationId(data.conversation_id);
+      }
+
+      // Refresh conversation messages to show the new exchange
+      fetchConversationMessages();
     } catch (error) {
-      console.error('Error fetching search results:', error);
+      console.error('🔴 [ERROR] Query failed:', error);
     }
     setIsLoading(false);
   };
@@ -112,49 +99,55 @@ export default function Search() {
   };
 
   return (
-    <div className="pt-10">
-      <div className="flex justify-center">
-        <input
-          type="text"
-          placeholder="Spør meg om skatt"
-          className="input input-bordered mr-10 w-full max-w-2xl m-1"
-          value={searchInput}
-          onChange={handleSearchInputChange}
-          onKeyDown={handleKeyPress}
-        />
+    <div className="pt-10 px-4">
+      <div className="mx-auto max-w-5xl">
+        <div className="flex justify-center">
+          <input
+            type="text"
+            placeholder="Spør meg om skatt"
+            className="input input-bordered w-full max-w-3xl m-1"
+            value={searchInput}
+            onChange={handleSearchInputChange}
+            onKeyDown={handleKeyPress}
+          />
+        </div>
+        <div className="flex justify-center pt-5">
+          <ToggleSwitch onToggle={handleToggle} textA="Konkret" textB="Detaljert" />
+          <button
+            className="btn bg-sky-700 hover:bg-sky-800 text-white font-bold m-1 px-6 rounded min-w-[180px]"
+            disabled={isLoading || searchInput === ''}
+            onClick={handleButtonClick}
+          >
+            {isLoading ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-sky-700"></div>
+            ) : !currentConversationId ? (
+              'Nytt spørsmål'
+            ) : (
+              'Oppfølgingsspørsmål'
+            )}
+          </button>
+        </div>
       </div>
-      <div className="flex justify-center pt-5">
-        <ToggleSwitch onToggle={handleToggle} textA="Konkret" textB="Detaljert" />
-        <DeleteLocalStorage disabled={isClearHistoryDisabled} handleDelete={clearSearchHistory} />
-        <button
-          className="btn bg-sky-700 hover:bg-sky-800 text-white font-bold m-1 px-6 rounded mr-10"
-          disabled={isLoading || searchInput === ''}
-          onClick={handleButtonClick}
-        >
-          {isClearHistoryDisabled ? 'Nytt spørsmål' : 'Oppfølgingsspørsmål'}
-        </button>
-      </div>
-      <div className="divider"></div>
-      <div className="px-60">
-        {isLoading && <p className="text-center">Loading...</p>}
-        {!isLoading && searchResponse !== initialSearchResponse && (
-          <div>
-            <GptResponseDisplay searchResponse={searchResponse.queryResponse} />
-
-            <div className="divider p-12"></div>
-
-            <div className="flex items-center justify-center gap-4">
-              <span className="text-lg font-medium">Fikk du svar på spørsmålet ditt?</span>
-              <QuestionThumb
-                searchResponse={searchResponse}
-                setSearchResponse={setSearchResponse}
-                getSearchHistory={getSearchHistory}
-                setSearchHistory={setSearchHistory}
-              />
+      <div className="divider w-full"></div>
+      <div className="px-4">
+        <div className="mx-auto max-w-5xl">
+          <div className="flex justify-center">
+            <div className="w-full max-w-3xl">
+              <ChatDisplay conversationMessages={conversationMessages} />
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
+  );
+}
+
+export default function Search() {
+  return (
+    <ConversationProvider>
+      <ChatLayout>
+        <SearchContent />
+      </ChatLayout>
+    </ConversationProvider>
   );
 }

@@ -6,6 +6,11 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    if (process.env.USE_MOCK_DATA === 'true') {
+      return NextResponse.json({
+        status: 'healthy',
+      });
+    }
     const healthResponse = await healthCheck();
 
     return NextResponse.json({

@@ -1,27 +1,19 @@
-// historyDropdownSelect.tsx
 'use client';
-import React from 'react';
 
 interface NewConversationButtonProps {
-  disabled?: boolean;
-  handleDelete: () => void;
+  onClick: () => void;
 }
 
-const NewConversationButton: React.FC<NewConversationButtonProps> = ({
-  disabled = false,
-  handleDelete,
-}) => {
+export default function NewConversationButton({ onClick }: NewConversationButtonProps) {
   return (
-    <div>
-      <button
-        className="btn bg-red-500 hover:bg-red-600 text-white m-1 px-6 rounded mr-10"
-        onClick={!disabled ? handleDelete : undefined}
-        disabled={disabled}
-      >
-        Nytt emne
-      </button>
-    </div>
+    <button
+      onClick={onClick}
+      className="btn bg-red-500 hover:bg-red-600 text-white px-6 rounded flex-1 mr-2"
+    >
+      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+      </svg>
+      Ny samtale
+    </button>
   );
-};
-
-export default NewConversationButton;
+}
