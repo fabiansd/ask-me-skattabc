@@ -26,10 +26,11 @@ describe('queryService', () => {
   const mockRequest: QueryChatRequest = {
     searchText: 'Hva er mva på bil?',
     isDetailed: false,
-    username: 'testuser',
-    history: [],
     tags: ['mva'],
+    conversation_id: 1,
   };
+
+  const mockAuthId = 'testuser';
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -44,27 +45,30 @@ describe('queryService', () => {
     it('should return mock data and save to history', async () => {
       const mockResponse = {
         openaiResponse: 'Mock OpenAI response',
-        esParagraphSearch: ['Mock ES paragraph'],
+        conversation_id: 1,
       };
       mockGetMockQueryResponse.mockReturnValue(mockResponse);
-      mockAddUserChatHistory.mockResolvedValue(undefined);
+      mockAddUserChatHistory.mockResolvedValue(1);
 
-      const result = await query(mockRequest);
-      const responseData = await result.json();
+      const result = await query(mockRequest, mockAuthId);
 
       expect(mockGetMockQueryResponse).toHaveBeenCalledTimes(1);
-      expect(mockAddUserChatHistory).toHaveBeenCalledWith(mockRequest, mockResponse.openaiResponse);
-      expect(responseData).toEqual(mockResponse);
+      expect(mockAddUserChatHistory).toHaveBeenCalledWith(
+        mockRequest,
+        mockResponse.openaiResponse,
+        mockAuthId
+      );
+      expect(result).toEqual(mockResponse);
     });
 
     it('should not call external services when using mock data', async () => {
       const mockResponse = {
         openaiResponse: 'Mock response',
-        esParagraphSearch: [],
+        conversation_id: 1,
       };
       mockGetMockQueryResponse.mockReturnValue(mockResponse);
 
-      await query(mockRequest);
+      await query(mockRequest, mockAuthId);
 
       expect(mockEmbedText).not.toHaveBeenCalled();
       expect(mockSearchMatchSearchVectorKeyword).not.toHaveBeenCalled();
@@ -81,10 +85,9 @@ describe('queryService', () => {
       mockEmbedText.mockResolvedValue(mockEmbedding);
       mockSearchMatchSearchVectorKeyword.mockResolvedValue(mockSearchResults);
       mockQueryChat.mockResolvedValue(mockOpenAiResponse);
-      mockAddUserChatHistory.mockResolvedValue(undefined);
+      mockAddUserChatHistory.mockResolvedValue(1);
 
-      const result = await query(mockRequest);
-      const responseData = await result.json();
+      const result = await query(mockRequest, mockAuthId);
 
       expect(mockEmbedText).toHaveBeenCalledWith(mockRequest.searchText);
       expect(mockSearchMatchSearchVectorKeyword).toHaveBeenCalledWith(
@@ -93,12 +96,16 @@ describe('queryService', () => {
         expect.any(Number),
         mockRequest.tags
       );
-      expect(mockQueryChat).toHaveBeenCalledWith(mockRequest, mockSearchResults);
-      expect(mockAddUserChatHistory).toHaveBeenCalledWith(mockRequest, mockOpenAiResponse);
+      expect(mockQueryChat).toHaveBeenCalledWith(mockRequest, mockSearchResults, mockAuthId);
+      expect(mockAddUserChatHistory).toHaveBeenCalledWith(
+        mockRequest,
+        mockOpenAiResponse,
+        mockAuthId
+      );
 
-      expect(responseData).toEqual({
+      expect(result).toEqual({
         openaiResponse: mockOpenAiResponse,
-        esParagraphSearch: mockSearchResults,
+        conversation_id: 1,
       });
     });
 
@@ -112,7 +119,7 @@ describe('queryService', () => {
       mockSearchMatchSearchVectorKeyword.mockResolvedValue(mockSearchResults);
       mockQueryChat.mockResolvedValue(mockOpenAiResponse);
 
-      await query(requestWithoutTags);
+      await query(requestWithoutTags, mockAuthId);
 
       expect(mockSearchMatchSearchVectorKeyword).toHaveBeenCalledWith(
         mockEmbedding,
@@ -130,7 +137,7 @@ describe('queryService', () => {
       mockSearchMatchSearchVectorKeyword.mockResolvedValue(mockSearchResults);
       mockQueryChat.mockResolvedValue(''); // Falsy response
 
-      await query(mockRequest);
+      await query(mockRequest, mockAuthId);
 
       expect(mockAddUserChatHistory).not.toHaveBeenCalled();
     });
@@ -144,9 +151,13 @@ describe('queryService', () => {
       mockSearchMatchSearchVectorKeyword.mockResolvedValue(mockSearchResults);
       mockQueryChat.mockResolvedValue(mockOpenAiResponse);
 
-      await query(mockRequest);
+      await query(mockRequest, mockAuthId);
 
-      expect(mockAddUserChatHistory).toHaveBeenCalledWith(mockRequest, mockOpenAiResponse);
+      expect(mockAddUserChatHistory).toHaveBeenCalledWith(
+        mockRequest,
+        mockOpenAiResponse,
+        mockAuthId
+      );
     });
   });
 
@@ -155,7 +166,7 @@ describe('queryService', () => {
       const error = new Error('Embedding failed');
       mockEmbedText.mockRejectedValue(error);
 
-      await expect(query(mockRequest)).rejects.toThrow('Embedding failed');
+      await expect(query(mockRequest, mockAuthId)).rejects.toThrow('Embedding failed');
     });
 
     it('should propagate search errors', async () => {
@@ -165,7 +176,7 @@ describe('queryService', () => {
       mockEmbedText.mockResolvedValue(mockEmbedding);
       mockSearchMatchSearchVectorKeyword.mockRejectedValue(error);
 
-      await expect(query(mockRequest)).rejects.toThrow('Search failed');
+      await expect(query(mockRequest, mockAuthId)).rejects.toThrow('Search failed');
     });
 
     it('should propagate OpenAI errors', async () => {
@@ -177,7 +188,7 @@ describe('queryService', () => {
       mockSearchMatchSearchVectorKeyword.mockResolvedValue(mockSearchResults);
       mockQueryChat.mockRejectedValue(error);
 
-      await expect(query(mockRequest)).rejects.toThrow('OpenAI failed');
+      await expect(query(mockRequest, mockAuthId)).rejects.toThrow('OpenAI failed');
     });
   });
 });

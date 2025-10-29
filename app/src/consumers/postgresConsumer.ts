@@ -187,7 +187,7 @@ export async function findUserConversationHistory(
       },
     });
 
-    return messages;
+    return messages as ConversationMessage[];
   } catch (error) {
     return [];
   }
