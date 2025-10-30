@@ -14,23 +14,18 @@ const Header = () => {
           SkattGPT
         </a>
       </div>
-      <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">
-          <a href="/info" className="btn btn-ghost text-xl">
-            Informasjon
-          </a>
-        </ul>
-      </div>
-      <div className="navbar-end">
-        <div className="pr-8">
-          <Health />
-        </div>
+      <div className="navbar-center hidden lg:flex"></div>
+      <div className="navbar-end flex items-center gap-2">
+        <a href="/info" className="btn btn-ghost text-sm">
+          Info
+        </a>
+        <Health />
         {session ? (
-          <button onClick={() => signOut()} className="btn">
+          <button onClick={() => signOut()} className="btn btn-ghost">
             {session.user?.name || getUserId(session)}
           </button>
         ) : (
-          <button onClick={() => signIn('google')} className="btn">
+          <button onClick={() => signIn('google')} className="btn btn-ghost">
             Login
           </button>
         )}

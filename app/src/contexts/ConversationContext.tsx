@@ -6,6 +6,8 @@ interface ConversationContextType {
   setCurrentConversationId: (id: number | null) => void;
   selectConversation: (id: number) => void;
   startNewConversation: () => void;
+  refreshConversations: () => void;
+  refreshTrigger: number;
   clearSearchState?: () => void;
 }
 
@@ -13,6 +15,7 @@ const ConversationContext = createContext<ConversationContextType | undefined>(u
 
 export function ConversationProvider({ children }: { children: React.ReactNode }) {
   const [currentConversationId, setCurrentConversationId] = useState<number | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const selectConversation = (id: number) => {
     setCurrentConversationId(id);
@@ -21,7 +24,11 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
 
   const startNewConversation = () => {
     setCurrentConversationId(null);
-    // TODO: Clear current conversation state
+    setRefreshTrigger(prev => prev + 1);
+  };
+
+  const refreshConversations = () => {
+    setRefreshTrigger(prev => prev + 1);
   };
 
   return (
@@ -31,6 +38,8 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         setCurrentConversationId,
         selectConversation,
         startNewConversation,
+        refreshConversations,
+        refreshTrigger,
       }}
     >
       {children}

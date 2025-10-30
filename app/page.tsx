@@ -2,7 +2,9 @@
 import { useSession } from 'next-auth/react';
 import { useCallback, useEffect, useState } from 'react';
 
+import SearchButton from './src/components/buttons/SearchButton';
 import ToggleSwitch from './src/components/buttons/toogleModelDepth';
+import SearchInput from './src/components/chat/SearchInput';
 import ChatLayout from './src/components/layout/ChatLayout';
 import ChatDisplay from './src/components/textManagement/markdownTextDisplay';
 import { ConversationProvider, useConversation } from './src/contexts/ConversationContext';
@@ -17,9 +19,9 @@ function SearchContent() {
   const [conversationMessages, setConversationMessages] = useState<ConversationMessage[]>([]);
 
   const { data: session } = useSession();
-  const { currentConversationId, setCurrentConversationId } = useConversation();
+  const { currentConversationId, setCurrentConversationId, refreshConversations } =
+    useConversation();
 
-  // Fetch conversation messages function
   const fetchConversationMessages = useCallback(async () => {
     if (currentConversationId && session) {
       try {
@@ -35,12 +37,10 @@ function SearchContent() {
         console.error('Error fetching conversation messages:', error);
       }
     } else {
-      // Clear messages when no conversation selected
       setConversationMessages([]);
     }
   }, [currentConversationId, session]);
 
-  // Fetch conversation messages when conversation changes
   useEffect(() => {
     fetchConversationMessages();
   }, [fetchConversationMessages]);
@@ -79,12 +79,12 @@ function SearchContent() {
       const data = await response.json();
       console.log('🟢 [API] Query response received:', data);
 
-      // If this was a new conversation, save the returned conversation_id
+      // If this was a new conversation, save the returned conversation_id and refresh list
       if (!currentConversationId && data.conversation_id) {
         setCurrentConversationId(data.conversation_id);
+        refreshConversations();
       }
 
-      // Refresh conversation messages to show the new exchange
       fetchConversationMessages();
     } catch (error) {
       console.error('🔴 [ERROR] Query failed:', error);
@@ -102,10 +102,7 @@ function SearchContent() {
     <div className="pt-10 px-4">
       <div className="mx-auto max-w-5xl">
         <div className="flex justify-center">
-          <input
-            type="text"
-            placeholder="Spør meg om skatt"
-            className="input input-bordered w-full max-w-3xl m-1"
+          <SearchInput
             value={searchInput}
             onChange={handleSearchInputChange}
             onKeyDown={handleKeyPress}
@@ -113,19 +110,12 @@ function SearchContent() {
         </div>
         <div className="flex justify-center pt-5">
           <ToggleSwitch onToggle={handleToggle} textA="Konkret" textB="Detaljert" />
-          <button
-            className="btn bg-sky-700 hover:bg-sky-800 text-white font-bold m-1 px-6 rounded min-w-[180px]"
+          <SearchButton
+            isLoading={isLoading}
             disabled={isLoading || searchInput === ''}
             onClick={handleButtonClick}
-          >
-            {isLoading ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-sky-700"></div>
-            ) : !currentConversationId ? (
-              'Nytt spørsmål'
-            ) : (
-              'Oppfølgingsspørsmål'
-            )}
-          </button>
+            currentConversationId={currentConversationId}
+          />
         </div>
       </div>
       <div className="divider w-full"></div>

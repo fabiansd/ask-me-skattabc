@@ -20,13 +20,3 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Error processing request' }, { status: 500 });
   }
 }
-
-export async function POST() {
-  try {
-    // Create new conversation
-    // TODO: Call service layer
-    return NextResponse.json({ error: 'Not implemented yet' }, { status: 501 });
-  } catch (error) {
-    return NextResponse.json({ error: 'Error processing request' }, { status: 500 });
-  }
-}

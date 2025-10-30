@@ -1,5 +1,10 @@
 'use client';
+import { useSession } from 'next-auth/react';
+
+import { useConversation } from '../../contexts/ConversationContext';
 import { ConversationsList } from '../../interface/history';
+import { getUserId } from '../../service/users/getUserId';
+import DeleteButton from '../buttons/DeleteButton';
 
 interface ConversationListProps {
   conversations: ConversationsList[];
@@ -14,6 +19,33 @@ export default function ConversationList({
   currentConversationId,
   onSelectConversation,
 }: ConversationListProps) {
+  const { data: session } = useSession();
+  const {
+    refreshConversations,
+    startNewConversation,
+    currentConversationId: contextCurrentId,
+  } = useConversation();
+
+  const handleDelete = async (conversationId: number) => {
+    if (!session) return;
+    try {
+      const response = await fetch(
+        `/api/conversations/${conversationId}/messages?auth_id=${getUserId(session)}`,
+        {
+          method: 'DELETE',
+        }
+      );
+      if (response.ok) {
+        // If we deleted the current conversation, start a new one
+        if (conversationId === contextCurrentId) {
+          startNewConversation();
+        }
+        refreshConversations();
+      }
+    } catch (error) {
+      console.error('Error deleting conversation:', error);
+    }
+  };
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="p-2">
@@ -27,7 +59,7 @@ export default function ConversationList({
               key={conversation.id}
               onClick={() => onSelectConversation(conversation.id)}
               className={`
-                w-full text-left p-3 rounded-lg mb-1 transition-colors
+                relative w-full text-left p-3 rounded-lg mb-1 transition-colors
                 hover:bg-base-300 group
                 ${currentConversationId === conversation.id ? 'bg-base-300' : 'hover:bg-base-300'}
               `}
@@ -45,6 +77,7 @@ export default function ConversationList({
                   {conversation.timestamp}
                 </span>
               </div>
+              <DeleteButton onDelete={() => handleDelete(conversation.id)} />
             </button>
           ))
         )}

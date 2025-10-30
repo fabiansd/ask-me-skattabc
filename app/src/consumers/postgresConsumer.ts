@@ -193,6 +193,42 @@ export async function findUserConversationHistory(
   }
 }
 
+export async function deleteConversation(
+  authIdentifier: string,
+  conversationId: number
+): Promise<void> {
+  try {
+    let user;
+
+    if (authIdentifier === 'default') {
+      user = await findDefaultUser(authIdentifier);
+    } else {
+      user = await findUserByGoogleId(authIdentifier);
+    }
+
+    // Verify user owns this conversation before deleting
+    const conversation = await prismaClient.conversations.findFirst({
+      where: {
+        conversation_id: conversationId,
+        user_id: user.user_id,
+      },
+    });
+
+    if (!conversation) {
+      throw new Error('Conversation not found or access denied');
+    }
+
+    await prismaClient.conversations.delete({
+      where: {
+        conversation_id: conversationId,
+      },
+    });
+  } catch (error) {
+    console.error('Error deleting conversation:', error);
+    throw error;
+  }
+}
+
 export async function findUserConversations(authIdentifier: string): Promise<ConversationsList[]> {
   try {
     let user;

@@ -16,18 +16,11 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
 
   const handleSelectConversation = (conversationId: number) => {
     selectConversation(conversationId);
-    // Only close on mobile
-    if (window.innerWidth < 1024) {
-      setSidebarOpen(false);
-    }
   };
 
   const handleNewConversation = () => {
     startNewConversation();
-    // Only close on mobile
-    if (window.innerWidth < 1024) {
-      setSidebarOpen(false);
-    }
+    setSidebarOpen(false);
   };
 
   return (

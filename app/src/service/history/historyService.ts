@@ -1,4 +1,5 @@
 import {
+  deleteConversation,
   findUserConversationHistory,
   findUserConversations,
 } from '@/app/src/consumers/postgresConsumer';
@@ -14,4 +15,11 @@ export async function getUserConversationHistory(
   conversation_id: number
 ): Promise<ConversationMessage[]> {
   return await findUserConversationHistory(authIdentifier, conversation_id);
+}
+
+export async function deleteUserConversation(
+  authIdentifier: string,
+  conversationId: number
+): Promise<void> {
+  return await deleteConversation(authIdentifier, conversationId);
 }

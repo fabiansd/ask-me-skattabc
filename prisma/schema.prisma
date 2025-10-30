@@ -24,12 +24,12 @@ model flyway_schema_history {
 }
 
 model conversations {
-  conversation_id Int       @id @default(autoincrement())
+  conversation_id Int             @id @default(autoincrement())
   user_id         Int
-  title           String?   @db.VarChar(255)
-  created_at      DateTime  @default(now()) @db.Timestamp(6)
-  updated_at      DateTime  @default(now()) @db.Timestamp(6)
-  users           users     @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  title           String?         @db.VarChar(255)
+  created_at      DateTime        @default(now()) @db.Timestamp(6)
+  updated_at      DateTime        @default(now()) @db.Timestamp(6)
+  users           users           @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
   messages        messages[]
   query_history   query_history[]
 
@@ -39,8 +39,8 @@ model conversations {
 model messages {
   message_id      Int           @id @default(autoincrement())
   conversation_id Int
-  role            String        @db.VarChar(20) // 'user' or 'assistant'
-  content         String        @db.Text
+  role            String        @db.VarChar(20)
+  content         String
   created_at      DateTime      @default(now()) @db.Timestamp(6)
   conversation    conversations @relation(fields: [conversation_id], references: [conversation_id], onDelete: Cascade, onUpdate: NoAction)
 
@@ -49,14 +49,14 @@ model messages {
 
 model query_history {
   history_id      Int            @id @default(autoincrement())
-  conversation_id Int?
   user_id         Int
   question        String
   answer          String
   feedback        Boolean?
   created_at      DateTime?      @default(now()) @db.Timestamp(6)
+  conversation_id Int?
+  conversation    conversations? @relation(fields: [conversation_id], references: [conversation_id], onUpdate: NoAction)
   users           users          @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  conversation    conversations? @relation(fields: [conversation_id], references: [conversation_id], onDelete: SetNull, onUpdate: NoAction)
 
   @@index([user_id], map: "index_user_chat_history")
   @@index([conversation_id], map: "index_query_history_conversation_id")
@@ -77,8 +77,8 @@ model users {
   email         String?         @unique @db.VarChar(255)
   auth_provider String          @default("default") @db.VarChar(20)
   google_id     String?         @unique @db.VarChar(255)
-  query_count   Int             @default(0)
   created_at    DateTime        @default(now()) @db.Timestamp(6)
+  query_count   Int             @default(0)
   conversations conversations[]
   query_history query_history[]
   user_feedback user_feedback[]

@@ -122,4 +122,33 @@ flyctl machine remove <id> --force
 
 - **PostgreSQL**: Stores user accounts, query history, and user feedback
 - **Elasticsearch**: Contains indexed SkatteABC tax documents with vector embeddings
-- **Local Storage**: Temporary conversation history for follow-up questionsTest change
+
+## Datagrunnlag til Vektorsøk
+
+### Nåværende Kilder
+
+Applikasjonen er bygget på PDF-dokumenter fra Skatteetaten, primært:
+
+- **Skattebetalingshåndboken** (flere utgaver)
+- **Grunnleggende skattelover** og forskrifter
+- **Offentlig tilgjengelige veiledninger** fra Skatteetaten
+
+### Manglende Kilder
+
+For å forbedre svarenes kvalitet og dekning mangler vi:
+
+- **Rettspraksis og prejudikater** fra Høyesterett og lagmannsretter
+- **Skatteklagenemda-avgjørelser** med konkrete utfall og eksempler
+- **Spesialiserte håndbøker** (Merverdiavgiftshåndboken, Skatteforvaltningshåndboken)
+- **Sirkulærer og uttalelser** fra Skatteetaten
+- **EØS/EU-relaterte skattesaker** og tolkninger
+
+### Veier Frem for Utvidelse
+
+1. **Lovdata Pro-abonnement** for tilgang til full rettspraksis
+2. **Skatteklagenemda** publikasjoner med anonymiserte saker
+3. **Strukturert scraping** av offentlige dokumenter (juridiske begrensninger)
+4. **Manuelle innhenting** av spesialdokumenter via offentlig forespørsel
+
+**Teknisk barriere**: Lovdata forbyr masseantagelse og krever separat avtale for kommersiell bruk.
+**Juridisk barriere**: EU-databaserettigheter gjelder i 15 år for beskyttede samlinger.

@@ -2,6 +2,7 @@
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
+import { useConversation } from '../../contexts/ConversationContext';
 import { ConversationsList } from '../../interface/history';
 import { getUserId } from '../../service/users/getUserId';
 import CollapseButton from '../buttons/collapseButton';
@@ -27,6 +28,7 @@ export default function ConversationSidebar({
   const [conversations, setConversations] = useState<ConversationsList[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
+  const { refreshTrigger } = useConversation();
 
   useEffect(() => {
     if (!isOpen) {
@@ -40,7 +42,7 @@ export default function ConversationSidebar({
     }
   }, [isOpen]);
 
-  // Fetch conversations when component mounts or session changes
+  // Fetch conversations when component mounts, session changes, or refreshTrigger changes
   useEffect(() => {
     const fetchConversations = async () => {
       if (!session) return;
@@ -61,15 +63,10 @@ export default function ConversationSidebar({
     };
 
     fetchConversations();
-  }, [session]);
+  }, [session, refreshTrigger]);
 
   return (
     <>
-      {/* Backdrop overlay for mobile */}
-      {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={onToggle} />
-      )}
-
       {/* Collapse button when sidebar is hidden */}
       {showFloatingButton && (
         <CollapseButton onClick={onToggle} title="Vis sidebar" isFloating={true} />

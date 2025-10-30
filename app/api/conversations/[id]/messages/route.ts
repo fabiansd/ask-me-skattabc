@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getUserConversationHistory } from '../../../../src/service/history/historyService';
+import {
+  deleteUserConversation,
+  getUserConversationHistory,
+} from '../../../../src/service/history/historyService';
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -23,12 +26,22 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function POST() {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    // Add new message to conversation
-    // TODO: Call service layer
-    return NextResponse.json({ error: 'Not implemented yet' }, { status: 501 });
+    const { searchParams } = new URL(request.url);
+    const authId = searchParams.get('auth_id');
+    const conversationId = parseInt(params.id);
+
+    if (!authId) {
+      return NextResponse.json({ error: 'auth_id is required' }, { status: 400 });
+    }
+    if (isNaN(conversationId)) {
+      return NextResponse.json({ error: 'Invalid conversation ID' }, { status: 400 });
+    }
+
+    await deleteUserConversation(authId, conversationId);
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: 'Error processing request' }, { status: 500 });
+    return NextResponse.json({ error: 'Error deleting conversation' }, { status: 500 });
   }
 }
