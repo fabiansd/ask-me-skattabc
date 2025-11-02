@@ -3,9 +3,10 @@ import { useSession } from 'next-auth/react';
 import { useCallback, useEffect, useState } from 'react';
 
 import SearchButton from './src/components/buttons/SearchButton';
-import ToggleSwitch from './src/components/buttons/toogleModelDepth';
+import ToggleSwitch from './src/components/buttons/ToggleModelDepth';
 import SearchInput from './src/components/chat/SearchInput';
 import ChatLayout from './src/components/layout/ChatLayout';
+import WelcomeModal from './src/components/modals/WelcomeModal';
 import ChatDisplay from './src/components/textManagement/markdownTextDisplay';
 import { ConversationProvider, useConversation } from './src/contexts/ConversationContext';
 import { ConversationMessage } from './src/interface/history';
@@ -17,13 +18,27 @@ function SearchContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [conversationMessages, setConversationMessages] = useState<ConversationMessage[]>([]);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
   const { data: session } = useSession();
   const { currentConversationId, setCurrentConversationId, refreshConversations } =
     useConversation();
 
+  // Show welcome modal for non-authenticated users after 2 seconds
+  useEffect(() => {
+    if (!session && !sessionStorage.getItem('welcomeModalDismissed')) {
+      const timer = setTimeout(() => setShowWelcomeModal(true), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [session]);
+
+  const handleCloseModal = () => {
+    setShowWelcomeModal(false);
+    sessionStorage.setItem('welcomeModalDismissed', 'true');
+  };
+
   const fetchConversationMessages = useCallback(async () => {
-    if (currentConversationId && session) {
+    if (currentConversationId) {
       try {
         const response = await fetch(
           `/api/conversations/${currentConversationId}/messages?auth_id=${getUserId(session)}`
@@ -37,6 +52,7 @@ function SearchContent() {
         console.error('Error fetching conversation messages:', error);
       }
     } else {
+      // Clear messages when no conversation selected
       setConversationMessages([]);
     }
   }, [currentConversationId, session]);
@@ -54,11 +70,6 @@ function SearchContent() {
   };
 
   const handleButtonClick = async () => {
-    if (!session) {
-      console.error('No session available');
-      return;
-    }
-
     console.log('🔵 [INPUT] Question submitted:', searchInput);
     setIsLoading(true);
     try {
@@ -99,36 +110,39 @@ function SearchContent() {
   };
 
   return (
-    <div className="pt-10 px-4">
-      <div className="mx-auto max-w-5xl">
-        <div className="flex justify-center">
-          <SearchInput
-            value={searchInput}
-            onChange={handleSearchInputChange}
-            onKeyDown={handleKeyPress}
-          />
-        </div>
-        <div className="flex justify-center pt-5">
-          <ToggleSwitch onToggle={handleToggle} textA="Konkret" textB="Detaljert" />
-          <SearchButton
-            isLoading={isLoading}
-            disabled={isLoading || searchInput === ''}
-            onClick={handleButtonClick}
-            currentConversationId={currentConversationId}
-          />
-        </div>
-      </div>
-      <div className="divider w-full"></div>
-      <div className="px-4">
+    <>
+      <WelcomeModal isVisible={showWelcomeModal} onClose={handleCloseModal} />
+      <div className="pt-10 px-4">
         <div className="mx-auto max-w-5xl">
           <div className="flex justify-center">
-            <div className="w-full max-w-3xl">
-              <ChatDisplay conversationMessages={conversationMessages} />
+            <SearchInput
+              value={searchInput}
+              onChange={handleSearchInputChange}
+              onKeyDown={handleKeyPress}
+            />
+          </div>
+          <div className="flex justify-center pt-5">
+            <ToggleSwitch onToggle={handleToggle} textA="Konkret" textB="Detaljert" />
+            <SearchButton
+              isLoading={isLoading}
+              disabled={isLoading || searchInput === ''}
+              onClick={handleButtonClick}
+              currentConversationId={currentConversationId}
+            />
+          </div>
+        </div>
+        <div className="divider w-full"></div>
+        <div className="px-4">
+          <div className="mx-auto max-w-5xl">
+            <div className="flex justify-center">
+              <div className="w-full max-w-3xl">
+                <ChatDisplay conversationMessages={conversationMessages} />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

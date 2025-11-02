@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 import { useConversation } from '../../contexts/ConversationContext';
 import { ConversationsList } from '../../interface/history';
 import { getUserId } from '../../service/users/getUserId';
-import CollapseButton from '../buttons/collapseButton';
-import NewConversationButton from '../buttons/newConversationButton';
+import CollapseButton from '../buttons/CollapseButton';
+import NewConversationButton from '../buttons/NewConversationButton';
 import ConversationList from '../layout/ConversationList';
 
 interface ConversationSidebarProps {

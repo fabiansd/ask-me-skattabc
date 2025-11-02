@@ -11,7 +11,7 @@ const Header = () => {
     <div className="navbar bg-base-200 px-10 shadow">
       <div className="navbar-start">
         <a href="/" className="btn btn-ghost text-xl">
-          SkattGPT
+          Skatt AI
         </a>
       </div>
       <div className="navbar-center hidden lg:flex"></div>

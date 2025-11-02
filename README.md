@@ -152,3 +152,51 @@ For å forbedre svarenes kvalitet og dekning mangler vi:
 
 **Teknisk barriere**: Lovdata forbyr masseantagelse og krever separat avtale for kommersiell bruk.
 **Juridisk barriere**: EU-databaserettigheter gjelder i 15 år for beskyttede samlinger.
+
+## Bruksområder og Kundebase
+
+### Primære Målgrupper
+
+**Småbedrifter og Entreprenører** (~50,000 aktive ENK/AS i Norge)
+
+- Effektiv skattesats på 35-45% skaper høye compliance-kostnader
+- Regnskapsfører koster 15,000-30,000 kr årlig
+- 4 forskuddsbetalinger skaper cash flow-utfordringer
+
+**Privatpersoner med Komplekse Skattesaker**
+
+- Utleie av bolig/hytte (200,000+ nordmenn)
+- Aksjehandel og kryptovaluta (300,000+ aktive tradere)
+- Frilansere og konsulenter (150,000+)
+
+### Bruksområder Gjennom Året
+
+**Q1 (Jan-Apr): Tax Season PEAK** 📈
+
+- Selvangivelse-hjelp
+- Fradrag-optimalisering
+- "Siste sjanse" kampanjer
+
+**Q2 (Mai-Aug): Business Planning** 📊
+
+- MVA-spørsmål for sommerbedrifter
+- Ferie/reise-fradrag
+- Investeringsrådgivning
+
+**Q3 (Sep-Nov): Business Setup** 🏢
+
+- Gründere starter ofte høst
+- Årsregnskap-forberedelser
+- Skatteplanlegging neste år
+
+**Q4 (Des): Year-end Optimization** 🎯
+
+- Skatteoptimalisering før nyttår
+- Forskuddskatt-justering
+- Avskrivninger og investeringer
+
+### Markedspotensial
+
+- **1000 betalende kunder**: Realistisk mål innen 2-3 år
+- **Customer Acquisition Cost**: 200-1,250 kr per kunde
+- **Break-even**: 50-100 Basic-abonnenter (5,000-10,000 kr/måned)
