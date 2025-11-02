@@ -17,7 +17,6 @@ async function handleQuery(request: NextRequest) {
     const data = await query(queryChatRequest, authId);
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    console.error('Prompt query error:', error);
     return NextResponse.json({ error: 'Error generating answer' }, { status: 500 });
   }
 }

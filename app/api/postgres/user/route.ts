@@ -22,8 +22,10 @@ export async function GET(request: NextRequest) {
     const queryHistory = await getUserById(parsedUserId);
     return NextResponse.json(queryHistory);
   } catch (error) {
-    console.error('User check error: ', error);
-    NextResponse.json({ error: ' User check failed' });
+    if (error instanceof Error && error.message === 'User not found') {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+    return NextResponse.json({ error: 'User check failed' }, { status: 500 });
   }
 }
 
@@ -38,7 +40,6 @@ export async function POST(request: NextRequest) {
     const queryHistory = await createUserIfNotExist(username);
     return NextResponse.json(queryHistory);
   } catch (error) {
-    console.error('User check error: ', error);
-    NextResponse.json({ error: ' User check failed' });
+    return NextResponse.json({ error: 'User check failed' }, { status: 500 });
   }
 }

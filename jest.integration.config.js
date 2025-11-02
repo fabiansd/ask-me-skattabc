@@ -2,6 +2,7 @@
 module.exports = {
   displayName: 'Integration Tests',
   testMatch: ['<rootDir>/tests/integration/**/*.test.ts'],
+  testSequencer: '<rootDir>/tests/integration/testSequencer.js',
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },

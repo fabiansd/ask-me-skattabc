@@ -19,7 +19,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     }
 
     const conversationMessages = await getUserConversationHistory(authId, conversationId);
-    // console.log('conversationMessages', conversationMessages);
     return NextResponse.json(conversationMessages, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: 'Error processing request' }, { status: 500 });

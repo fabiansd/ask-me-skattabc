@@ -3,29 +3,12 @@ import { NextRequest } from 'next/server';
 import { POST } from '@/app/api/query/route';
 
 import { setupMocks } from '../helpers/mockServices';
-import { createTestUser, createDefaultUser, cleanupTestData, TEST_USER } from '../helpers/testUser';
+import { TEST_USER } from '../helpers/testUser';
 
-// Setup mocks before any imports
 setupMocks();
 
 describe('POST /api/query', () => {
-  let testUser: any;
-
-  beforeAll(async () => {
-    // Ensure both default and test users exist
-    await createDefaultUser();
-    testUser = await createTestUser();
-  });
-
-  afterAll(async () => {
-    if (testUser) {
-      await cleanupTestData(testUser.user_id);
-    }
-  });
-
   it('should process query for logged-in user', async () => {
-    // Ensure test user exists before making the request
-    await createTestUser();
     const queryData = {
       searchText: 'Hva er fradrag for hjemmekontor?',
       isDetailed: false,
@@ -48,15 +31,12 @@ describe('POST /api/query', () => {
   });
 
   it('should process query for default user', async () => {
-    // Ensure default user exists before making the request
-    await createDefaultUser();
-
     const queryData = {
       searchText: 'Kan jeg trekke fra reiseutgifter?',
       isDetailed: true,
     };
 
-    const url = `http://localhost:3000/api/query?auth_id=default`;
+    const url = `http://localhost:3000/api/query?auth_id=${TEST_USER.google_id}`;
     const request = new NextRequest(url, {
       method: 'POST',
       body: JSON.stringify(queryData),
@@ -72,9 +52,6 @@ describe('POST /api/query', () => {
   });
 
   it('should require auth_id parameter', async () => {
-    // Ensure default user exists
-    await createDefaultUser();
-
     const queryData = {
       searchText: 'Test question',
       isDetailed: false,
@@ -95,9 +72,6 @@ describe('POST /api/query', () => {
   });
 
   it('should handle invalid query data gracefully', async () => {
-    // Ensure test user exists
-    await createTestUser();
-
     const url = `http://localhost:3000/api/query?auth_id=${TEST_USER.google_id}`;
     const request = new NextRequest(url, {
       method: 'POST',

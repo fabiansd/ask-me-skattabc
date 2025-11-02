@@ -8,7 +8,6 @@ export async function POST(request: NextRequest) {
     await addUserFeedbackService(feedback);
     return NextResponse.json({});
   } catch (error) {
-    console.error('Prompt query error:', error);
     return NextResponse.json({ error: 'Error generating answer' });
   }
 }

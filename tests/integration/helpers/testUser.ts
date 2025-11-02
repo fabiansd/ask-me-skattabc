@@ -1,7 +1,7 @@
 export const TEST_USER = {
   google_id: 'test-google-id-123',
-  username: 'test-user',
-  email: 'test@example.com',
+  username: 'google-test-user',
+  email: 'googletest@example.com',
   auth_provider: 'google' as const,
 };
 
@@ -12,18 +12,9 @@ export const DEFAULT_USER = {
 };
 
 export async function createTestUser(): Promise<any> {
-  // Use the API to create a test user instead of direct Prisma calls
-  const response = await fetch('http://localhost:3000/api/postgres/user', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: TEST_USER.username }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to create test user: ${response.status}`);
-  }
-
-  return await response.json();
+  // Simulate the OAuth flow by calling createGoogleUser directly
+  const { createGoogleUser } = await import('@/app/src/consumers/postgresConsumer');
+  return await createGoogleUser(TEST_USER.google_id, TEST_USER.email, TEST_USER.username);
 }
 
 export async function createDefaultUser(): Promise<any> {

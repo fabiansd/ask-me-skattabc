@@ -215,7 +215,6 @@ export async function deleteConversation(
     });
 
     if (!conversation) {
-      // Conversation doesn't exist or user doesn't have access - that's fine
       return;
     }
 
