@@ -1,9 +1,14 @@
 import { QueryChatRequest } from '../interface/skattSokInterface';
 
+interface ConversationMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 export function generateConcretePrompt(
   queryChatRequest: QueryChatRequest,
   context: string[],
-  conversationHistory?: any[]
+  conversationHistory?: ConversationMessage[]
 ): string {
   let query =
     'Du er en ekspert på norske skattelover. Svar kortfattet og rett på sak. ' +
@@ -33,7 +38,7 @@ export function generateConcretePrompt(
 export function generateDetailedPromt(
   queryChatRequest: QueryChatRequest,
   context: string[],
-  conversationHistory?: any[]
+  conversationHistory?: ConversationMessage[]
 ): string {
   let query =
     'Du er en ekspert på norske skattelover. Bruk folkelig språk og forklar grundig og utdypende. ' +
