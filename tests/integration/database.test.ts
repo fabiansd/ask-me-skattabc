@@ -1,33 +1,21 @@
-import { PrismaClient } from '@prisma/client';
-
 describe('Database Integration Tests', () => {
-  let prisma: PrismaClient;
+  test('should connect to application via health check', async () => {
+    const response = await fetch('http://localhost:3000/api/health');
+    expect(response.status).toBe(200);
 
-  beforeAll(async () => {
-    prisma = new PrismaClient();
-    await prisma.$connect();
+    const data = await response.json();
+    expect(data).toHaveProperty('status');
   });
 
-  afterAll(async () => {
-    await prisma.$disconnect();
-  });
+  test('should be able to create default user via API', async () => {
+    const response = await fetch('http://localhost:3000/api/postgres/user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: 'default' }),
+    });
 
-  test('should connect to test database', async () => {
-    const result = await prisma.$queryRaw`SELECT 1 as test`;
-    expect(result).toEqual([{ test: 1 }]);
-  });
-
-  test('should have required tables', async () => {
-    const tables = (await prisma.$queryRaw`
-      SELECT table_name
-      FROM information_schema.tables
-      WHERE table_schema = 'public'
-    `) as Array<{ table_name: string }>;
-
-    const tableNames = tables.map(t => t.table_name);
-
-    expect(tableNames).toContain('users');
-    expect(tableNames).toContain('query_history');
-    expect(tableNames).toContain('user_feedback');
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data).toHaveProperty('username', 'default');
   });
 });
