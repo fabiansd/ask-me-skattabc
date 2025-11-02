@@ -19,9 +19,9 @@
     "test": "jest",
     "test:db": "npm run test:db:setup && npm run test:db:run && npm run test:db:teardown",
     "test:db:setup": "podman-compose -f db-postgres/podman-compose.test.yml up -d && echo 'Waiting for test PostgreSQL...' && sleep 3 && DATABASE_URL='postgresql://postgres:testpassword@localhost:5434/ask_me_skattabc_test' npx prisma migrate deploy",
-    "test:db:run": "jest --config=jest.integration.config.js",
+    "test:db:run": "jest --config=./jest.integration.config.js",
     "test:db:teardown": "podman-compose -f db-postgres/podman-compose.test.yml down -v --remove-orphans",
-    "test:db:ci": "jest --config=jest.integration.config.js",
+    "test:db:ci": "jest --config=./jest.integration.config.js",
     "prepare": "husky"
   },
   "lint-staged": {
