@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
-
-import GptResponseDisplay from './markdownTextDisplay';
+import ReactMarkdown from 'react-markdown';
 
 interface ParagraphsDisplayProps {
   paragraphs: string[];
@@ -16,7 +15,7 @@ const ParagraphsDisplay = ({ paragraphs }: ParagraphsDisplayProps) => {
             key={index}
             className="inline-block p-4 text-left bg-base-300 rounded-box shadow max-w-max"
           >
-            <GptResponseDisplay searchResponse={paragraph} />
+            <ReactMarkdown>{paragraph}</ReactMarkdown>
           </div>
         ))}
     </div>
