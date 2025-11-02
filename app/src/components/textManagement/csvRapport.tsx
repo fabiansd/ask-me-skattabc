@@ -13,7 +13,10 @@ const DownloadCSV: React.FC<DownloadCSVProps> = ({ searchResponse }) => {
   const csvData = [
     ['Type', 'Content'],
     ['Query Response', queryResponse],
-    ...paragraphsResponse.map((paragraph, index) => [`Paragraph ${index + 1}`, paragraph]),
+    ...paragraphsResponse.map((paragraph: string, index: number) => [
+      `Paragraph ${index + 1}`,
+      paragraph,
+    ]),
   ];
 
   if (queryResponse === '') {

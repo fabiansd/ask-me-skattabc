@@ -34,6 +34,13 @@
         "no-console": "off",
         "@typescript-eslint/no-explicit-any": "off"
       }
+    },
+    {
+      "files": ["**/consumers/**/*.{ts,tsx}", "**/service/**/*.{ts,tsx}", "**/clients/**/*.{ts,tsx}"],
+      "rules": {
+        "no-console": "off",
+        "@typescript-eslint/no-explicit-any": "warn"
+      }
     }
   ]
 }
