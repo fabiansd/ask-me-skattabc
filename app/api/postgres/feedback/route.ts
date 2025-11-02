@@ -9,6 +9,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({});
   } catch (error) {
     console.error('Prompt query error:', error);
-    NextResponse.json({ error: 'Error generating answer' });
+    return NextResponse.json({ error: 'Error generating answer' });
   }
 }

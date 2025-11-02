@@ -54,33 +54,99 @@ export default function Info() {
 
   return (
     <div className="pt-10 flex justify-center">
-      <div className="w-full max-w-2xl space-y-4">
-        <textarea
-          name="happiness_feedback"
-          value={feedback.happiness_feedback}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyPress}
-          className="textarea textarea-bordered w-full h-40 p-4"
-          placeholder="Positive og negative tilbakemeldinger om skattGPT"
-        ></textarea>
-        <textarea
-          name="desired_features"
-          value={feedback.desired_features}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyPress}
-          className="textarea textarea-bordered w-full h-40 p-4"
-          placeholder="Ting du skulle ønske skattGPT kunne"
-        ></textarea>
-        <div className="flex justify-center">
-          <button
-            className="btn bg-sky-700 hover:bg-sky-800 text-white font-bold px-6 rounded"
-            disabled={
-              isLoading || (feedback.desired_features === '' && feedback.happiness_feedback === '')
-            }
-            onClick={handeButtonClick}
-          >
-            Send
-          </button>
+      <div className="w-full max-w-2xl space-y-8">
+        {/* About the AI Assistant */}
+        <div>
+          <p className="text-base-content/80 leading-relaxed mb-4">
+            Denne AI-assistenten bruker norske skattelover og juridiske tekster til å gi presise
+            svar på komplekse skattespørsmål. Systemet kombinerer semantisk søk i skattemateriale
+            med avanserte språkmodeller for å levere praktiske råd innen:
+          </p>
+          <ul className="list-disc list-inside text-base-content/80 space-y-2 mb-4">
+            <li>
+              <strong>Personlig økonomi:</strong> Selvangivelse, fradrag og skatteoptimalisering
+            </li>
+            <li>
+              <strong>Næringsdrift:</strong> MVA, avskrivninger og bedriftsskatt
+            </li>
+            <li>
+              <strong>Investeringer:</strong> Aksjegevinst, utleie og kapitalinntekt
+            </li>
+            <li>
+              <strong>Internasjonalt:</strong> Dobbeltbeskatningsavtaler og utenlandsk inntekt
+            </li>
+          </ul>
+          <p className="text-base-content/60 text-sm">
+            <em>
+              Merk: Dette er en eksperimentell tjeneste som ikke erstatter profesjonell rådgivning.
+            </em>
+          </p>
+        </div>
+
+        {/* Contact Info */}
+        <div>
+          <h2 className="text-xl font-bold text-base-content mb-4">Kontaktinfo</h2>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-base-content/60">📧</span>
+              <a
+                href="mailto:fabian.s.dietrichson@gmail.com"
+                className="text-sky-600 hover:text-sky-800"
+              >
+                fabian.s.dietrichson@gmail.com
+              </a>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-base-content/60">📱</span>
+              <span className="text-base-content/80">+47 41230038</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-base-content/60">💼</span>
+              <a
+                href="https://www.linkedin.com/in/fabiansodaldietrichson/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sky-600 hover:text-sky-800"
+              >
+                LinkedIn-profil
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Feedback Section */}
+        <div>
+          <h2 className="text-xl font-bold text-base-content mb-4">Tilbakemelding</h2>
+          <div className="space-y-4">
+            <textarea
+              name="happiness_feedback"
+              value={feedback.happiness_feedback}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyPress}
+              className="textarea textarea-bordered w-full h-32 p-4"
+              placeholder="Positive og negative tilbakemeldinger om Skatt AI"
+            ></textarea>
+            <textarea
+              name="desired_features"
+              value={feedback.desired_features}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyPress}
+              className="textarea textarea-bordered w-full h-32 p-4"
+              placeholder="Ting du skulle ønske Skatt AI kunne"
+            ></textarea>
+            <div className="flex justify-center">
+              <button
+                className="btn bg-sky-700 hover:bg-sky-800 text-white font-bold px-6 rounded"
+                disabled={
+                  isLoading ||
+                  (feedback.desired_features === '' && feedback.happiness_feedback === '')
+                }
+                onClick={handeButtonClick}
+              >
+                Send
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

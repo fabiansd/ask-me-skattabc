@@ -278,7 +278,10 @@ export async function findUserConversations(authIdentifier: string): Promise<Con
 
 export async function addUserFeedback(feedback: UserFeedbackInput) {
   try {
-    const user = await findDefaultUser(feedback.username);
+    const user =
+      feedback.username === 'default'
+        ? await findDefaultUser(feedback.username)
+        : await findUserByGoogleId(feedback.username);
 
     const feecback_item = {
       user_id: user?.user_id,
