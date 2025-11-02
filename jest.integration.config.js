@@ -7,7 +7,7 @@ module.exports = {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   testEnvironment: 'node',
-  setupFilesAfterEnv: ['./tests/integration/setup.ts'],
+  setupFilesAfterEnv: [process.cwd() + '/tests/integration/setup.ts'],
   testTimeout: 30000,
   collectCoverageFrom: ['app/api/**/*.ts', 'app/src/**/*.ts', '!**/*.d.ts'],
   testEnvironmentOptions: {
