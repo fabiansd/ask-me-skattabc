@@ -122,7 +122,7 @@ export async function addUserChatHistory(
       const conversation = await prismaClient.conversations.create({
         data: {
           user_id: user.user_id,
-          title: queryChatRequest.searchText.substring(0, 100), // First 100 chars as title
+          title: queryChatRequest.searchText?.substring(0, 100) || 'Untitled', // First 100 chars as title
         },
       });
       conversationId = conversation.conversation_id;
@@ -132,7 +132,7 @@ export async function addUserChatHistory(
       data: {
         conversation_id: conversationId,
         role: 'user',
-        content: queryChatRequest.searchText,
+        content: queryChatRequest.searchText || 'No content provided',
       },
     });
 
@@ -149,7 +149,7 @@ export async function addUserChatHistory(
         conversation_id: conversationId,
         user_id: user.user_id,
         answer: openaiResponse,
-        question: queryChatRequest.searchText,
+        question: queryChatRequest.searchText || 'No question provided',
       },
     });
 
@@ -215,7 +215,8 @@ export async function deleteConversation(
     });
 
     if (!conversation) {
-      throw new Error('Conversation not found or access denied');
+      // Conversation doesn't exist or user doesn't have access - that's fine
+      return;
     }
 
     await prismaClient.conversations.delete({
@@ -285,8 +286,8 @@ export async function addUserFeedback(feedback: UserFeedbackInput) {
 
     const feecback_item = {
       user_id: user?.user_id,
-      happiness_feedback: feedback.happiness_feedback,
-      desired_features: feedback.desired_features,
+      happiness_feedback: feedback.happiness_feedback || '',
+      desired_features: feedback.desired_features || '',
     } as user_feedback;
 
     await prismaClient.user_feedback.create({ data: feecback_item });
