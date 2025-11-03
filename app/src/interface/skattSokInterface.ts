@@ -1,15 +1,6 @@
-export interface SearchState {
-  id: string;
-  searchInput: string;
-  queryResponse: string;
-  paragraphsResponse: string[];
-  chatFeedback?: 'thumbsUp' | 'thumbsDown' | null;
-}
-
 export interface QueryChatRequest {
   searchText: string;
   tags?: string[];
   isDetailed: boolean;
-  username: string;
-  history: SearchState[];
+  conversation_id?: number;
 }

@@ -6,11 +6,17 @@ import query from '@/app/src/service/chat/queryService';
 
 async function handleQuery(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const authId = searchParams.get('auth_id');
+
+    if (!authId) {
+      return NextResponse.json({ error: 'auth_id is required' }, { status: 400 });
+    }
+
     const queryChatRequest: QueryChatRequest = await request.json();
-    const response = await query(queryChatRequest);
-    return response;
+    const data = await query(queryChatRequest, authId);
+    return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    console.error('Prompt query error:', error);
     return NextResponse.json({ error: 'Error generating answer' }, { status: 500 });
   }
 }

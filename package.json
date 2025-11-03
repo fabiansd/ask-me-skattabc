@@ -17,6 +17,10 @@
     "format:check": "prettier --check .",
     "type-check": "tsc --noEmit",
     "test": "jest",
+    "test:db": "npm run test:db:setup && npm run test:db:run && npm run test:db:teardown",
+    "test:db:setup": "podman-compose -f db-postgres/podman-compose.test.yml up -d && echo 'Waiting for test PostgreSQL...' && sleep 3 && DATABASE_URL='postgresql://postgres:testpassword@localhost:5434/ask_me_skattabc_test' npx prisma migrate deploy",
+    "test:db:run": "jest --config=./jest.integration.config.js",
+    "test:db:teardown": "podman-compose -f db-postgres/podman-compose.test.yml down -v --remove-orphans",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -56,6 +60,7 @@
     "@typescript-eslint/parser": "^7.18.0",
     "autoprefixer": "^10.4.19",
     "daisyui": "^4.10.2",
+    "dotenv": "^17.2.3",
     "eslint": "^8",
     "eslint-config-next": "14.2.2",
     "eslint-config-prettier": "^10.1.8",
