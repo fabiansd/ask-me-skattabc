@@ -33,8 +33,6 @@ describe('POST /api/postgres/feedback', () => {
     const response = await POST(request);
 
     expect(response.status).toBe(200);
-    // Note: We just test that the API responds successfully
-    // In a real app, you'd have a GET feedback API to verify storage
   });
 
   it('should create feedback for default user', async () => {
@@ -53,7 +51,6 @@ describe('POST /api/postgres/feedback', () => {
     const response = await POST(request);
 
     expect(response.status).toBe(200);
-    // Note: We just test that the API responds successfully
   });
 
   it('should handle missing feedback data gracefully', async () => {

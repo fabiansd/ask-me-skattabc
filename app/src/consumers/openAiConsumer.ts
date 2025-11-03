@@ -20,7 +20,6 @@ export async function embedText(text: string) {
     });
     return await Settings.embedModel.getTextEmbedding(text);
   } catch (error) {
-    console.error('Error getting embedding ');
     throw error;
   }
 }
@@ -31,7 +30,6 @@ export async function queryChat(
   authId: string
 ) {
   try {
-    // console.log('Query openai -> query: ', queryChatRequest.searchText);
     const openai = new OpenAI({
       model: DEFAULT_MODEL,
       apiKey: process.env.OPENAI_API_KEY,

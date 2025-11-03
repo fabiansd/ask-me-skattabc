@@ -27,7 +27,7 @@ describe('POST /api/query', () => {
 
     const data = await response.json();
     expect(data).toHaveProperty('conversation_id');
-    expect(data).toHaveProperty('openaiResponse'); // Based on your actual API response
+    expect(data).toHaveProperty('openaiResponse');
   });
 
   it('should process query for default user', async () => {
@@ -48,7 +48,7 @@ describe('POST /api/query', () => {
     expect(response.status).toBe(200);
 
     const data = await response.json();
-    expect(data).toHaveProperty('openaiResponse'); // Based on your actual API response
+    expect(data).toHaveProperty('openaiResponse');
   });
 
   it('should require auth_id parameter', async () => {

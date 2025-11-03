@@ -67,20 +67,16 @@ export default function ConversationSidebar({
 
   return (
     <>
-      {/* Collapse button when sidebar is hidden */}
       {showFloatingButton && (
         <CollapseButton onClick={onToggle} title="Vis sidebar" isFloating={true} />
       )}
 
-      {/* Sidebar */}
       <div className="h-full bg-base-200 border-r border-base-300 w-80 flex flex-col">
-        {/* Header */}
         <div className="p-4 border-b border-base-300 flex justify-between items-center">
           <NewConversationButton onClick={onNewConversation} />
           <CollapseButton onClick={onToggle} title="Skjul sidebar" />
         </div>
 
-        {/* Conversations list */}
         <ConversationList
           conversations={conversations}
           isLoading={isLoading}
@@ -88,7 +84,6 @@ export default function ConversationSidebar({
           onSelectConversation={onSelectConversation}
         />
 
-        {/* Footer */}
         <div className="p-4 border-t border-base-300">
           <div className="text-xs text-base-content/50 text-center">
             {conversations.length} samtaler
