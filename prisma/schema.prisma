@@ -41,6 +41,7 @@ model messages {
   conversation_id Int
   role            String        @db.VarChar(20)
   content         String
+  tags            String[]
   created_at      DateTime      @default(now()) @db.Timestamp(6)
   conversation    conversations @relation(fields: [conversation_id], references: [conversation_id], onDelete: Cascade, onUpdate: NoAction)
 
@@ -65,8 +66,8 @@ model query_history {
 model user_feedback {
   feedback_id        Int       @id @default(autoincrement())
   user_id            Int
-  desired_features   String
-  happiness_feedback String
+  desired_features   String?
+  happiness_feedback String?
   created_at         DateTime? @default(now()) @db.Timestamp(6)
   users              users     @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
 }

@@ -42,7 +42,7 @@ export function generateDetailedPromt(
 ): string {
   let query =
     'Du er en ekspert på norske skattelover. Bruk folkelig språk og forklar grundig og utdypende. ' +
-    'Gi detaljerte steg-for-steg instruksjoner for hva brukeren må gjøre. ' +
+    'Anta at jeg ikke har forkunnskaper om skatt. Gi detaljerte steg-for-steg instruksjoner for hva brukeren må gjøre. ' +
     'Inkluder praktiske eksempler og forklar hvorfor ting er som de er. ' +
     'Bruk konteksten og referer til paragrafer. Del svaret opp i flere paragrafer ved å bruke \\n.';
 
