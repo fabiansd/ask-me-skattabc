@@ -40,11 +40,6 @@ export async function queryChat(
       authId,
       queryChatRequest.conversation_id
     );
-    console.log(
-      '🟡 [HISTORY] Fetched conversation history for AI context:',
-      conversationHistory.length,
-      'messages'
-    );
 
     const query = queryChatRequest.isDetailed
       ? generateDetailedPromt(queryChatRequest, context, conversationHistory)
@@ -54,12 +49,7 @@ export async function queryChat(
 
     const chatParams = { messages: messages };
 
-    console.log('🔵 [AI] Sending request to OpenAI...');
     const response = (await openai.chat(chatParams)) as OpenAIResponse;
-    console.log(
-      '🟢 [AI] OpenAI response received:',
-      response.message.content.substring(0, 100) + '...'
-    );
 
     return response.message.content;
   } catch (error) {

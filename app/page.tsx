@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 import SearchButton from './src/components/buttons/SearchButton';
 import ToggleSwitch from './src/components/buttons/ToggleModelDepth';
+import KeywordInput from './src/components/chat/KeywordInput';
+import KeywordTags from './src/components/chat/KeywordTags';
 import SearchInput from './src/components/chat/SearchInput';
 import ChatLayout from './src/components/layout/ChatLayout';
 import WelcomeModal from './src/components/modals/WelcomeModal';
@@ -14,9 +16,10 @@ import { QueryChatRequest } from './src/interface/skattSokInterface';
 import { getUserId } from './src/service/users/getUserId';
 
 function SearchContent() {
-  const [isDetailed, setIsDetailed] = useState(false);
+  const [isDetailed, setIsDetailed] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [searchInput, setSearchInput] = useState('');
+  const [keywords, setKeywords] = useState<string[]>([]);
   const [conversationMessages, setConversationMessages] = useState<ConversationMessage[]>([]);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
@@ -61,20 +64,22 @@ function SearchContent() {
     fetchConversationMessages();
   }, [fetchConversationMessages]);
 
-  const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setSearchInput(event.target.value);
   };
 
   const handleToggle = (state: boolean) => {
+    console.log('page', isDetailed);
     setIsDetailed(state);
   };
 
   const handleButtonClick = async () => {
-    console.log('🔵 [INPUT] Question submitted:', searchInput);
     setIsLoading(true);
     try {
+      console.log('📤', isDetailed ? 'DETALJERT' : 'KONKRET', 'mode');
       const queryChatRequest: QueryChatRequest = {
         searchText: searchInput,
+        tags: keywords.length > 0 ? keywords : undefined,
         isDetailed: isDetailed,
         conversation_id: currentConversationId || undefined,
       };
@@ -121,14 +126,25 @@ function SearchContent() {
               onKeyDown={handleKeyPress}
             />
           </div>
-          <div className="flex justify-center pt-5">
-            <ToggleSwitch onToggle={handleToggle} textA="Konkret" textB="Detaljert" />
-            <SearchButton
-              isLoading={isLoading}
-              disabled={isLoading || searchInput === ''}
-              onClick={handleButtonClick}
-              currentConversationId={currentConversationId}
-            />
+          <div className="flex flex-col items-center pt-5">
+            <div className="flex items-center gap-4">
+              <KeywordInput keywords={keywords} onKeywordsChange={setKeywords} />
+              <ToggleSwitch onToggle={handleToggle} isDetailed={isDetailed} />
+              <SearchButton
+                isLoading={isLoading}
+                disabled={isLoading || searchInput === ''}
+                onClick={handleButtonClick}
+                currentConversationId={currentConversationId}
+              />
+            </div>
+            <div className="w-full max-w-2xl">
+              <KeywordTags
+                keywords={keywords}
+                onRemoveKeyword={index => {
+                  setKeywords(keywords.filter((_, i) => i !== index));
+                }}
+              />
+            </div>
           </div>
         </div>
         <div className="divider w-full"></div>

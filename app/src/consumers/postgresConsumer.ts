@@ -15,7 +15,6 @@ export async function findUserById(userId: number): Promise<users> {
     if (!user) {
       throw new Error('User not found');
     }
-    console.log('Found user: ', user);
     return user;
   } catch (error) {
     throw error;
@@ -31,7 +30,6 @@ export async function findDefaultUser(username: string): Promise<users> {
     if (!user) {
       throw new Error('Default user not found');
     }
-    console.log('Found default user: ', user);
     return user;
   } catch (error) {
     throw error;
@@ -49,7 +47,6 @@ export async function findUserByGoogleId(googleId: string): Promise<users> {
     if (!user) {
       throw new Error('Google user not found');
     }
-    console.log('Found Google user: ', user);
     return user;
   } catch (error) {
     throw error;
@@ -67,7 +64,6 @@ export async function createDefaultUser(username: string): Promise<users> {
         query_count: 0,
       },
     });
-    console.log('Default user ensured: ', user);
     return user;
   } catch (error) {
     throw error;
@@ -95,7 +91,6 @@ export async function createGoogleUser(
         },
       });
     }
-    console.log('Google user created/found: ', user);
     return user;
   } catch (error) {
     throw error;
@@ -133,6 +128,7 @@ export async function addUserChatHistory(
         conversation_id: conversationId,
         role: 'user',
         content: queryChatRequest.searchText || 'No content provided',
+        tags: queryChatRequest.tags || [],
       },
     });
 
@@ -153,7 +149,6 @@ export async function addUserChatHistory(
       },
     });
 
-    console.log('Added to conversation:', conversationId);
     return conversationId!;
   } catch (error) {
     throw error;
@@ -239,8 +234,6 @@ export async function findUserConversations(authIdentifier: string): Promise<Con
       user = await findUserByGoogleId(authIdentifier);
     }
 
-    console.log('Found user:', user);
-
     const conversations = await prismaClient.conversations.findMany({
       where: {
         user_id: user.user_id,
@@ -258,8 +251,6 @@ export async function findUserConversations(authIdentifier: string): Promise<Con
       },
     });
 
-    console.log('Raw conversations from DB:', conversations);
-
     // Transform to ConversationsList format
     const conversationsList: ConversationsList[] = conversations.map(conv => ({
       id: conv.conversation_id,
@@ -268,7 +259,6 @@ export async function findUserConversations(authIdentifier: string): Promise<Con
       timestamp: conv.created_at.toLocaleDateString(),
     }));
 
-    console.log('Transformed conversations:', conversationsList);
     return conversationsList;
   } catch (error) {
     console.error('Error in findUserConversations:', error);

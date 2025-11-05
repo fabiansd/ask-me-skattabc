@@ -71,10 +71,12 @@ export async function searchMatchSearchVectorKeyword(
   keywords: string[] = []
 ) {
   try {
+    console.log('🔍 ES HYBRID SEARCH - Keywords received:', keywords);
     const client = getClient();
     const keywordBoosts = keywords.map(kw => ({
-      match: { content: { query: kw, boost: 0.5 } },
+      match: { content: { query: kw, boost: 0.3 } },
     }));
+    console.log('🔍 ES HYBRID SEARCH - Keyword boosts:', keywordBoosts);
 
     const esResponse = await client.search({
       index: index,
@@ -95,9 +97,6 @@ export async function searchMatchSearchVectorKeyword(
       }),
     });
     const unwrappedResponse = unwrapESResponse(esResponse);
-    console.log(
-      `ES hybrid search retrieved ${unwrappedResponse.length} vectors from index: ${index}`
-    );
     return unwrappedResponse;
   } catch (error) {
     console.error('Elasticsearch hybrid search error:', error);

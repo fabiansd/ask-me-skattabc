@@ -1,5 +1,5 @@
 export interface UserFeedbackInput {
   username: string;
-  happiness_feedback: '';
-  desired_features: '';
+  happiness_feedback?: string;
+  desired_features?: string;
 }

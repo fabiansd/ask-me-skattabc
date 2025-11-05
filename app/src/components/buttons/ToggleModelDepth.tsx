@@ -1,26 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
+
+import Tooltip from '../common/Tooltip';
 
 interface ToggleSwitchProps {
   onToggle: (state: boolean) => void;
-  textA: string;
-  textB: string;
+  isDetailed: boolean;
 }
 
-const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ onToggle, textA, textB }) => {
-  const [isTextA, setIsTextA] = useState(true);
-
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ onToggle, isDetailed }) => {
   const handleToggle = () => {
-    const newState = !isTextA;
-    setIsTextA(newState);
-    onToggle(newState);
+    const newValue = !isDetailed;
+    console.log('🎛️', newValue ? 'DETALJERT' : 'KONKRET', '(isDetailed:', newValue + ')');
+    onToggle(newValue);
   };
 
   return (
-    <label className="swap btn-ghost m-1 px-6 rounded mr-10">
-      <input type="checkbox" checked={!isTextA} onChange={handleToggle} />
-      <div className="swap-on">{textB}</div>
-      <div className="swap-off">{textA}</div>
-    </label>
+    <Tooltip text="Velg mellom korte presise og utdypende forklarende svar">
+      <label className="swap btn btn-ghost m-1 px-6 rounded mr-10">
+        <input type="checkbox" checked={isDetailed} onChange={handleToggle} />
+        <div className="swap-on">{'Detaljert'}</div>
+        <div className="swap-off">{'Konkret'}</div>
+      </label>
+    </Tooltip>
   );
 };
 

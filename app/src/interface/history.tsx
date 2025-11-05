@@ -3,6 +3,7 @@ export interface ConversationMessage {
   conversation_id: number;
   role: 'user' | 'assistant';
   content: string;
+  tags?: string[];
   created_at: Date;
 }
 

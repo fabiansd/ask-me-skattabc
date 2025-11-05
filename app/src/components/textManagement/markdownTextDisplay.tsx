@@ -45,6 +45,17 @@ const ChatDisplay = ({ conversationMessages }: ChatDisplayProps) => {
               >
                 <ReactMarkdown>{replaceParagraphsWithLinks(message.content)}</ReactMarkdown>
               </div>
+              {message.role === 'user' && message.tags && message.tags.length > 0 && (
+                <div className="mt-2">
+                  <span className="text-xs text-base-content/60">Tags: </span>
+                  {message.tags.map((tag, index) => (
+                    <span key={index} className="text-xs text-base-content/60">
+                      {tag}
+                      {index < message.tags!.length - 1 ? ', ' : ''}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ))}

@@ -7,7 +7,7 @@ import { getUserId } from '../src/service/users/getUserId';
 
 const initialFeedback: UserFeedbackInput = {
   username: 'default',
-  happiness_feedback: '',
+  happiness_feedback: 'x',
   desired_features: '',
 };
 
@@ -58,9 +58,9 @@ export default function Info() {
         {/* About the AI Assistant */}
         <div>
           <p className="text-base-content/80 leading-relaxed mb-4">
-            Denne AI-assistenten bruker norske skattelover og juridiske tekster til å gi presise
-            svar på komplekse skattespørsmål. Systemet kombinerer semantisk søk i skattemateriale
-            med avanserte språkmodeller for å levere praktiske råd innen:
+            Denne AI-assistenten bruker juridiske tekster og alle norske skattelover fra Lovdata til
+            å gi presise svar på komplekse skattespørsmål. Systemet kombinerer semantisk søk i
+            skattemateriale med avanserte språkmodeller for å levere praktiske råd innen:
           </p>
           <ul className="list-disc list-inside text-base-content/80 space-y-2 mb-4">
             <li>
@@ -76,6 +76,10 @@ export default function Info() {
               <strong>Internasjonalt:</strong> Dobbeltbeskatningsavtaler og utenlandsk inntekt
             </li>
           </ul>
+          <p className="text-base-content/80 leading-relaxed mb-4">
+            Søket vil lete etter relevant informasjon ift. spørsmålet ditt og forsøke å svare. Om du
+            oppgir nøkkelord vil søket også forsøke å finne direkte treff på disse nøkkelordene.
+          </p>
           <p className="text-base-content/60 text-sm">
             <em>
               Merk: Dette er en eksperimentell tjeneste som ikke erstatter profesjonell rådgivning.
@@ -119,28 +123,17 @@ export default function Info() {
           <h2 className="text-xl font-bold text-base-content mb-4">Tilbakemelding</h2>
           <div className="space-y-4">
             <textarea
-              name="happiness_feedback"
-              value={feedback.happiness_feedback}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyPress}
-              className="textarea textarea-bordered w-full h-32 p-4"
-              placeholder="Positive og negative tilbakemeldinger om Skatt AI"
-            ></textarea>
-            <textarea
               name="desired_features"
               value={feedback.desired_features}
               onChange={handleInputChange}
               onKeyDown={handleKeyPress}
               className="textarea textarea-bordered w-full h-32 p-4"
-              placeholder="Ting du skulle ønske Skatt AI kunne"
+              placeholder="Ting du ønsker skatt AI kan og generell feedback"
             ></textarea>
             <div className="flex justify-center">
               <button
                 className="btn bg-sky-700 hover:bg-sky-800 text-white font-bold px-6 rounded"
-                disabled={
-                  isLoading ||
-                  (feedback.desired_features === '' && feedback.happiness_feedback === '')
-                }
+                disabled={isLoading || feedback.desired_features === ''}
                 onClick={handeButtonClick}
               >
                 Send

@@ -2,7 +2,6 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
 
 import { getUserId } from '../../service/users/getUserId';
-import Health from '../serverPingHealth';
 
 const Header = () => {
   const { data: session } = useSession();
@@ -19,7 +18,6 @@ const Header = () => {
         <a href="/info" className="btn btn-ghost text-sm">
           Info
         </a>
-        <Health />
         {session ? (
           <button onClick={() => signOut()} className="btn btn-ghost">
             {session.user?.name || getUserId(session)}
