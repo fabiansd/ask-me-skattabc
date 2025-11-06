@@ -1,5 +1,5 @@
 'use client';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
 import { getUserId } from '../../service/users/getUserId';
 
@@ -15,17 +15,17 @@ const Header = () => {
       </div>
       <div className="navbar-center hidden lg:flex"></div>
       <div className="navbar-end flex items-center gap-2">
-        <a href="/info" className="btn btn-ghost text-sm">
+        <a href="/info" className="btn btn-ghost text-sm rounded">
           Info
         </a>
         {session ? (
-          <button onClick={() => signOut()} className="btn btn-ghost">
+          <a href="/account" className="btn btn-ghost rounded">
             {session.user?.name || getUserId(session)}
-          </button>
+          </a>
         ) : (
-          <button onClick={() => signIn('google')} className="btn btn-ghost">
+          <a href="/account" className="btn btn-ghost rounded">
             Login
-          </button>
+          </a>
         )}
       </div>
     </div>

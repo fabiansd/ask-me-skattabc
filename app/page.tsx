@@ -27,7 +27,47 @@ function SearchContent() {
   const { currentConversationId, setCurrentConversationId, refreshConversations } =
     useConversation();
 
-  // Show welcome modal for non-authenticated users after 2 seconds
+  // SessionStorage persistence
+  useEffect(() => {
+    // Restore state from sessionStorage on mount
+    const savedInput = sessionStorage.getItem('searchInput');
+    const savedKeywords = sessionStorage.getItem('keywords');
+    const savedConversationId = sessionStorage.getItem('currentConversationId');
+
+    if (savedInput) setSearchInput(savedInput);
+    if (savedKeywords) {
+      try {
+        setKeywords(JSON.parse(savedKeywords));
+      } catch (error) {
+        console.error('Error parsing saved keywords:', error);
+      }
+    }
+    if (savedConversationId) {
+      const conversationId = parseInt(savedConversationId, 10);
+      if (!isNaN(conversationId)) {
+        setCurrentConversationId(conversationId);
+      }
+    }
+  }, [setCurrentConversationId]);
+
+  useEffect(() => {
+    searchInput
+      ? sessionStorage.setItem('searchInput', searchInput)
+      : sessionStorage.removeItem('searchInput');
+  }, [searchInput]);
+
+  useEffect(() => {
+    keywords.length > 0
+      ? sessionStorage.setItem('keywords', JSON.stringify(keywords))
+      : sessionStorage.removeItem('keywords');
+  }, [keywords]);
+
+  useEffect(() => {
+    currentConversationId
+      ? sessionStorage.setItem('currentConversationId', currentConversationId.toString())
+      : sessionStorage.removeItem('currentConversationId');
+  }, [currentConversationId]);
+
   useEffect(() => {
     if (!session && !sessionStorage.getItem('welcomeModalDismissed')) {
       const timer = setTimeout(() => setShowWelcomeModal(true), 2000);
@@ -55,7 +95,6 @@ function SearchContent() {
         console.error('Error fetching conversation messages:', error);
       }
     } else {
-      // Clear messages when no conversation selected
       setConversationMessages([]);
     }
   }, [currentConversationId, session]);
@@ -95,6 +134,10 @@ function SearchContent() {
       const data = await response.json();
       console.log('🟢 [API] Query response received:', data);
 
+      // Clear the search input after successful submission
+      setSearchInput('');
+      sessionStorage.removeItem('searchInput');
+
       // If this was a new conversation, save the returned conversation_id and refresh list
       if (!currentConversationId && data.conversation_id) {
         setCurrentConversationId(data.conversation_id);
@@ -109,7 +152,8 @@ function SearchContent() {
   };
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
       handleButtonClick();
     }
   };

@@ -14,7 +14,7 @@ export default function SearchButton({
   currentConversationId,
 }: SearchButtonProps) {
   return (
-    <Tooltip text="Press enter! Assistenten husker samtalen og bygger videre på den">
+    <Tooltip text="Press enter! Assistenten husker samtalen og bygger videre på den. PS: Jeg jobber :)">
       <button
         className="btn bg-sky-700 hover:bg-sky-800 text-white font-bold m-1 px-6 rounded min-w-[180px]"
         disabled={disabled}

@@ -77,7 +77,7 @@ export default function Info() {
             </li>
           </ul>
           <p className="text-base-content/80 leading-relaxed mb-4">
-            Søket vil lete etter relevant informasjon ift. spørsmålet ditt og forsøke å svare. Om du
+            Søket vil lete etter relevant informasjon mht. spørsmålet ditt og forsøke å svare. Om du
             oppgir nøkkelord vil søket også forsøke å finne direkte treff på disse nøkkelordene.
           </p>
           <p className="text-base-content/60 text-sm">
@@ -102,7 +102,7 @@ export default function Info() {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-base-content/60">📱</span>
-              <span className="text-base-content/80">+47 41230038</span>
+              <span className="text-base-content/80">+47 412 30 038</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-base-content/60">💼</span>
@@ -128,7 +128,7 @@ export default function Info() {
               onChange={handleInputChange}
               onKeyDown={handleKeyPress}
               className="textarea textarea-bordered w-full h-32 p-4"
-              placeholder="Ting du ønsker skatt AI kan og generell feedback"
+              placeholder="Ting du skulle ønske skatt AI kunne gjøre og generell tilbakemelding."
             ></textarea>
             <div className="flex justify-center">
               <button

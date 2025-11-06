@@ -17,6 +17,9 @@ export function generateConcretePrompt(
 
   query += `\n\nSpørsmål: ${queryChatRequest.searchText}`;
 
+  query +=
+    'VIKTIG! Dette spørsmålet er det du skal svare på, de neste er kun for kontekst. Ikke gi et svar som er helt likt et svar du har gitt i tidligere svar\n';
+
   if (conversationHistory && conversationHistory.length > 0) {
     query += '\n\nTidligere spørsmål og svar:';
     for (const msg of conversationHistory) {
@@ -46,7 +49,10 @@ export function generateDetailedPromt(
     'Inkluder praktiske eksempler og forklar hvorfor ting er som de er. ' +
     'Bruk konteksten og referer til paragrafer. Del svaret opp i flere paragrafer ved å bruke \\n.';
 
-  query += `\n\nSpørsmål: ${queryChatRequest.searchText}`;
+  query += `\n\nSpørsmål: ${queryChatRequest.searchText}\n`;
+
+  query +=
+    'VIKTIG! Dette spørsmålet er det du skal svare på, de neste er kun for kontekst. Ikke gi et svar som er helt likt et svar du har gitt i tidligere svar\n';
 
   if (conversationHistory && conversationHistory.length > 0) {
     query += '\n\nTidligere spørsmål og svar:';

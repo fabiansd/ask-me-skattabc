@@ -18,7 +18,7 @@ export default function KeywordInput({ keywords, onKeywordsChange }: KeywordInpu
   };
 
   return (
-    <Tooltip text="Legg til nøkkelord for å spesifisere søket ditt">
+    <Tooltip text="Søket leter etter eksakte matcher på nøkkelordene">
       <div className="flex w-64 m-1">
         <input
           type="text"
