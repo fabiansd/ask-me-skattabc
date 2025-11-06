@@ -2,8 +2,9 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
 // eslint-disable-next-line import/order
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function AccountPage() {
+function AccountContent() {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const promptSelectAccount = searchParams.get('prompt') === 'select_account';
@@ -76,5 +77,19 @@ export default function AccountPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AccountPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-700"></div>
+        </div>
+      }
+    >
+      <AccountContent />
+    </Suspense>
   );
 }
