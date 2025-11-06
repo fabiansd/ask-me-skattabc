@@ -12,7 +12,7 @@ export default function KeywordTags({ keywords, onRemoveKeyword }: KeywordTagsPr
         <button
           key={index}
           type="button"
-          className="badge bg-sky-700 gap-2 hover:bg-sky-600 hover:cursor-pointer transition-colors duration-200"
+          className="badge bg-sky-600 gap-2 hover:bg-sky-500 hover:cursor-pointer transition-colors duration-200"
           onClick={() => onRemoveKeyword(index)}
         >
           <span className="font-bold" style={{ color: 'rgb(31 41 55)' }}>

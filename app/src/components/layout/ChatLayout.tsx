@@ -9,9 +9,8 @@ interface ChatLayoutProps {
 }
 
 export default function ChatLayout({ children }: ChatLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(true); // Start open on desktop
+  const [sidebarOpen, setSidebarOpen] = useState(false); // Start closed by default
   const { currentConversationId, selectConversation, startNewConversation } = useConversation();
-
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const handleSelectConversation = (conversationId: number) => {
@@ -28,10 +27,20 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
       {/* Sidebar toggle button - always visible */}
       <button
         onClick={toggleSidebar}
-        className="fixed left-0 z-60 btn btn-ghost btn-sm p-2 bg-base-200 border border-base-300"
+        className={`group fixed left-0 z-60 bg-base-200 border border-base-300 flex items-center justify-center min-h-[2rem] hover:bg-neutral hover:border-neutral-focus transition-colors ${
+          sidebarOpen ? 'p-2 rounded-md' : 'pl-3 pr-2 py-2 rounded-r-md'
+        }`}
         style={{ top: 'calc(4rem + 1rem + 0.5rem)' }}
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {!sidebarOpen && (
+          <span className="text-sm font-medium mr-2 flex items-center">Samtaler</span>
+        )}
+        <svg
+          className="w-4 h-4 flex-shrink-0 group-hover:scale-110 transition-transform"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"

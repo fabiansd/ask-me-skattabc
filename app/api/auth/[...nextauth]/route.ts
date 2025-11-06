@@ -15,32 +15,22 @@ const authOptions: NextAuthOptions = {
     async signIn({ user, account }) {
       if (account?.provider === 'google' && user.id) {
         try {
-          // Create Google user if they don't exist
           await createGoogleUser(user.id, user.email || '', user.name || '');
         } catch (error) {
-          console.log('User might already exist or creation failed:', error);
+          // User might already exist, that's fine
         }
       }
       return true;
     },
     async session({ session, token }) {
       if (session?.user && token?.sub) {
-        // Use Google's sub (subject) ID as our user identifier
         session.user.id = token.sub;
       }
       return session;
     },
-    async jwt({ token, account }) {
-      if (account) {
-        token.sub = account.providerAccountId; // Google's user ID
-      }
-      return token;
-    },
   },
-  session: {
-    strategy: 'jwt',
-  },
-};
+  trustHost: true,
+} as NextAuthOptions;
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

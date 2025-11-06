@@ -1,5 +1,4 @@
 'use client';
-import { signIn } from 'next-auth/react';
 import { useEffect } from 'react';
 
 interface WelcomeModalProps {
@@ -34,14 +33,14 @@ export default function WelcomeModal({ isVisible, onClose }: WelcomeModalProps) 
             skattespørsmål.
           </p>
           <p className="text-base-content/70 leading-relaxed">
-            Logg inn med din Google-konto å få tilgang til <strong>samtalehistorikk</strong> og{' '}
+            Logg inn med din Google-konto for å få tilgang til <strong>samtalehistorikk</strong> og{' '}
             <strong>sterkere AI-modell </strong>.
           </p>
         </div>
 
         <div className="space-y-3">
           <button
-            onClick={() => signIn('google')}
+            onClick={() => (window.location.href = '/account')}
             className="w-full btn bg-sky-700 hover:bg-sky-800 text-white font-bold py-3 rounded-lg"
           >
             Logg inn med Google
