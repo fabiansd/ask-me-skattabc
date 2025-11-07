@@ -117,7 +117,7 @@ export async function addUserChatHistory(
       const conversation = await prismaClient.conversations.create({
         data: {
           user_id: user.user_id,
-          title: queryChatRequest.searchText?.substring(0, 100) || 'Untitled', // First 100 chars as title
+          title: queryChatRequest.searchText?.substring(0, 100) || 'Untitled',
         },
       });
       conversationId = conversation.conversation_id;
@@ -138,6 +138,11 @@ export async function addUserChatHistory(
         role: 'assistant',
         content: openaiResponse,
       },
+    });
+
+    await prismaClient.conversations.update({
+      where: { conversation_id: conversationId },
+      data: { updated_at: new Date() },
     });
 
     await prismaClient.query_history.create({
@@ -201,7 +206,6 @@ export async function deleteConversation(
       user = await findUserByGoogleId(authIdentifier);
     }
 
-    // Verify user owns this conversation before deleting
     const conversation = await prismaClient.conversations.findFirst({
       where: {
         conversation_id: conversationId,
@@ -247,16 +251,16 @@ export async function findUserConversations(authIdentifier: string): Promise<Con
         },
       },
       orderBy: {
-        created_at: 'desc',
+        updated_at: 'desc',
       },
     });
 
     // Transform to ConversationsList format
-    const conversationsList: ConversationsList[] = conversations.map(conv => ({
+    const conversationsList: ConversationsList[] = conversations.map((conv: any) => ({
       id: conv.conversation_id,
       title: conv.title || `Samtale ${conv.conversation_id}`,
       lastMessage: conv.messages?.[0]?.content || 'Ingen meldinger',
-      timestamp: conv.created_at.toLocaleDateString(),
+      timestamp: conv.updated_at.toLocaleDateString(),
     }));
 
     return conversationsList;

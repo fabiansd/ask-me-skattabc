@@ -27,9 +27,8 @@ function SearchContent() {
   const { currentConversationId, setCurrentConversationId, refreshConversations } =
     useConversation();
 
-  // SessionStorage persistence
   useEffect(() => {
-    // Restore state from sessionStorage on mount
+    // Persist search state info for smoother UX
     const savedInput = sessionStorage.getItem('searchInput');
     const savedKeywords = sessionStorage.getItem('keywords');
     const savedConversationId = sessionStorage.getItem('currentConversationId');
@@ -141,9 +140,9 @@ function SearchContent() {
       // If this was a new conversation, save the returned conversation_id and refresh list
       if (!currentConversationId && data.conversation_id) {
         setCurrentConversationId(data.conversation_id);
-        refreshConversations();
       }
 
+      refreshConversations();
       fetchConversationMessages();
     } catch (error) {
       console.error('🔴 [ERROR] Query failed:', error);
