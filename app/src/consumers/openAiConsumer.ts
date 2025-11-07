@@ -12,6 +12,23 @@ type OpenAIResponse = {
   };
 };
 
+export async function moderateContent(text: string): Promise<boolean> {
+  try {
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const moderation = await (openai as any).moderations.create({
+      input: text,
+    });
+
+    return moderation.results[0].flagged;
+  } catch (error) {
+    return false;
+  }
+}
+
 export async function embedText(text: string) {
   try {
     Settings.embedModel = new OpenAIEmbedding({
