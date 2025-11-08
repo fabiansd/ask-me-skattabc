@@ -2,6 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent bounce/elastic scrolling and address bar hiding on mobile */
+html,
+body {
+  overscroll-behavior: none;
+  overscroll-behavior-y: none;
+  height: 100%;
+  margin: 0;
+}
+
+/* Prevent overscroll on all scrollable elements */
+* {
+  overscroll-behavior: none;
+}
+
+@media only screen and (max-width: 768px) {
+  html {
+    overflow: hidden;
+  }
+  body {
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+  main {
+    height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 .markdown-content a {
   @apply text-sky-600 underline hover:text-sky-800;
 }

@@ -19,6 +19,8 @@ export const metadata: Metadata = {
         sizes: '32x32',
       },
     ],
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
   },
 };
 
@@ -29,10 +31,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-theme="dark">
-      <body className={`${inter.className} min-h-screen flex flex-col overflow-hidden`}>
+      <body
+        className={`${inter.className} min-h-screen flex flex-col`}
+        style={{ overscrollBehavior: 'none' }}
+      >
         <SessionWrapper>
           <Header />
-          <main className="flex-grow overflow-hidden">{children}</main>
+          <main className="flex-grow">{children}</main>
         </SessionWrapper>
       </body>
     </html>

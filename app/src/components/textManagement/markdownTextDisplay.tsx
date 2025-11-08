@@ -7,9 +7,10 @@ import { replaceParagraphsWithLinks } from '../../lib/skatteparagraferReferering
 
 interface ChatDisplayProps {
   conversationMessages: ConversationMessage[];
+  isCollapsed?: boolean;
 }
 
-const ChatDisplay = ({ conversationMessages }: ChatDisplayProps) => {
+const ChatDisplay = ({ conversationMessages, isCollapsed = false }: ChatDisplayProps) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when messages change
@@ -26,7 +27,7 @@ const ChatDisplay = ({ conversationMessages }: ChatDisplayProps) => {
   return (
     <div
       ref={chatContainerRef}
-      className="h-[calc(100vh-20rem)] overflow-y-auto scroll-smooth bg-base-100 rounded-lg p-4"
+      className={`${isCollapsed ? 'h-[calc(100vh-8rem)]' : 'h-[calc(100vh-20rem)]'} overflow-y-auto scroll-smooth bg-base-100 rounded-lg`}
     >
       <div className="space-y-4 w-full">
         {conversationMessages.map(message => (
@@ -43,7 +44,22 @@ const ChatDisplay = ({ conversationMessages }: ChatDisplayProps) => {
                 className="text-left markdown-content text-base-content"
                 style={{ whiteSpace: 'pre-line' }}
               >
-                <ReactMarkdown>{replaceParagraphsWithLinks(message.content)}</ReactMarkdown>
+                <ReactMarkdown
+                  components={{
+                    a: ({ href, children }) => (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sky-600 hover:text-sky-800 underline"
+                      >
+                        {children}
+                      </a>
+                    ),
+                  }}
+                >
+                  {replaceParagraphsWithLinks(message.content)}
+                </ReactMarkdown>
               </div>
               {message.role === 'user' && message.tags && message.tags.length > 0 && (
                 <div className="mt-2">
