@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 # Copy built standalone app (includes all dependencies)
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
 
 # Copy Prisma schema for migrations
 COPY --from=builder /app/prisma ./prisma

@@ -53,8 +53,8 @@ export default function Info() {
   };
 
   return (
-    <div className="pt-10 flex justify-center">
-      <div className="w-full max-w-2xl space-y-8">
+    <div className="pt-10 px-4 flex justify-center">
+      <div className="w-full max-w-2xl space-y-8 pb-8">
         {/* About the AI Assistant */}
         <div>
           <p className="text-base-content/80 leading-relaxed mb-4">

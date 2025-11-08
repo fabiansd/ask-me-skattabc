@@ -6,9 +6,10 @@ import ConversationSidebar from '../navigation/ConversationSidebar';
 
 interface ChatLayoutProps {
   children: React.ReactNode;
+  isInputCollapsed?: boolean;
 }
 
-export default function ChatLayout({ children }: ChatLayoutProps) {
+export default function ChatLayout({ children, isInputCollapsed = false }: ChatLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false); // Start closed by default
   const { currentConversationId, selectConversation, startNewConversation } = useConversation();
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -23,17 +24,17 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
   };
 
   return (
-    <div className="relative h-[calc(100vh-4rem)] overflow-hidden">
-      {/* Sidebar toggle button - always visible */}
+    <div
+      className={`relative ${isInputCollapsed ? 'h-screen overflow-y-auto' : 'min-h-[calc(100vh-4rem)]'}`}
+    >
       <button
         onClick={toggleSidebar}
         className={`group fixed left-0 z-60 bg-base-200 border border-base-300 flex items-center justify-center min-h-[2rem] hover:bg-neutral hover:border-neutral-focus transition-colors ${
-          sidebarOpen ? 'p-2 rounded-md' : 'pl-3 pr-2 py-2 rounded-r-md'
-        }`}
-        style={{ top: 'calc(4rem + 1rem + 0.5rem)' }}
+          sidebarOpen ? 'p-2 rounded-md' : 'md:pl-3 md:pr-2 py-2 rounded-r-md w-8 md:w-auto'
+        } top-[10.35rem] md:top-[6.55rem]`}
       >
         {!sidebarOpen && (
-          <span className="text-sm font-medium mr-2 flex items-center">Samtaler</span>
+          <span className="text-sm font-medium mr-2 hidden md:flex items-center">Samtaler</span>
         )}
         <svg
           className="w-4 h-4 flex-shrink-0 group-hover:scale-110 transition-transform"
@@ -50,7 +51,6 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
         </svg>
       </button>
 
-      {/* Sidebar Container - overlay when open */}
       <div
         className={`
         fixed left-0 top-16 h-[calc(100vh-4rem)] z-50 bg-base-100 shadow-lg
@@ -68,12 +68,10 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
         />
       </div>
 
-      {/* Backdrop when sidebar is open */}
       {sidebarOpen && (
         <div className="fixed inset-0 bg-transparent z-40" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Main content area - always full width */}
       <div className="h-full w-full">{children}</div>
     </div>
   );

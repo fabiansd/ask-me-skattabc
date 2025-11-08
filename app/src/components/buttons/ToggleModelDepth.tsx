@@ -16,7 +16,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ onToggle, isDetailed }) => 
 
   return (
     <Tooltip text="Velg mellom korte presise og utdypende forklarende svar">
-      <label className="swap btn btn-ghost m-1 px-6 rounded mr-10">
+      <label className="swap btn btn-ghost m-1 px-6 rounded mr-16">
         <input type="checkbox" checked={isDetailed} onChange={handleToggle} />
         <div className="swap-on">{'Detaljert'}</div>
         <div className="swap-off">{'Konkret'}</div>

@@ -2,6 +2,7 @@
 import { useSession } from 'next-auth/react';
 import { useCallback, useEffect, useState } from 'react';
 
+import CollapseToggle from './src/components/buttons/CollapseToggle';
 import SearchButton from './src/components/buttons/SearchButton';
 import ToggleSwitch from './src/components/buttons/ToggleModelDepth';
 import KeywordInput from './src/components/chat/KeywordInput';
@@ -15,7 +16,13 @@ import { ConversationMessage } from './src/interface/history';
 import { QueryChatRequest } from './src/interface/skattSokInterface';
 import { getUserId } from './src/service/users/getUserId';
 
-function SearchContent() {
+function SearchContent({
+  isInputAreaCollapsed,
+  setIsInputAreaCollapsed,
+}: {
+  isInputAreaCollapsed: boolean;
+  setIsInputAreaCollapsed: (value: boolean) => void;
+}) {
   const [isDetailed, setIsDetailed] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [searchInput, setSearchInput] = useState('');
@@ -160,43 +167,71 @@ function SearchContent() {
   return (
     <>
       <WelcomeModal isVisible={showWelcomeModal} onClose={handleCloseModal} />
-      <div className="pt-10 px-4">
-        <div className="mx-auto max-w-5xl">
-          <div className="flex justify-center">
-            <SearchInput
-              value={searchInput}
-              onChange={handleSearchInputChange}
-              onKeyDown={handleKeyPress}
-            />
-          </div>
-          <div className="flex flex-col items-center pt-5">
-            <div className="flex items-center gap-4">
-              <KeywordInput keywords={keywords} onKeywordsChange={setKeywords} />
-              <ToggleSwitch onToggle={handleToggle} isDetailed={isDetailed} />
-              <SearchButton
-                isLoading={isLoading}
-                disabled={isLoading || searchInput === ''}
-                onClick={handleButtonClick}
-                currentConversationId={currentConversationId}
+
+      {/* Input area - collapsible */}
+      <div
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${isInputAreaCollapsed ? 'max-h-0' : 'max-h-96'}`}
+      >
+        <div className="pt-8 px-4">
+          <div className="mx-auto max-w-5xl">
+            <div className="flex justify-center">
+              <SearchInput
+                value={searchInput}
+                onChange={handleSearchInputChange}
+                onKeyDown={handleKeyPress}
               />
             </div>
-            <div className="w-full max-w-2xl">
-              <KeywordTags
-                keywords={keywords}
-                onRemoveKeyword={index => {
-                  setKeywords(keywords.filter((_, i) => i !== index));
-                }}
-              />
+            <div className="flex flex-col items-center pt-2.5 md:pt-5">
+              {/* Desktop layout: Original horizontal layout */}
+              <div className="hidden md:flex items-center gap-4">
+                <KeywordInput keywords={keywords} onKeywordsChange={setKeywords} />
+                <ToggleSwitch onToggle={handleToggle} isDetailed={isDetailed} />
+                <SearchButton
+                  isLoading={isLoading}
+                  disabled={isLoading || searchInput === ''}
+                  onClick={handleButtonClick}
+                  currentConversationId={currentConversationId}
+                />
+              </div>
+
+              {/* Mobile layout: Two lines */}
+              <div className="flex flex-col items-center gap-2 w-full max-w-2xl md:hidden">
+                <KeywordInput keywords={keywords} onKeywordsChange={setKeywords} />
+                <div className="flex items-center gap-2">
+                  <ToggleSwitch onToggle={handleToggle} isDetailed={isDetailed} />
+                  <SearchButton
+                    isLoading={isLoading}
+                    disabled={isLoading || searchInput === ''}
+                    onClick={handleButtonClick}
+                    currentConversationId={currentConversationId}
+                  />
+                </div>
+              </div>
+
+              {/* Tags container - shared for both layouts */}
+              <div className="w-full max-w-2xl mt-2 md:mt-0">
+                <KeywordTags
+                  keywords={keywords}
+                  onRemoveKeyword={index => {
+                    setKeywords(keywords.filter((_, i) => i !== index));
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
-        <div className="divider w-full"></div>
-        <div className="px-4">
-          <div className="mx-auto max-w-5xl">
-            <div className="flex justify-center">
-              <div className="w-full max-w-3xl">
-                <ChatDisplay conversationMessages={conversationMessages} />
-              </div>
+      </div>
+      {/* Divider with collapse toggle */}
+      <CollapseToggle isCollapsed={isInputAreaCollapsed} onToggle={setIsInputAreaCollapsed} />
+      {/* Chat display area */}
+      <div className={`px-4 ${isInputAreaCollapsed ? 'pt-4 pb-4' : ''}`}>
+        <div className="mx-auto max-w-5xl">
+          <div className="flex justify-center">
+            <div className="w-full max-w-3xl">
+              <ChatDisplay
+                conversationMessages={conversationMessages}
+                isCollapsed={isInputAreaCollapsed}
+              />
             </div>
           </div>
         </div>
@@ -205,12 +240,19 @@ function SearchContent() {
   );
 }
 
-export default function Search() {
+function SearchWrapper() {
+  const [isInputAreaCollapsed, setIsInputAreaCollapsed] = useState(false);
+
   return (
     <ConversationProvider>
-      <ChatLayout>
-        <SearchContent />
+      <ChatLayout isInputCollapsed={isInputAreaCollapsed}>
+        <SearchContent
+          isInputAreaCollapsed={isInputAreaCollapsed}
+          setIsInputAreaCollapsed={setIsInputAreaCollapsed}
+        />
       </ChatLayout>
     </ConversationProvider>
   );
 }
+
+export default SearchWrapper;
