@@ -10,12 +10,6 @@ import { generateConcretePrompt, generateDetailedPromt } from '../lib/promptGene
 
 import { findUserConversationHistory } from './postgresConsumer';
 
-type OpenAIResponse = {
-  message: {
-    content: string;
-  };
-};
-
 export async function moderateContent(text: string): Promise<boolean> {
   try {
     const openai = new OpenAI({
@@ -81,7 +75,7 @@ export async function queryChat(
 
     const chatParams = { messages: messages };
 
-    const response = (await openai.chat(chatParams)) as OpenAIResponse;
+    const response = await openai.chat(chatParams);
 
     return response.message.content;
   } catch (error) {
