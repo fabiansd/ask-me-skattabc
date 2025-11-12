@@ -3,7 +3,6 @@ import { useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 import { ConversationMessage } from '../../interface/history';
-import { replaceParagraphsWithLinks } from '../../lib/skatteparagraferReferering';
 
 interface ChatDisplayProps {
   conversationMessages: ConversationMessage[];
@@ -58,7 +57,7 @@ const ChatDisplay = ({ conversationMessages, isCollapsed = false }: ChatDisplayP
                     ),
                   }}
                 >
-                  {replaceParagraphsWithLinks(message.content)}
+                  {message.content}
                 </ReactMarkdown>
               </div>
               {message.role === 'user' && message.tags && message.tags.length > 0 && (

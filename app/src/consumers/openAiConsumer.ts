@@ -1,6 +1,10 @@
 import { ChatMessage, OpenAI, OpenAIEmbedding, Settings } from 'llamaindex';
 
-import { DEFAULT_MODEL, OPENAI_EMBEDDING_MODEL } from '../constants/opanAiParameters';
+import {
+  DEFAULT_MODEL_ANONYMOUS,
+  DEFAULT_MODEL_AUTHENTICATED,
+  OPENAI_EMBEDDING_MODEL,
+} from '../constants/opanAiParameters';
 import { QueryChatRequest } from '../interface/skattSokInterface';
 import { generateConcretePrompt, generateDetailedPromt } from '../lib/promptGenerator';
 
@@ -47,11 +51,22 @@ export async function queryChat(
   authId: string
 ) {
   try {
-    const openai = new OpenAI({
-      model: DEFAULT_MODEL,
+    const isAuthenticated =
+      authId && authId !== 'default' && authId !== 'anonymous' && authId.trim() !== '';
+    const selectedModel = isAuthenticated ? DEFAULT_MODEL_AUTHENTICATED : DEFAULT_MODEL_ANONYMOUS;
+
+    console.log(
+      `🤖 Using model: ${selectedModel} (authenticated: ${isAuthenticated}, authId: ${authId})`
+    );
+
+    // For GPT-5, we must explicitly set temperature to 1 (its only supported value)
+    const openaiConfig = {
+      model: selectedModel,
       apiKey: process.env.OPENAI_API_KEY,
-      temperature: 0,
-    });
+      temperature: selectedModel === DEFAULT_MODEL_AUTHENTICATED ? 1 : 0,
+    };
+
+    const openai = new OpenAI(openaiConfig);
 
     const conversationHistory = await findUserConversationHistory(
       authId,

@@ -11,14 +11,15 @@ export function generateConcretePrompt(
   conversationHistory?: ConversationMessage[]
 ): string {
   let query =
-    'Du er en ekspert på norske skattelover. Svar kortfattet og rett på sak. ' +
-    'Gi kun det nødvendige svaret uten unødvendige forklaringer. ' +
-    'Bruk konteksten og referer til paragrafer. Del svaret opp i flere paragrafer ved å bruke \\n.';
+    'Du er en ekspert på norske skattelover. Svar kortfattet med enkelt, hverdagslig språk uten juss-fagord. ' +
+    'Oversett vanskelige skatteloven-ord til vanlig norsk folk forstår. ' +
+    'Bruk KUN informasjon fra konteksten - ikke finn på noe. ' +
+    'Når du nevner paragrafer, lag klikkbare markdown-links: [§ X-Y-Z](https://lovdata.no/lov/1999-03-26-14/§X-Y-Z). ' +
+    'Del svaret opp i paragrafer.';
 
   query += `\n\nSpørsmål: ${queryChatRequest.searchText}`;
 
-  query +=
-    'VIKTIG! Dette spørsmålet er det du skal svare på, de neste er kun for kontekst. Ikke gi et svar som er helt likt et svar du har gitt i tidligere svar\n';
+  query += 'Ikke gjenta tidligere svar - vær kreativ med forklaringen.\n';
 
   if (conversationHistory && conversationHistory.length > 0) {
     query += '\n\nTidligere spørsmål og svar:';
@@ -44,15 +45,16 @@ export function generateDetailedPromt(
   conversationHistory?: ConversationMessage[]
 ): string {
   let query =
-    'Du er en ekspert på norske skattelover. Bruk folkelig språk og forklar grundig og utdypende. ' +
-    'Anta at jeg ikke har forkunnskaper om skatt. Gi detaljerte steg-for-steg instruksjoner for hva brukeren må gjøre. ' +
-    'Inkluder praktiske eksempler og forklar hvorfor ting er som de er. ' +
-    'Bruk konteksten og referer til paragrafer. Del svaret opp i flere paragrafer ved å bruke \\n.';
+    'Du er en ekspert på norske skattelover som forklarer ting enkelt og forståelig. ' +
+    'Bruk hverdagsord i stedet for juss-språk. Oversett faguttrykk til vanlig norsk. ' +
+    'Forklar trinn-for-trinn som til en vanlig person uten skattekunnskap. ' +
+    'Bruk KUN informasjon fra konteksten - ikke finn på noe. ' +
+    'Når du nevner paragrafer, lag klikkbare markdown-links: [§ X-Y-Z](https://lovdata.no/lov/1999-03-26-14/§X-Y-Z). ' +
+    'Del svaret opp i paragrafer.';
 
   query += `\n\nSpørsmål: ${queryChatRequest.searchText}\n`;
 
-  query +=
-    'VIKTIG! Dette spørsmålet er det du skal svare på, de neste er kun for kontekst. Ikke gi et svar som er helt likt et svar du har gitt i tidligere svar\n';
+  query += 'Ikke gjenta tidligere svar - vær kreativ med forklaringen.\n';
 
   if (conversationHistory && conversationHistory.length > 0) {
     query += '\n\nTidligere spørsmål og svar:';
