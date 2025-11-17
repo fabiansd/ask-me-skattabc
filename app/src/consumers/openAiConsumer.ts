@@ -57,7 +57,7 @@ export async function queryChat(
     const openaiConfig = {
       model: selectedModel,
       apiKey: process.env.OPENAI_API_KEY,
-      temperature: selectedModel === DEFAULT_MODEL_AUTHENTICATED ? 1 : 0,
+      temperature: 1,
     };
 
     const openai = new OpenAI(openaiConfig);
@@ -77,7 +77,9 @@ export async function queryChat(
 
     const response = await openai.chat(chatParams);
 
-    return response.message.content;
+    return typeof response.message.content === 'string'
+      ? response.message.content
+      : (response.message.content?.find(item => item.type === 'text') as { text: string })?.text;
   } catch (error) {
     console.error('Error querying openai, ', error);
   }
