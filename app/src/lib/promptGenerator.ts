@@ -5,71 +5,49 @@ interface ConversationMessage {
   content: string;
 }
 
-export function generateConcretePrompt(
+export function generatePrompt(
   queryChatRequest: QueryChatRequest,
   context: string[],
   conversationHistory?: ConversationMessage[]
 ): string {
+  const isDetailed = queryChatRequest.isDetailed;
+
   let query =
-    'Du er en ekspert på norske skattelover. Svar kortfattet med enkelt, hverdagslig språk uten juss-fagord. ' +
-    'Oversett vanskelige skatteloven-ord til vanlig norsk folk forstår. ' +
-    'Bruk KUN informasjon fra konteksten - ikke finn på noe. ' +
-    'Når du nevner paragrafer, lag klikkbare markdown-links: [§ X-Y-Z](https://lovdata.no/lov/1999-03-26-14/§X-Y-Z). ' +
-    'Del svaret opp i paragrafer.';
+    '[ROLLE] Du er ekspert på norske lover med fokus på skatt og finans med et øye for detaljer. ' +
+    'Du er en skatteagent som heter Optimalskatt. Svar proft og henvis deg til brukeren\n\n';
 
-  query += `\n\nSpørsmål: ${queryChatRequest.searchText}`;
+  query +=
+    '[OPPDRAG] Du skal hjelpe norske folk med å forstå skattelovene og få svar på spørsmålene sine relatert til norske lover.\n\n';
 
-  query += 'Ikke gjenta tidligere svar - vær kreativ med forklaringen.\n';
+  query +=
+    '[INSTRUKSJONER] \n' +
+    '- Vær hjelpsom, bruk folkelig språk og forklar vanskelige ord. Annta gjennomsnittlig kunnskaper om lov\n' +
+    '- Bruk KUN informasjon fra konteksten - ikke finn på noe. (Husk at jeg har gitt deg konteksten, ikke brukeren. ' +
+    'henvis deg til brukeren. Og konteksten kan du referere til Norges lover.))\n' +
+    '- Referer til paragrafer du bruker (VIKTIG). Når du nevner paragrafer lag klikkbare markdown-links: [§ X-Y-Z](https://lovdata.no/lov/1999-03-26-14/§X-Y-Z)\n' +
+    '- Skriv et godt og sammenhengende språk i oversiktlige avsnitt som er gode å lese. Ikke masse kolon osv. lister du opp punkter så ha med linebreak så det ser bra ut' +
+    '- Ikke gjenta tidligere svar du har gitt, svar på gjeldende spørsmål.\n';
+  ('\n');
+
+  query += isDetailed
+    ? '[TONE] Gi en detaljert forklaring som beksriver prosessen trinn for trinn på hva man skal gjøre gitt spørsmålet.\n\n'
+    : '[TONE] Gi en konkret, kort og oversiktlig forklaring som legger opp til oppfølgingsspørsmål og videre gransking.\n\n';
+
+  query += `[GJELDENDE SPØRSMÅL]: ${queryChatRequest.searchText}`;
 
   if (conversationHistory && conversationHistory.length > 0) {
-    query += '\n\nTidligere spørsmål og svar:';
+    query += '\n\n[TIDLIGERE SPØRSMÅL MED SVAR]:';
     for (const msg of conversationHistory) {
       if (msg.role === 'user') {
-        query += `\n- Spørsmål: ${msg.content}`;
+        query += `\n- Spørsmål:\n ${msg.content}`;
       } else if (msg.role === 'assistant') {
-        query += `\n- Svar: ${msg.content}`;
+        query += `\n- Svar:\n ${msg.content}`;
       }
     }
   }
 
   if (context && context.length > 0) {
-    query += `\n\nKontekst: ${context.join('\n')}`;
+    query += `\n\n[KONTEKST NORSKE LOVER OG FORSKRIFTER] ${context.join('\n')}`;
   }
-
-  return query;
-}
-
-export function generateDetailedPromt(
-  queryChatRequest: QueryChatRequest,
-  context: string[],
-  conversationHistory?: ConversationMessage[]
-): string {
-  let query =
-    'Du er en ekspert på norske skattelover som forklarer ting enkelt og forståelig. ' +
-    'Bruk hverdagsord i stedet for juss-språk. Oversett faguttrykk til vanlig norsk. ' +
-    'Forklar trinn-for-trinn som til en vanlig person uten skattekunnskap. ' +
-    'Bruk KUN informasjon fra konteksten - ikke finn på noe. ' +
-    'Når du nevner paragrafer, lag klikkbare markdown-links: [§ X-Y-Z](https://lovdata.no/lov/1999-03-26-14/§X-Y-Z). ' +
-    'Del svaret opp i paragrafer.';
-
-  query += `\n\nSpørsmål: ${queryChatRequest.searchText}\n`;
-
-  query += 'Ikke gjenta tidligere svar - vær kreativ med forklaringen.\n';
-
-  if (conversationHistory && conversationHistory.length > 0) {
-    query += '\n\nTidligere spørsmål og svar:';
-    for (const msg of conversationHistory) {
-      if (msg.role === 'user') {
-        query += `\n- Spørsmål: ${msg.content}`;
-      } else if (msg.role === 'assistant') {
-        query += `\n- Svar: ${msg.content}`;
-      }
-    }
-  }
-
-  if (context && context.length > 0) {
-    query += `\n\nKontekst: ${context.join('\n')}`;
-  }
-
   return query;
 }

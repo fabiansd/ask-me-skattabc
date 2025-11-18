@@ -44,6 +44,12 @@ elasticsearch/notebook_client/data_archive/
 elasticsearch/notebook_client/notebooks_archive/
 elasticsearch/snapshot/
 
+# Jupyter notebooks (can be large)
+*.ipynb
+**/.ipynb_checkpoints/
+elasticsearch/notebook_client/notebooks/examples/
+!elasticsearch/notebook_client/notebooks/embed-skatt*.ipynb
+
 # General data file patterns
 *.txt
 *.json

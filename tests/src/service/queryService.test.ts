@@ -92,9 +92,9 @@ describe('queryService', () => {
       expect(mockEmbedText).toHaveBeenCalledWith(mockRequest.searchText);
       expect(mockSearchMatchSearchVectorKeyword).toHaveBeenCalledWith(
         mockEmbedding,
-        'skatt_chunks_2025', // ELASTICSEARCH_INDEX_SKATT constant
-        expect.any(Number),
-        mockRequest.tags
+        'lovdata_semantic_ada3l_251108', // ELASTICSEARCH_INDEX_SKATT constant
+        mockRequest.tags,
+        mockRequest.searchText
       );
       expect(mockQueryChat).toHaveBeenCalledWith(mockRequest, mockSearchResults, mockAuthId);
       expect(mockAddUserChatHistory).toHaveBeenCalledWith(
@@ -123,9 +123,9 @@ describe('queryService', () => {
 
       expect(mockSearchMatchSearchVectorKeyword).toHaveBeenCalledWith(
         mockEmbedding,
-        'skatt_chunks_2025',
-        expect.any(Number),
-        [] // Should default to empty array
+        'lovdata_semantic_ada3l_251108',
+        [], // Should default to empty array
+        requestWithoutTags.searchText
       );
     });
 

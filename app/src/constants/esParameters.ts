@@ -1,4 +1,10 @@
 export const ELASTIC_USERNAME = 'elastic';
-export const ES_SEARCH_NUM_HITS = 45;
-export const ES_KNN_NUMBER = 60;
-export const ELASTICSEARCH_INDEX_SKATT = 'skatt_chunks_2025';
+
+// Elasticsearch Search Parameters for Tax AI
+export const ES_SEARCH_RANKING_HITS = 20; // Final documents returned
+export const ES_KNN_K = 40; // KNN candidates to examine
+export const ES_KNN_NUM_CANDIDATES = 100; // Initial candidate pool
+
+//export const ELASTICSEARCH_INDEX_SKATT = 'lovdata_selected_semantic_251107';
+export const ELASTICSEARCH_INDEX_SKATT = 'lovdata_semantic_ada3l_251108';
+export const ELASTICSEARCH_INDEX_SKATT_CHUNKS = 'skatt_chunks_2025';

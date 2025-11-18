@@ -4,9 +4,9 @@ import {
   DEFAULT_MODEL_ANONYMOUS,
   DEFAULT_MODEL_AUTHENTICATED,
   OPENAI_EMBEDDING_MODEL,
-} from '../constants/opanAiParameters';
+} from '../constants/openAiParameters';
 import { QueryChatRequest } from '../interface/skattSokInterface';
-import { generateConcretePrompt, generateDetailedPromt } from '../lib/promptGenerator';
+import { generatePrompt } from '../lib/promptGenerator';
 
 import { findUserConversationHistory } from './postgresConsumer';
 
@@ -44,6 +44,7 @@ export async function queryChat(
   context: string[],
   authId: string
 ) {
+  const startTime = performance.now();
   try {
     const isAuthenticated =
       authId && authId !== 'default' && authId !== 'anonymous' && authId.trim() !== '';
@@ -53,7 +54,6 @@ export async function queryChat(
       `🤖 Using model: ${selectedModel} (authenticated: ${isAuthenticated}, authId: ${authId})`
     );
 
-    // For GPT-5, we must explicitly set temperature to 1 (its only supported value)
     const openaiConfig = {
       model: selectedModel,
       apiKey: process.env.OPENAI_API_KEY,
@@ -67,9 +67,7 @@ export async function queryChat(
       queryChatRequest.conversation_id
     );
 
-    const query = queryChatRequest.isDetailed
-      ? generateDetailedPromt(queryChatRequest, context, conversationHistory)
-      : generateConcretePrompt(queryChatRequest, context, conversationHistory);
+    const query = generatePrompt(queryChatRequest, context, conversationHistory);
 
     const messages: ChatMessage[] = [{ role: 'user', content: query }];
 
@@ -77,10 +75,18 @@ export async function queryChat(
 
     const response = await openai.chat(chatParams);
 
+    const openaiTime = performance.now() - startTime;
+
+    console.log(`🤖 OpenAI Response:
+    └─ Model: ${selectedModel}
+    └─ Response time: ${openaiTime.toFixed(0)}ms
+    └─ Context documents: ${context.length}
+    └─ Context size: ~${Math.round(context.join('').length / 1000)}k chars`);
+
     return typeof response.message.content === 'string'
       ? response.message.content
       : (response.message.content?.find(item => item.type === 'text') as { text: string })?.text;
   } catch (error) {
-    console.error('Error querying openai, ', error);
+    console.error('❌ OpenAI error:', error);
   }
 }

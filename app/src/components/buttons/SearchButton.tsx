@@ -5,6 +5,7 @@ interface SearchButtonProps {
   disabled: boolean;
   onClick: () => void;
   currentConversationId: number | null;
+  loadingText?: string;
 }
 
 export default function SearchButton({
@@ -12,7 +13,14 @@ export default function SearchButton({
   disabled,
   onClick,
   currentConversationId,
+  loadingText = 'Laster',
 }: SearchButtonProps) {
+  const buttonText = isLoading
+    ? loadingText
+    : !currentConversationId
+      ? 'Nytt spørsmål'
+      : 'Oppfølgingsspørsmål';
+
   return (
     <Tooltip text="Press enter! Assistenten husker samtalen. PS: Jeg jobber :)">
       <button
@@ -21,11 +29,12 @@ export default function SearchButton({
         onClick={onClick}
       >
         {isLoading ? (
-          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-sky-700"></div>
-        ) : !currentConversationId ? (
-          'Nytt spørsmål'
+          <div className="flex items-center gap-2">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            <span>{buttonText}</span>
+          </div>
         ) : (
-          'Oppfølgingsspørsmål'
+          buttonText
         )}
       </button>
     </Tooltip>
