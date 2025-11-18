@@ -1,6 +1,11 @@
 import { getClient } from '../clients/esClient';
 import { unwrapESResponse } from '../clients/esUtil';
-import { ELASTICSEARCH_INDEX_SKATT, ES_KNN_NUMBER } from '../constants/esParameters';
+import {
+  ELASTICSEARCH_INDEX_SKATT,
+  ES_SEARCH_RANKING_HITS,
+  ES_KNN_K,
+  ES_KNN_NUM_CANDIDATES,
+} from '../constants/esParameters';
 
 export async function healthCheck() {
   try {
@@ -39,27 +44,32 @@ export async function searchMatchKeyword(searchText: string) {
   }
 }
 
-export async function searchMatchVector(searchVector: number[], index: string, size: number) {
+export async function searchMatchVector(searchVector: number[], index: string) {
+  const startTime = performance.now();
   try {
     const client = getClient();
     const esResponse = await client.search({
       index: index,
-      size: size,
+      size: ES_SEARCH_RANKING_HITS,
       knn: {
         field: 'embedding',
         query_vector: searchVector,
-        k: ES_KNN_NUMBER,
-        num_candidates: 100,
+        k: ES_KNN_K,
+        num_candidates: ES_KNN_NUM_CANDIDATES,
         boost: 0.1,
       },
     });
     const unwrappedResponse = unwrapESResponse(esResponse);
-    console.log(
-      `ES vector search retrieved ${unwrappedResponse.length} vectors from index: ${index}`
-    );
+    const searchTime = performance.now() - startTime;
+
+    console.log(`🔍 ES Vector Search Results:
+    └─ Index: ${index}
+    └─ Search time: ${searchTime.toFixed(0)}ms
+    └─ Documents retrieved: ${unwrappedResponse.length}/${ES_SEARCH_RANKING_HITS}`);
+
     return unwrappedResponse;
   } catch (error) {
-    console.error('Elasticsearch search error:', error);
+    console.error('❌ ES vector search error:', error);
     throw error;
   }
 }
@@ -67,39 +77,51 @@ export async function searchMatchVector(searchVector: number[], index: string, s
 export async function searchMatchSearchVectorKeyword(
   searchVector: number[],
   index: string,
-  size: number,
-  keywords: string[] = []
+  keywords: string[] = [],
+  userQuery: string = ''
 ) {
+  const startTime = performance.now();
   try {
-    console.log('🔍 ES HYBRID SEARCH - Keywords received:', keywords);
     const client = getClient();
-    const keywordBoosts = keywords.map(kw => ({
-      match: { content: { query: kw, boost: 0.3 } },
-    }));
-    console.log('🔍 ES HYBRID SEARCH - Keyword boosts:', keywordBoosts);
 
     const esResponse = await client.search({
       index: index,
-      size: size,
+      size: ES_SEARCH_RANKING_HITS,
       knn: {
         field: 'embedding',
         query_vector: searchVector,
-        k: ES_KNN_NUMBER,
-        num_candidates: 100,
+        k: ES_KNN_K,
+        num_candidates: ES_KNN_NUM_CANDIDATES,
         boost: 1.0,
       },
-      ...(keywords?.length > 0 && {
-        query: {
-          bool: {
-            should: keywordBoosts,
-          },
+      query: {
+        bool: {
+          should: [
+            { match: { content: { query: userQuery, boost: 0.3 } } },
+            ...(keywords.length > 0
+              ? keywords.map(kw => ({
+                  match: { content: { query: kw, boost: 0.3 } },
+                }))
+              : []),
+          ],
+          minimum_should_match: 0,
         },
-      }),
+      },
     });
+
     const unwrappedResponse = unwrapESResponse(esResponse);
+    const searchTime = performance.now() - startTime;
+
+    console.log(`🔍 ES Hybrid Search Results:
+    └─ Index: ${index}
+    └─ Search time: ${searchTime.toFixed(0)}ms
+    └─ Query: "${userQuery}"
+    └─ Keywords: ${keywords.length > 0 ? keywords.join(', ') : 'none'}
+    └─ Documents retrieved: ${unwrappedResponse.length}/${ES_SEARCH_RANKING_HITS}`);
+
     return unwrappedResponse;
   } catch (error) {
-    console.error('Elasticsearch hybrid search error:', error);
+    console.error('❌ ES hybrid search error:', error);
     throw error;
   }
 }

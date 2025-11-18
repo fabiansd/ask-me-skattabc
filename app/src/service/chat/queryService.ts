@@ -1,4 +1,4 @@
-import { ELASTICSEARCH_INDEX_SKATT, ES_SEARCH_NUM_HITS } from '@/app/src/constants/esParameters';
+import { ELASTICSEARCH_INDEX_SKATT } from '@/app/src/constants/esParameters';
 import { searchMatchSearchVectorKeyword } from '@/app/src/consumers/esSearchConsumer';
 import { embedText, moderateContent, queryChat } from '@/app/src/consumers/openAiConsumer';
 
@@ -29,8 +29,8 @@ async function generateResponse(
   const esChunkSearch = await searchMatchSearchVectorKeyword(
     searchVector,
     ELASTICSEARCH_INDEX_SKATT,
-    ES_SEARCH_NUM_HITS,
-    queryChatRequest.tags || []
+    queryChatRequest.tags || [],
+    queryChatRequest.searchText
   );
 
   return await queryChat(queryChatRequest, esChunkSearch, authId);

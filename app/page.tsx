@@ -25,6 +25,7 @@ function SearchContent({
 }) {
   const [isDetailed, setIsDetailed] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState('Henter lover');
   const [searchInput, setSearchInput] = useState('');
   const [keywords, setKeywords] = useState<string[]>([]);
   const [conversationMessages, setConversationMessages] = useState<ConversationMessage[]>([]);
@@ -120,6 +121,12 @@ function SearchContent({
 
   const handleButtonClick = async () => {
     setIsLoading(true);
+    setLoadingText('Henter lover');
+
+    setTimeout(() => {
+      setLoadingText('Formulerer svar');
+    }, 3500);
+
     try {
       console.log('📤', isDetailed ? 'DETALJERT' : 'KONKRET', 'mode');
       const queryChatRequest: QueryChatRequest = {
@@ -140,11 +147,9 @@ function SearchContent({
       const data = await response.json();
       console.log('🟢 [API] Query response received:', data);
 
-      // Clear the search input after successful submission
       setSearchInput('');
       sessionStorage.removeItem('searchInput');
 
-      // If this was a new conversation, save the returned conversation_id and refresh list
       if (!currentConversationId && data.conversation_id) {
         setCurrentConversationId(data.conversation_id);
       }
@@ -191,6 +196,7 @@ function SearchContent({
                   disabled={isLoading || searchInput === ''}
                   onClick={handleButtonClick}
                   currentConversationId={currentConversationId}
+                  loadingText={loadingText}
                 />
               </div>
 
@@ -204,6 +210,7 @@ function SearchContent({
                     disabled={isLoading || searchInput === ''}
                     onClick={handleButtonClick}
                     currentConversationId={currentConversationId}
+                    loadingText={loadingText}
                   />
                 </div>
               </div>

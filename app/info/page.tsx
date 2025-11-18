@@ -55,6 +55,34 @@ export default function Info() {
   return (
     <div className="pt-10 px-4 flex justify-center">
       <div className="w-full max-w-2xl space-y-8 pb-8">
+        {/* How to Use */}
+        <div>
+          <h2 className="text-xl font-bold text-base-content mb-4">Bruksmanual</h2>
+
+          <p className="text-base-content/80 leading-relaxed mb-4">
+            <strong>Hvordan søke</strong>
+            <br />
+            Skriv ditt skattespørsmål på vanlig norsk, f.eks. &quot;Kan jeg trekke fra
+            hjemmekontor?&quot; For bedre treff kan du legge til spesifikke nøkkelord som &quot;§
+            6-15&quot;, &quot;fradrag&quot;, eller &quot;MVA&quot; i nøkkelord-feltet.
+          </p>
+
+          <p className="text-base-content/80 leading-relaxed mb-4">
+            <strong>Smart matching</strong>
+            <br />
+            Assistenten bruker dobbelt søk - den leter etter lover som forstår spørsmålet ditt
+            semantisk, samtidig som den matcher eksakte nøkkelord som §-referanser. De beste
+            treffene fra begge metodene kombineres for optimal relevans.
+          </p>
+
+          <p className="text-base-content/80 leading-relaxed mb-4">
+            <strong>Svartyper</strong>
+            <br />
+            Velg <em>konkret</em> for korte, fokuserte svar som åpner for oppfølgingsspørsmål. Velg{' '}
+            <em>detaljert</em> for grundige steg-for-steg forklaringer (tar lengre tid å generere).
+          </p>
+        </div>
+
         {/* About the AI Assistant */}
         <div>
           <p className="text-base-content/80 leading-relaxed mb-4">
@@ -76,10 +104,6 @@ export default function Info() {
               <strong>Internasjonalt:</strong> Dobbeltbeskatningsavtaler og utenlandsk inntekt
             </li>
           </ul>
-          <p className="text-base-content/80 leading-relaxed mb-4">
-            Søket vil lete etter relevant informasjon mht. spørsmålet ditt og forsøke å svare. Om du
-            oppgir nøkkelord vil søket også forsøke å finne direkte treff på disse nøkkelordene.
-          </p>
           <p className="text-base-content/60 text-sm">
             <em>
               Merk: Dette er en eksperimentell tjeneste som ikke erstatter profesjonell rådgivning.
