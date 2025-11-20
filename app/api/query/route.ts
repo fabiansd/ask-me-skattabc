@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { QueryChatRequest } from '@/app/src/interface/skattSokInterface';
 import { withRateLimit } from '@/app/src/middleware/rateLimitMiddleware';
-import query from '@/app/src/service/chat/queryService';
+import { queryStream } from '@/app/src/service/chat/queryService';
 
 async function handleQuery(request: NextRequest) {
   try {
@@ -14,8 +14,27 @@ async function handleQuery(request: NextRequest) {
     }
 
     const queryChatRequest: QueryChatRequest = await request.json();
-    const data = await query(queryChatRequest, authId);
-    return NextResponse.json(data, { status: 200 });
+
+    // Create a ReadableStream from the async generator
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of queryStream(queryChatRequest, authId)) {
+            controller.enqueue(new TextEncoder().encode(chunk));
+          }
+          controller.close();
+        } catch (error) {
+          controller.error(error);
+        }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Transfer-Encoding': 'chunked',
+      },
+    });
   } catch (error) {
     return NextResponse.json({ error: 'Error generating answer' }, { status: 500 });
   }

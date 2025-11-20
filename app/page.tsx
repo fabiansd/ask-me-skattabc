@@ -1,6 +1,6 @@
 'use client';
 import { useSession } from 'next-auth/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import CollapseToggle from './src/components/buttons/CollapseToggle';
 import SearchButton from './src/components/buttons/SearchButton';
@@ -10,7 +10,7 @@ import KeywordTags from './src/components/chat/KeywordTags';
 import SearchInput from './src/components/chat/SearchInput';
 import ChatLayout from './src/components/layout/ChatLayout';
 import WelcomeModal from './src/components/modals/WelcomeModal';
-import ChatDisplay from './src/components/textManagement/markdownTextDisplay';
+import ChatDisplay, { ChatDisplayRef } from './src/components/textManagement/markdownTextDisplay';
 import { ConversationProvider, useConversation } from './src/contexts/ConversationContext';
 import { ConversationMessage } from './src/interface/history';
 import { QueryChatRequest } from './src/interface/skattSokInterface';
@@ -30,6 +30,7 @@ function SearchContent({
   const [keywords, setKeywords] = useState<string[]>([]);
   const [conversationMessages, setConversationMessages] = useState<ConversationMessage[]>([]);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const chatDisplayRef = useRef<ChatDisplayRef>(null);
 
   const { data: session } = useSession();
   const { currentConversationId, setCurrentConversationId, refreshConversations } =
@@ -136,24 +137,88 @@ function SearchContent({
         conversation_id: currentConversationId || undefined,
       };
 
+      // Add user message to display immediately
+      const userMessage: ConversationMessage = {
+        message_id: Date.now(), // Temporary ID
+        conversation_id: currentConversationId || 0,
+        role: 'user',
+        content: searchInput,
+        created_at: new Date(),
+      };
+
+      setConversationMessages(prev => [...prev, userMessage]);
+
+      // Scroll to the user's question after it's added
+      setTimeout(() => {
+        chatDisplayRef.current?.scrollToLastUserMessage();
+      }, 100);
+
       const response = await fetch(`/api/query?auth_id=${getUserId(session)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(queryChatRequest),
       });
+
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-      const data = await response.json();
-      console.log('🟢 [API] Query response received:', data);
+
+      // Create placeholder assistant message for streaming
+      const assistantMessage: ConversationMessage = {
+        message_id: Date.now() + 1, // Temporary ID
+        conversation_id: currentConversationId || 0,
+        role: 'assistant',
+        content: '',
+        created_at: new Date(),
+      };
+
+      setConversationMessages(prev => [...prev, assistantMessage]);
+
+      // Read stream
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let streamedContent = '';
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+
+          // Check if this is the final JSON message with conversation_id
+          try {
+            const parsed = JSON.parse(chunk);
+            if (parsed.conversation_id) {
+              if (!currentConversationId) {
+                setCurrentConversationId(parsed.conversation_id);
+              }
+              continue;
+            }
+          } catch {
+            // Not JSON, it's a text chunk
+            streamedContent += chunk;
+
+            // Update the assistant message with streamed content
+            setConversationMessages(prev => {
+              const updated = [...prev];
+              const lastIndex = updated.length - 1;
+              if (updated[lastIndex]?.role === 'assistant') {
+                updated[lastIndex] = {
+                  ...updated[lastIndex],
+                  content: streamedContent,
+                };
+              }
+              return updated;
+            });
+          }
+        }
+      }
 
       setSearchInput('');
       sessionStorage.removeItem('searchInput');
 
-      if (!currentConversationId && data.conversation_id) {
-        setCurrentConversationId(data.conversation_id);
-      }
-
+      // Refresh from database to get final state
       refreshConversations();
       fetchConversationMessages();
     } catch (error) {
@@ -175,7 +240,7 @@ function SearchContent({
 
       {/* Input area - collapsible */}
       <div
-        className={`transition-all duration-300 ease-in-out overflow-hidden ${isInputAreaCollapsed ? 'max-h-0' : 'max-h-96'}`}
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${isInputAreaCollapsed ? 'max-h-0' : 'max-h-100'}`}
       >
         <div className="pt-8 px-4">
           <div className="mx-auto max-w-5xl">
@@ -231,15 +296,14 @@ function SearchContent({
       {/* Divider with collapse toggle */}
       <CollapseToggle isCollapsed={isInputAreaCollapsed} onToggle={setIsInputAreaCollapsed} />
       {/* Chat display area */}
-      <div className={`px-4 ${isInputAreaCollapsed ? 'pt-4 pb-4' : ''}`}>
-        <div className="mx-auto max-w-5xl">
-          <div className="flex justify-center">
-            <div className="w-full max-w-3xl">
-              <ChatDisplay
-                conversationMessages={conversationMessages}
-                isCollapsed={isInputAreaCollapsed}
-              />
-            </div>
+      <div className="mx-auto max-w-5xl">
+        <div className="flex justify-center">
+          <div className="w-full max-w-3xl">
+            <ChatDisplay
+              ref={chatDisplayRef}
+              conversationMessages={conversationMessages}
+              isCollapsed={isInputAreaCollapsed}
+            />
           </div>
         </div>
       </div>
