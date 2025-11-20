@@ -1,5 +1,5 @@
 import { ELASTICSEARCH_INDEX_SKATT } from '@/app/src/constants/esParameters';
-import { searchMatchSearchVectorKeyword } from '@/app/src/consumers/esSearchConsumer';
+import { searchVectorAndRRFKeyword } from '@/app/src/consumers/esSearchConsumer';
 import { embedText, moderateContent, queryChat } from '@/app/src/consumers/openAiConsumer';
 
 import { getMockQueryResponse } from '../../../../tests/mockData';
@@ -25,8 +25,16 @@ async function generateResponse(
   }
 
   const searchVector: number[] = await embedText(queryChatRequest.searchText);
-
+  /*
   const esChunkSearch = await searchMatchSearchVectorKeyword(
+    searchVector,
+    ELASTICSEARCH_INDEX_SKATT,
+    queryChatRequest.tags || [],
+    queryChatRequest.searchText
+  );
+*/
+
+  const esChunkSearch = await searchVectorAndRRFKeyword(
     searchVector,
     ELASTICSEARCH_INDEX_SKATT,
     queryChatRequest.tags || [],

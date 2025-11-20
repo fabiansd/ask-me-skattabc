@@ -1,4 +1,4 @@
-import { searchMatchSearchVectorKeyword } from '@/app/src/consumers/esSearchConsumer';
+import { searchVectorAndRRFKeyword } from '@/app/src/consumers/esSearchConsumer';
 import { embedText, queryChat } from '@/app/src/consumers/openAiConsumer';
 import { addUserChatHistory } from '@/app/src/consumers/postgresConsumer';
 import { QueryChatRequest } from '@/app/src/interface/skattSokInterface';
@@ -12,8 +12,8 @@ jest.mock('../../mockData');
 
 import { getMockQueryResponse } from '../../mockData';
 
-const mockSearchMatchSearchVectorKeyword = searchMatchSearchVectorKeyword as jest.MockedFunction<
-  typeof searchMatchSearchVectorKeyword
+const mockSearchVectorAndRRFKeyword = searchVectorAndRRFKeyword as jest.MockedFunction<
+  typeof searchVectorAndRRFKeyword
 >;
 const mockEmbedText = embedText as jest.MockedFunction<typeof embedText>;
 const mockQueryChat = queryChat as jest.MockedFunction<typeof queryChat>;
@@ -71,7 +71,7 @@ describe('queryService', () => {
       await query(mockRequest, mockAuthId);
 
       expect(mockEmbedText).not.toHaveBeenCalled();
-      expect(mockSearchMatchSearchVectorKeyword).not.toHaveBeenCalled();
+      expect(mockSearchVectorAndRRFKeyword).not.toHaveBeenCalled();
       expect(mockQueryChat).not.toHaveBeenCalled();
     });
   });
@@ -83,14 +83,14 @@ describe('queryService', () => {
       const mockOpenAiResponse = 'OpenAI response about MVA';
 
       mockEmbedText.mockResolvedValue(mockEmbedding);
-      mockSearchMatchSearchVectorKeyword.mockResolvedValue(mockSearchResults);
+      mockSearchVectorAndRRFKeyword.mockResolvedValue(mockSearchResults);
       mockQueryChat.mockResolvedValue(mockOpenAiResponse);
       mockAddUserChatHistory.mockResolvedValue(1);
 
       const result = await query(mockRequest, mockAuthId);
 
       expect(mockEmbedText).toHaveBeenCalledWith(mockRequest.searchText);
-      expect(mockSearchMatchSearchVectorKeyword).toHaveBeenCalledWith(
+      expect(mockSearchVectorAndRRFKeyword).toHaveBeenCalledWith(
         mockEmbedding,
         'lovdata_semantic_ada3l_251108', // ELASTICSEARCH_INDEX_SKATT constant
         mockRequest.tags,
@@ -116,12 +116,12 @@ describe('queryService', () => {
       const mockOpenAiResponse = 'Response';
 
       mockEmbedText.mockResolvedValue(mockEmbedding);
-      mockSearchMatchSearchVectorKeyword.mockResolvedValue(mockSearchResults);
+      mockSearchVectorAndRRFKeyword.mockResolvedValue(mockSearchResults);
       mockQueryChat.mockResolvedValue(mockOpenAiResponse);
 
       await query(requestWithoutTags, mockAuthId);
 
-      expect(mockSearchMatchSearchVectorKeyword).toHaveBeenCalledWith(
+      expect(mockSearchVectorAndRRFKeyword).toHaveBeenCalledWith(
         mockEmbedding,
         'lovdata_semantic_ada3l_251108',
         [], // Should default to empty array
@@ -134,7 +134,7 @@ describe('queryService', () => {
       const mockSearchResults = ['Result'];
 
       mockEmbedText.mockResolvedValue(mockEmbedding);
-      mockSearchMatchSearchVectorKeyword.mockResolvedValue(mockSearchResults);
+      mockSearchVectorAndRRFKeyword.mockResolvedValue(mockSearchResults);
       mockQueryChat.mockResolvedValue(''); // Falsy response
 
       await query(mockRequest, mockAuthId);
@@ -148,7 +148,7 @@ describe('queryService', () => {
       const mockOpenAiResponse = 'Valid response';
 
       mockEmbedText.mockResolvedValue(mockEmbedding);
-      mockSearchMatchSearchVectorKeyword.mockResolvedValue(mockSearchResults);
+      mockSearchVectorAndRRFKeyword.mockResolvedValue(mockSearchResults);
       mockQueryChat.mockResolvedValue(mockOpenAiResponse);
 
       await query(mockRequest, mockAuthId);
@@ -174,7 +174,7 @@ describe('queryService', () => {
       const error = new Error('Search failed');
 
       mockEmbedText.mockResolvedValue(mockEmbedding);
-      mockSearchMatchSearchVectorKeyword.mockRejectedValue(error);
+      mockSearchVectorAndRRFKeyword.mockRejectedValue(error);
 
       await expect(query(mockRequest, mockAuthId)).rejects.toThrow('Search failed');
     });
@@ -185,7 +185,7 @@ describe('queryService', () => {
       const error = new Error('OpenAI failed');
 
       mockEmbedText.mockResolvedValue(mockEmbedding);
-      mockSearchMatchSearchVectorKeyword.mockResolvedValue(mockSearchResults);
+      mockSearchVectorAndRRFKeyword.mockResolvedValue(mockSearchResults);
       mockQueryChat.mockRejectedValue(error);
 
       await expect(query(mockRequest, mockAuthId)).rejects.toThrow('OpenAI failed');
