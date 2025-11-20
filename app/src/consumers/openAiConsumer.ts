@@ -97,3 +97,60 @@ export async function queryChat(
     console.error('❌ OpenAI error:', error);
   }
 }
+
+export async function* queryChatStream(
+  queryChatRequest: QueryChatRequest,
+  context: string[],
+  authId: string
+): AsyncGenerator<string> {
+  const startTime = performance.now();
+  try {
+    const isAuthenticated =
+      authId && authId !== 'default' && authId !== 'anonymous' && authId.trim() !== '';
+    const selectedModel = isAuthenticated ? DEFAULT_MODEL_AUTHENTICATED : DEFAULT_MODEL_ANONYMOUS;
+
+    console.log(
+      `🤖 Using model: ${selectedModel} (authenticated: ${isAuthenticated}, authId: ${authId}) [STREAMING]`
+    );
+
+    const conversationHistory = await findUserConversationHistory(
+      authId,
+      queryChatRequest.conversation_id
+    );
+
+    const query = generatePrompt(queryChatRequest, context, conversationHistory);
+
+    const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [{ role: 'user', content: query }];
+
+    const chatParams: OpenAI.Chat.ChatCompletionCreateParams & {
+      reasoning_effort?: 'low' | 'medium' | 'high';
+    } = {
+      model: selectedModel,
+      messages: messages,
+      temperature: DEFAULT_TEMPERATURE,
+      reasoning_effort: 'low',
+      stream: true, // Enable streaming
+    };
+
+    const client = getOpenAIClient();
+    const stream = await client.chat.completions.create(chatParams);
+
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content || '';
+      if (content) {
+        yield content;
+      }
+    }
+
+    const openaiTime = performance.now() - startTime;
+
+    console.log(`🤖 OpenAI Stream Complete:
+    └─ Model: ${selectedModel}
+    └─ Response time: ${openaiTime.toFixed(0)}ms
+    └─ Context documents: ${context.length}
+    └─ Context size: ~${Math.round(context.join('').length / 1000)}k chars`);
+  } catch (error) {
+    console.error('❌ OpenAI streaming error:', error);
+    throw error;
+  }
+}

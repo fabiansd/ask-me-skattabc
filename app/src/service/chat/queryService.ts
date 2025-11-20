@@ -1,6 +1,6 @@
 import { ELASTICSEARCH_INDEX_SKATT } from '@/app/src/constants/esParameters';
 import { searchVectorAndRRFKeyword } from '@/app/src/consumers/esSearchConsumer';
-import { embedText, moderateContent, queryChat } from '@/app/src/consumers/openAiConsumer';
+import { embedText, moderateContent, queryChatStream } from '@/app/src/consumers/openAiConsumer';
 
 import { getMockQueryResponse } from '../../../../tests/mockData';
 import { addUserChatHistory } from '../../consumers/postgresConsumer';
@@ -15,24 +15,26 @@ async function validateQueryRequest(queryChatRequest: QueryChatRequest): Promise
   }
 }
 
-async function generateResponse(
+export async function* queryStream(
   queryChatRequest: QueryChatRequest,
   authId: string
-): Promise<string | undefined> {
+): AsyncGenerator<string> {
+  await validateQueryRequest(queryChatRequest);
+
   if (process.env.USE_MOCK_DATA === 'true') {
     const mockResponse = getMockQueryResponse();
-    return mockResponse.openaiResponse;
+    yield mockResponse.openaiResponse;
+
+    const conversation_id = await addUserChatHistory(
+      queryChatRequest,
+      mockResponse.openaiResponse,
+      authId
+    );
+    yield JSON.stringify({ conversation_id });
+    return;
   }
 
   const searchVector: number[] = await embedText(queryChatRequest.searchText);
-  /*
-  const esChunkSearch = await searchMatchSearchVectorKeyword(
-    searchVector,
-    ELASTICSEARCH_INDEX_SKATT,
-    queryChatRequest.tags || [],
-    queryChatRequest.searchText
-  );
-*/
 
   const esChunkSearch = await searchVectorAndRRFKeyword(
     searchVector,
@@ -41,20 +43,17 @@ async function generateResponse(
     queryChatRequest.searchText
   );
 
-  return await queryChat(queryChatRequest, esChunkSearch, authId);
-}
-
-async function query(queryChatRequest: QueryChatRequest, authId: string) {
-  await validateQueryRequest(queryChatRequest);
-
-  const openaiResponse = await generateResponse(queryChatRequest, authId);
-
-  let conversation_id;
-  if (openaiResponse) {
-    conversation_id = await addUserChatHistory(queryChatRequest, openaiResponse, authId);
+  // Collect streamed response
+  let fullResponse = '';
+  for await (const chunk of queryChatStream(queryChatRequest, esChunkSearch, authId)) {
+    fullResponse += chunk;
+    yield chunk;
   }
 
-  return { openaiResponse, conversation_id };
+  // After stream completes, save to database
+  if (fullResponse) {
+    const conversation_id = await addUserChatHistory(queryChatRequest, fullResponse, authId);
+    // Send final message with conversation_id
+    yield JSON.stringify({ conversation_id });
+  }
 }
-
-export default query;
