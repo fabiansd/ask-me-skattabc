@@ -11,13 +11,21 @@ import { generatePrompt } from '../lib/promptGenerator';
 
 import { findUserConversationHistory } from './postgresConsumer';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let openai: OpenAI | null = null;
+
+function getOpenAIClient(): OpenAI {
+  if (!openai) {
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+  return openai;
+}
 
 export async function moderateContent(text: string): Promise<boolean> {
   try {
-    const moderation = await openai.moderations.create({
+    const client = getOpenAIClient();
+    const moderation = await client.moderations.create({
       input: text,
     });
 
@@ -29,7 +37,8 @@ export async function moderateContent(text: string): Promise<boolean> {
 
 export async function embedText(text: string) {
   try {
-    const response = await openai.embeddings.create({
+    const client = getOpenAIClient();
+    const response = await client.embeddings.create({
       model: OPENAI_EMBEDDING_MODEL,
       input: text,
     });
@@ -72,7 +81,8 @@ export async function queryChat(
       reasoning_effort: 'low', // Set low for GPT-5 models
     };
 
-    const response = await openai.chat.completions.create(chatParams);
+    const client = getOpenAIClient();
+    const response = await client.chat.completions.create(chatParams);
 
     const openaiTime = performance.now() - startTime;
 

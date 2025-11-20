@@ -169,7 +169,7 @@ export async function searchVectorAndRRFKeyword(
     ];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const esResponse = await client.search({
+    const esResponse = await (client.search as any)({
       index: index,
       body: {
         retriever: {
