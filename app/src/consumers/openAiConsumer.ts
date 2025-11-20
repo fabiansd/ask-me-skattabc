@@ -1,8 +1,9 @@
-import { ChatMessage, OpenAI, OpenAIEmbedding, Settings } from 'llamaindex';
+import OpenAI from 'openai';
 
 import {
   DEFAULT_MODEL_ANONYMOUS,
   DEFAULT_MODEL_AUTHENTICATED,
+  DEFAULT_TEMPERATURE,
   OPENAI_EMBEDDING_MODEL,
 } from '../constants/openAiParameters';
 import { QueryChatRequest } from '../interface/skattSokInterface';
@@ -10,14 +11,13 @@ import { generatePrompt } from '../lib/promptGenerator';
 
 import { findUserConversationHistory } from './postgresConsumer';
 
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 export async function moderateContent(text: string): Promise<boolean> {
   try {
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const moderation = await (openai as any).moderations.create({
+    const moderation = await openai.moderations.create({
       input: text,
     });
 
@@ -29,11 +29,11 @@ export async function moderateContent(text: string): Promise<boolean> {
 
 export async function embedText(text: string) {
   try {
-    Settings.embedModel = new OpenAIEmbedding({
+    const response = await openai.embeddings.create({
       model: OPENAI_EMBEDDING_MODEL,
-      apiKey: process.env.OPENAI_API_KEY,
+      input: text,
     });
-    return await Settings.embedModel.getTextEmbedding(text);
+    return response.data[0].embedding;
   } catch (error) {
     throw error;
   }
@@ -54,14 +54,6 @@ export async function queryChat(
       `🤖 Using model: ${selectedModel} (authenticated: ${isAuthenticated}, authId: ${authId})`
     );
 
-    const openaiConfig = {
-      model: selectedModel,
-      apiKey: process.env.OPENAI_API_KEY,
-      temperature: 1,
-    };
-
-    const openai = new OpenAI(openaiConfig);
-
     const conversationHistory = await findUserConversationHistory(
       authId,
       queryChatRequest.conversation_id
@@ -69,11 +61,18 @@ export async function queryChat(
 
     const query = generatePrompt(queryChatRequest, context, conversationHistory);
 
-    const messages: ChatMessage[] = [{ role: 'user', content: query }];
+    const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [{ role: 'user', content: query }];
 
-    const chatParams = { messages: messages };
+    const chatParams: OpenAI.Chat.ChatCompletionCreateParams & {
+      reasoning_effort?: 'low' | 'medium' | 'high';
+    } = {
+      model: selectedModel,
+      messages: messages,
+      temperature: DEFAULT_TEMPERATURE,
+      reasoning_effort: 'low', // Set low for GPT-5 models
+    };
 
-    const response = await openai.chat(chatParams);
+    const response = await openai.chat.completions.create(chatParams);
 
     const openaiTime = performance.now() - startTime;
 
@@ -83,9 +82,7 @@ export async function queryChat(
     └─ Context documents: ${context.length}
     └─ Context size: ~${Math.round(context.join('').length / 1000)}k chars`);
 
-    return typeof response.message.content === 'string'
-      ? response.message.content
-      : (response.message.content?.find(item => item.type === 'text') as { text: string })?.text;
+    return response.choices[0].message.content || undefined;
   } catch (error) {
     console.error('❌ OpenAI error:', error);
   }

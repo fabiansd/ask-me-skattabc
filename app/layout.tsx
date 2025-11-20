@@ -12,14 +12,8 @@ export const metadata: Metadata = {
   title: 'Optimalskatt',
   description: 'AI skatteagent som kan norske skattelover',
   icons: {
-    icon: [
-      {
-        url: '/favicon.png',
-        type: 'image/png',
-        sizes: '32x32',
-      },
-    ],
-    shortcut: '/favicon.png',
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
     apple: '/favicon.png',
   },
 };
