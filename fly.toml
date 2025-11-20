@@ -11,7 +11,7 @@ kill_timeout = '4m'
 [build]
 
 [deploy]
-  release_command = "npx prisma migrate deploy"
+  release_command = "npx prisma@5.15.0 migrate deploy"
 
 [http_service]
   internal_port = 3000
