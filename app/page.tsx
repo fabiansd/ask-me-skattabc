@@ -14,6 +14,7 @@ import ChatDisplay, { ChatDisplayRef } from './src/components/textManagement/mar
 import { ConversationProvider, useConversation } from './src/contexts/ConversationContext';
 import { ConversationMessage } from './src/interface/history';
 import { QueryChatRequest } from './src/interface/skattSokInterface';
+import { createAssistantPlaceholder, createUserMessage } from './src/lib/messageHelpers';
 import { getUserId } from './src/service/users/getUserId';
 
 function SearchContent({
@@ -138,13 +139,7 @@ function SearchContent({
       };
 
       // Add user message to display immediately
-      const userMessage: ConversationMessage = {
-        message_id: Date.now(), // Temporary ID
-        conversation_id: currentConversationId || 0,
-        role: 'user',
-        content: searchInput,
-        created_at: new Date(),
-      };
+      const userMessage = createUserMessage(searchInput, currentConversationId || undefined);
 
       setConversationMessages(prev => [...prev, userMessage]);
 
@@ -164,13 +159,7 @@ function SearchContent({
       }
 
       // Create placeholder assistant message for streaming
-      const assistantMessage: ConversationMessage = {
-        message_id: Date.now() + 1, // Temporary ID
-        conversation_id: currentConversationId || 0,
-        role: 'assistant',
-        content: '',
-        created_at: new Date(),
-      };
+      const assistantMessage = createAssistantPlaceholder(currentConversationId || undefined);
 
       setConversationMessages(prev => [...prev, assistantMessage]);
 

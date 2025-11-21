@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`KeywordTags matches snapshot with empty keywords 1`] = `null`;
+
+exports[`KeywordTags matches snapshot with keywords 1`] = `
+<div
+  className="flex flex-wrap gap-1 mt-2"
+>
+  <button
+    className="badge bg-sky-600 gap-2 hover:bg-sky-500 hover:cursor-pointer transition-colors duration-200"
+    onClick={[Function]}
+    type="button"
+  >
+    <span
+      className="font-bold"
+      style={
+        {
+          "color": "rgb(31 41 55)",
+        }
+      }
+    >
+      mva
+    </span>
+    <span
+      className="text-xs"
+      style={
+        {
+          "color": "rgb(31 41 55)",
+        }
+      }
+    >
+      ✕
+    </span>
+  </button>
+  <button
+    className="badge bg-sky-600 gap-2 hover:bg-sky-500 hover:cursor-pointer transition-colors duration-200"
+    onClick={[Function]}
+    type="button"
+  >
+    <span
+      className="font-bold"
+      style={
+        {
+          "color": "rgb(31 41 55)",
+        }
+      }
+    >
+      skatt
+    </span>
+    <span
+      className="text-xs"
+      style={
+        {
+          "color": "rgb(31 41 55)",
+        }
+      }
+    >
+      ✕
+    </span>
+  </button>
+  <button
+    className="badge bg-sky-600 gap-2 hover:bg-sky-500 hover:cursor-pointer transition-colors duration-200"
+    onClick={[Function]}
+    type="button"
+  >
+    <span
+      className="font-bold"
+      style={
+        {
+          "color": "rgb(31 41 55)",
+        }
+      }
+    >
+      fradrag
+    </span>
+    <span
+      className="text-xs"
+      style={
+        {
+          "color": "rgb(31 41 55)",
+        }
+      }
+    >
+      ✕
+    </span>
+  </button>
+</div>
+`;

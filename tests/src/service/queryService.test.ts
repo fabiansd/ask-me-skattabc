@@ -1,8 +1,11 @@
+/**
+ * @jest-environment node
+ */
 import { searchVectorAndRRFKeyword } from '@/app/src/consumers/esSearchConsumer';
-import { embedText, queryChat } from '@/app/src/consumers/openAiConsumer';
+import { embedText, queryChatStream } from '@/app/src/consumers/openAiConsumer';
 import { addUserChatHistory } from '@/app/src/consumers/postgresConsumer';
 import { QueryChatRequest } from '@/app/src/interface/skattSokInterface';
-import query from '@/app/src/service/chat/queryService';
+import { queryStream } from '@/app/src/service/chat/queryService';
 
 // Mock all external dependencies
 jest.mock('@/app/src/consumers/esSearchConsumer');
@@ -16,11 +19,20 @@ const mockSearchVectorAndRRFKeyword = searchVectorAndRRFKeyword as jest.MockedFu
   typeof searchVectorAndRRFKeyword
 >;
 const mockEmbedText = embedText as jest.MockedFunction<typeof embedText>;
-const mockQueryChat = queryChat as jest.MockedFunction<typeof queryChat>;
+const mockQueryChatStream = queryChatStream as jest.MockedFunction<typeof queryChatStream>;
 const mockAddUserChatHistory = addUserChatHistory as jest.MockedFunction<typeof addUserChatHistory>;
 const mockGetMockQueryResponse = getMockQueryResponse as jest.MockedFunction<
   typeof getMockQueryResponse
 >;
+
+// Helper function to collect all chunks from AsyncGenerator
+async function collectStreamChunks(generator: AsyncGenerator<string>): Promise<string[]> {
+  const chunks: string[] = [];
+  for await (const chunk of generator) {
+    chunks.push(chunk);
+  }
+  return chunks;
+}
 
 describe('queryService', () => {
   const mockRequest: QueryChatRequest = {
@@ -50,7 +62,7 @@ describe('queryService', () => {
       mockGetMockQueryResponse.mockReturnValue(mockResponse);
       mockAddUserChatHistory.mockResolvedValue(1);
 
-      const result = await query(mockRequest, mockAuthId);
+      const chunks = await collectStreamChunks(queryStream(mockRequest, mockAuthId));
 
       expect(mockGetMockQueryResponse).toHaveBeenCalledTimes(1);
       expect(mockAddUserChatHistory).toHaveBeenCalledWith(
@@ -58,7 +70,8 @@ describe('queryService', () => {
         mockResponse.openaiResponse,
         mockAuthId
       );
-      expect(result).toEqual(mockResponse);
+      expect(chunks).toContain(mockResponse.openaiResponse);
+      expect(chunks).toContain(JSON.stringify({ conversation_id: 1 }));
     });
 
     it('should not call external services when using mock data', async () => {
@@ -67,12 +80,13 @@ describe('queryService', () => {
         conversation_id: 1,
       };
       mockGetMockQueryResponse.mockReturnValue(mockResponse);
+      mockAddUserChatHistory.mockResolvedValue(1);
 
-      await query(mockRequest, mockAuthId);
+      await collectStreamChunks(queryStream(mockRequest, mockAuthId));
 
       expect(mockEmbedText).not.toHaveBeenCalled();
       expect(mockSearchVectorAndRRFKeyword).not.toHaveBeenCalled();
-      expect(mockQueryChat).not.toHaveBeenCalled();
+      expect(mockQueryChatStream).not.toHaveBeenCalled();
     });
   });
 
@@ -80,14 +94,18 @@ describe('queryService', () => {
     it('should process query through full pipeline', async () => {
       const mockEmbedding = [0.1, 0.2, 0.3];
       const mockSearchResults = ['ES result 1', 'ES result 2'];
-      const mockOpenAiResponse = 'OpenAI response about MVA';
+      const mockStreamChunks = ['OpenAI ', 'response ', 'about ', 'MVA'];
 
       mockEmbedText.mockResolvedValue(mockEmbedding);
       mockSearchVectorAndRRFKeyword.mockResolvedValue(mockSearchResults);
-      mockQueryChat.mockResolvedValue(mockOpenAiResponse);
+      mockQueryChatStream.mockImplementation(async function* () {
+        for (const chunk of mockStreamChunks) {
+          yield chunk;
+        }
+      });
       mockAddUserChatHistory.mockResolvedValue(1);
 
-      const result = await query(mockRequest, mockAuthId);
+      const chunks = await collectStreamChunks(queryStream(mockRequest, mockAuthId));
 
       expect(mockEmbedText).toHaveBeenCalledWith(mockRequest.searchText);
       expect(mockSearchVectorAndRRFKeyword).toHaveBeenCalledWith(
@@ -96,30 +114,27 @@ describe('queryService', () => {
         mockRequest.tags,
         mockRequest.searchText
       );
-      expect(mockQueryChat).toHaveBeenCalledWith(mockRequest, mockSearchResults, mockAuthId);
-      expect(mockAddUserChatHistory).toHaveBeenCalledWith(
-        mockRequest,
-        mockOpenAiResponse,
-        mockAuthId
-      );
+      expect(mockQueryChatStream).toHaveBeenCalledWith(mockRequest, mockSearchResults, mockAuthId);
 
-      expect(result).toEqual({
-        openaiResponse: mockOpenAiResponse,
-        conversation_id: 1,
-      });
+      const fullResponse = mockStreamChunks.join('');
+      expect(mockAddUserChatHistory).toHaveBeenCalledWith(mockRequest, fullResponse, mockAuthId);
+
+      expect(chunks).toEqual([...mockStreamChunks, JSON.stringify({ conversation_id: 1 })]);
     });
 
     it('should handle missing tags gracefully', async () => {
       const requestWithoutTags = { ...mockRequest, tags: undefined };
       const mockEmbedding = [0.1, 0.2];
       const mockSearchResults = ['Result'];
-      const mockOpenAiResponse = 'Response';
 
       mockEmbedText.mockResolvedValue(mockEmbedding);
       mockSearchVectorAndRRFKeyword.mockResolvedValue(mockSearchResults);
-      mockQueryChat.mockResolvedValue(mockOpenAiResponse);
+      mockQueryChatStream.mockImplementation(async function* () {
+        yield 'Response';
+      });
+      mockAddUserChatHistory.mockResolvedValue(1);
 
-      await query(requestWithoutTags, mockAuthId);
+      await collectStreamChunks(queryStream(requestWithoutTags, mockAuthId));
 
       expect(mockSearchVectorAndRRFKeyword).toHaveBeenCalledWith(
         mockEmbedding,
@@ -135,9 +150,11 @@ describe('queryService', () => {
 
       mockEmbedText.mockResolvedValue(mockEmbedding);
       mockSearchVectorAndRRFKeyword.mockResolvedValue(mockSearchResults);
-      mockQueryChat.mockResolvedValue(''); // Falsy response
+      mockQueryChatStream.mockImplementation(async function* () {
+        // Empty stream - no chunks yielded
+      });
 
-      await query(mockRequest, mockAuthId);
+      await collectStreamChunks(queryStream(mockRequest, mockAuthId));
 
       expect(mockAddUserChatHistory).not.toHaveBeenCalled();
     });
@@ -149,9 +166,12 @@ describe('queryService', () => {
 
       mockEmbedText.mockResolvedValue(mockEmbedding);
       mockSearchVectorAndRRFKeyword.mockResolvedValue(mockSearchResults);
-      mockQueryChat.mockResolvedValue(mockOpenAiResponse);
+      mockQueryChatStream.mockImplementation(async function* () {
+        yield mockOpenAiResponse;
+      });
+      mockAddUserChatHistory.mockResolvedValue(1);
 
-      await query(mockRequest, mockAuthId);
+      await collectStreamChunks(queryStream(mockRequest, mockAuthId));
 
       expect(mockAddUserChatHistory).toHaveBeenCalledWith(
         mockRequest,
@@ -166,7 +186,9 @@ describe('queryService', () => {
       const error = new Error('Embedding failed');
       mockEmbedText.mockRejectedValue(error);
 
-      await expect(query(mockRequest, mockAuthId)).rejects.toThrow('Embedding failed');
+      await expect(collectStreamChunks(queryStream(mockRequest, mockAuthId))).rejects.toThrow(
+        'Embedding failed'
+      );
     });
 
     it('should propagate search errors', async () => {
@@ -176,19 +198,25 @@ describe('queryService', () => {
       mockEmbedText.mockResolvedValue(mockEmbedding);
       mockSearchVectorAndRRFKeyword.mockRejectedValue(error);
 
-      await expect(query(mockRequest, mockAuthId)).rejects.toThrow('Search failed');
+      await expect(collectStreamChunks(queryStream(mockRequest, mockAuthId))).rejects.toThrow(
+        'Search failed'
+      );
     });
 
-    it('should propagate OpenAI errors', async () => {
+    it('should propagate OpenAI streaming errors', async () => {
       const mockEmbedding = [0.1];
       const mockSearchResults = ['Result'];
       const error = new Error('OpenAI failed');
 
       mockEmbedText.mockResolvedValue(mockEmbedding);
       mockSearchVectorAndRRFKeyword.mockResolvedValue(mockSearchResults);
-      mockQueryChat.mockRejectedValue(error);
+      mockQueryChatStream.mockImplementation(async function* () {
+        throw error;
+      });
 
-      await expect(query(mockRequest, mockAuthId)).rejects.toThrow('OpenAI failed');
+      await expect(collectStreamChunks(queryStream(mockRequest, mockAuthId))).rejects.toThrow(
+        'OpenAI failed'
+      );
     });
   });
 });
