@@ -36,23 +36,33 @@ export async function* queryStream(
 
   const searchVector: number[] = await embedText(queryChatRequest.searchText);
 
-  const esChunkSearch = await searchVectorAndRRFKeyword(
+  const esDocuments = await searchVectorAndRRFKeyword(
     searchVector,
     ELASTICSEARCH_INDEX_SKATT,
     queryChatRequest.tags || [],
     queryChatRequest.searchText
   );
 
+  // Extract content for streaming and source metadata for storage
+  const esContent = esDocuments.map(doc => doc.content);
+  const sourceDocumentIds = esDocuments.map(doc => doc._id);
+
   // Collect streamed response
   let fullResponse = '';
-  for await (const chunk of queryChatStream(queryChatRequest, esChunkSearch, authId)) {
+  for await (const chunk of queryChatStream(queryChatRequest, esContent, authId)) {
     fullResponse += chunk;
     yield chunk;
   }
 
-  // After stream completes, save to database
+  // After stream completes, save to database with source tracking
   if (fullResponse) {
-    const conversation_id = await addUserChatHistory(queryChatRequest, fullResponse, authId);
+    const conversation_id = await addUserChatHistory(
+      queryChatRequest,
+      fullResponse,
+      authId,
+      ELASTICSEARCH_INDEX_SKATT,
+      sourceDocumentIds
+    );
     // Send final message with conversation_id
     yield JSON.stringify({ conversation_id });
   }

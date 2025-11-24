@@ -10,6 +10,7 @@ import KeywordTags from './src/components/chat/KeywordTags';
 import SearchInput from './src/components/chat/SearchInput';
 import ChatLayout from './src/components/layout/ChatLayout';
 import WelcomeModal from './src/components/modals/WelcomeModal';
+import SourcesSidebar from './src/components/navigation/SourcesSidebar';
 import ChatDisplay, { ChatDisplayRef } from './src/components/textManagement/markdownTextDisplay';
 import { ConversationProvider, useConversation } from './src/contexts/ConversationContext';
 import { ConversationMessage } from './src/interface/history';
@@ -31,6 +32,8 @@ function SearchContent({
   const [keywords, setKeywords] = useState<string[]>([]);
   const [conversationMessages, setConversationMessages] = useState<ConversationMessage[]>([]);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [isSourcesSidebarOpen, setIsSourcesSidebarOpen] = useState(false);
+  const [selectedMessageId, setSelectedMessageId] = useState<number | null>(null);
   const chatDisplayRef = useRef<ChatDisplayRef>(null);
 
   const { data: session } = useSession();
@@ -223,6 +226,16 @@ function SearchContent({
     }
   };
 
+  const handleViewSources = (messageId: number) => {
+    setSelectedMessageId(messageId);
+    setIsSourcesSidebarOpen(true);
+  };
+
+  const handleCloseSources = () => {
+    setIsSourcesSidebarOpen(false);
+    setSelectedMessageId(null);
+  };
+
   return (
     <>
       <WelcomeModal isVisible={showWelcomeModal} onClose={handleCloseModal} />
@@ -292,10 +305,18 @@ function SearchContent({
               ref={chatDisplayRef}
               conversationMessages={conversationMessages}
               isCollapsed={isInputAreaCollapsed}
+              onViewSources={handleViewSources}
             />
           </div>
         </div>
       </div>
+
+      {/* Sources sidebar */}
+      <SourcesSidebar
+        isOpen={isSourcesSidebarOpen}
+        onToggle={handleCloseSources}
+        messageId={selectedMessageId}
+      />
     </>
   );
 }

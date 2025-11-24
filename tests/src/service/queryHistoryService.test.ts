@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import {
   findUserConversationHistory,
   findUserConversations,
@@ -8,8 +11,9 @@ import {
   getUserConversationHistory,
 } from '@/app/src/service/history/historyService';
 
-// Mock the postgres consumer
+// Mock the consumers
 jest.mock('@/app/src/consumers/postgresConsumer');
+jest.mock('@/app/src/consumers/esSearchConsumer');
 
 const mockFindUserConversations = findUserConversations as jest.MockedFunction<
   typeof findUserConversations

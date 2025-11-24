@@ -100,7 +100,9 @@ export async function createGoogleUser(
 export async function addUserChatHistory(
   queryChatRequest: QueryChatRequest,
   openaiResponse: string,
-  authId: string
+  authId: string,
+  sourceIndex?: string,
+  sourceDocumentIds?: string[]
 ): Promise<number> {
   try {
     let user;
@@ -137,6 +139,8 @@ export async function addUserChatHistory(
         conversation_id: conversationId,
         role: 'assistant',
         content: openaiResponse,
+        source_index: sourceIndex,
+        source_document_ids: sourceDocumentIds,
       },
     });
 
@@ -284,6 +288,31 @@ export async function addUserFeedback(feedback: UserFeedbackInput) {
     } as user_feedback;
 
     await prismaClient.user_feedback.create({ data: feecback_item });
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getMessageSourceInfo(
+  messageId: number
+): Promise<{ source_index: string | null; source_document_ids: string[] } | null> {
+  try {
+    const message = await prismaClient.messages.findUnique({
+      where: { message_id: messageId },
+      select: {
+        source_index: true,
+        source_document_ids: true,
+      },
+    });
+
+    if (!message) {
+      return null;
+    }
+
+    return {
+      source_index: message.source_index,
+      source_document_ids: message.source_document_ids || [],
+    };
   } catch (error) {
     throw error;
   }

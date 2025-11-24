@@ -93,7 +93,10 @@ describe('queryService', () => {
   describe('when USE_MOCK_DATA is false or undefined', () => {
     it('should process query through full pipeline', async () => {
       const mockEmbedding = [0.1, 0.2, 0.3];
-      const mockSearchResults = ['ES result 1', 'ES result 2'];
+      const mockSearchResults = [
+        { _id: 'doc1', _index: 'lovdata_semantic_ada3l_251108', content: 'ES result 1' },
+        { _id: 'doc2', _index: 'lovdata_semantic_ada3l_251108', content: 'ES result 2' },
+      ];
       const mockStreamChunks = ['OpenAI ', 'response ', 'about ', 'MVA'];
 
       mockEmbedText.mockResolvedValue(mockEmbedding);
@@ -114,10 +117,20 @@ describe('queryService', () => {
         mockRequest.tags,
         mockRequest.searchText
       );
-      expect(mockQueryChatStream).toHaveBeenCalledWith(mockRequest, mockSearchResults, mockAuthId);
+      expect(mockQueryChatStream).toHaveBeenCalledWith(
+        mockRequest,
+        ['ES result 1', 'ES result 2'],
+        mockAuthId
+      );
 
       const fullResponse = mockStreamChunks.join('');
-      expect(mockAddUserChatHistory).toHaveBeenCalledWith(mockRequest, fullResponse, mockAuthId);
+      expect(mockAddUserChatHistory).toHaveBeenCalledWith(
+        mockRequest,
+        fullResponse,
+        mockAuthId,
+        'lovdata_semantic_ada3l_251108',
+        ['doc1', 'doc2']
+      );
 
       expect(chunks).toEqual([...mockStreamChunks, JSON.stringify({ conversation_id: 1 })]);
     });
@@ -125,7 +138,9 @@ describe('queryService', () => {
     it('should handle missing tags gracefully', async () => {
       const requestWithoutTags = { ...mockRequest, tags: undefined };
       const mockEmbedding = [0.1, 0.2];
-      const mockSearchResults = ['Result'];
+      const mockSearchResults = [
+        { _id: 'doc1', _index: 'lovdata_semantic_ada3l_251108', content: 'Result' },
+      ];
 
       mockEmbedText.mockResolvedValue(mockEmbedding);
       mockSearchVectorAndRRFKeyword.mockResolvedValue(mockSearchResults);
@@ -146,7 +161,9 @@ describe('queryService', () => {
 
     it('should not save history when OpenAI response is falsy', async () => {
       const mockEmbedding = [0.1];
-      const mockSearchResults = ['Result'];
+      const mockSearchResults = [
+        { _id: 'doc1', _index: 'lovdata_semantic_ada3l_251108', content: 'Result' },
+      ];
 
       mockEmbedText.mockResolvedValue(mockEmbedding);
       mockSearchVectorAndRRFKeyword.mockResolvedValue(mockSearchResults);
@@ -161,7 +178,9 @@ describe('queryService', () => {
 
     it('should save history when OpenAI response is truthy', async () => {
       const mockEmbedding = [0.1];
-      const mockSearchResults = ['Result'];
+      const mockSearchResults = [
+        { _id: 'doc1', _index: 'lovdata_semantic_ada3l_251108', content: 'Result' },
+      ];
       const mockOpenAiResponse = 'Valid response';
 
       mockEmbedText.mockResolvedValue(mockEmbedding);
@@ -176,7 +195,9 @@ describe('queryService', () => {
       expect(mockAddUserChatHistory).toHaveBeenCalledWith(
         mockRequest,
         mockOpenAiResponse,
-        mockAuthId
+        mockAuthId,
+        'lovdata_semantic_ada3l_251108',
+        ['doc1']
       );
     });
   });
@@ -205,7 +226,9 @@ describe('queryService', () => {
 
     it('should propagate OpenAI streaming errors', async () => {
       const mockEmbedding = [0.1];
-      const mockSearchResults = ['Result'];
+      const mockSearchResults = [
+        { _id: 'doc1', _index: 'lovdata_semantic_ada3l_251108', content: 'Result' },
+      ];
       const error = new Error('OpenAI failed');
 
       mockEmbedText.mockResolvedValue(mockEmbedding);
