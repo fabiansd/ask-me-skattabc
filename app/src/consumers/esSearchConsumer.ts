@@ -1,5 +1,5 @@
 import { getClient, getCloudClient } from '../clients/esClient';
-import { unwrapESResponse } from '../clients/esUtil';
+import { unwrapESResponse, unwrapESResponseWithMetadata, ESDocument } from '../clients/esUtil';
 import {
   ELASTICSEARCH_INDEX_SKATT,
   ES_SEARCH_RANKING_HITS,
@@ -140,6 +140,42 @@ export async function searchMatchSearchVectorKeyword(
   }
 }
 
+export async function fetchDocumentsByIds(
+  index: string,
+  documentIds: string[]
+): Promise<ESDocument[]> {
+  try {
+    const client = getCloudClient();
+
+    const response = await client.mget({
+      index: index,
+      body: {
+        ids: documentIds,
+      },
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const documents: ESDocument[] = response.docs
+      .filter((doc: any) => doc.found)
+      .map((doc: any) => ({
+        _id: doc._id,
+        _index: doc._index,
+        content: doc._source.content,
+        department: doc._source.department,
+        document_title: doc._source.document_title,
+        article_number: doc._source.article_number,
+        article_title: doc._source.article_title,
+      }));
+
+    console.log(`📄 Fetched ${documents.length}/${documentIds.length} documents from ${index}`);
+
+    return documents;
+  } catch (error) {
+    console.error('❌ ES fetch documents error:', error);
+    throw error;
+  }
+}
+
 export async function searchVectorAndRRFKeyword(
   searchVector: number[],
   index: string,
@@ -197,7 +233,7 @@ export async function searchVectorAndRRFKeyword(
       },
     });
 
-    const unwrappedResponse = unwrapESResponse(esResponse);
+    const unwrappedResponse = unwrapESResponseWithMetadata(esResponse);
     const searchTime = performance.now() - startTime;
 
     console.log(`🔍 ES RRF Search Results:

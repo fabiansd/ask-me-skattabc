@@ -4,10 +4,12 @@ import ReactMarkdown from 'react-markdown';
 
 import { ConversationMessage } from '../../interface/history';
 import ScrollToBottomButton from '../buttons/ScrollToBottomButton';
+import ViewSourcesButton from '../buttons/ViewSourcesButton';
 
 interface ChatDisplayProps {
   conversationMessages: ConversationMessage[];
   isCollapsed?: boolean;
+  onViewSources?: (messageId: number) => void;
 }
 
 export interface ChatDisplayRef {
@@ -15,7 +17,7 @@ export interface ChatDisplayRef {
 }
 
 const ChatDisplay = forwardRef<ChatDisplayRef, ChatDisplayProps>(
-  ({ conversationMessages, isCollapsed = false }, ref) => {
+  ({ conversationMessages, isCollapsed = false, onViewSources }, ref) => {
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const [showScrollButton, setShowScrollButton] = useState(false);
 
@@ -81,8 +83,16 @@ const ChatDisplay = forwardRef<ChatDisplayRef, ChatDisplayProps>(
                   message.role === 'user' ? 'bg-base-300' : 'bg-base-200'
                 }`}
               >
-                <div className="text-sm font-medium mb-2 text-base-content/80">
-                  {message.role === 'user' ? 'Du:' : 'Assistent:'}
+                <div className="flex justify-between items-center mb-2">
+                  <div className="text-sm font-medium text-base-content/80">
+                    {message.role === 'user' ? 'Du:' : 'Assistent:'}
+                  </div>
+                  {message.role === 'assistant' &&
+                    message.source_document_ids &&
+                    message.source_document_ids.length > 0 &&
+                    onViewSources && (
+                      <ViewSourcesButton onClick={() => onViewSources(message.message_id)} />
+                    )}
                 </div>
                 <div
                   className="text-left markdown-content text-base-content"
@@ -116,6 +126,14 @@ const ChatDisplay = forwardRef<ChatDisplayRef, ChatDisplayProps>(
                     ))}
                   </div>
                 )}
+                {message.role === 'assistant' &&
+                  message.source_document_ids &&
+                  message.source_document_ids.length > 0 &&
+                  onViewSources && (
+                    <div className="mt-2 flex justify-end">
+                      <ViewSourcesButton onClick={() => onViewSources(message.message_id)} />
+                    </div>
+                  )}
               </div>
             </div>
           ))}

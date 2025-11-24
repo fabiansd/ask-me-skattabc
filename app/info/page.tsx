@@ -81,6 +81,14 @@ export default function Info() {
             Velg <em>konkret</em> for korte, fokuserte svar som åpner for oppfølgingsspørsmål. Velg{' '}
             <em>detaljert</em> for grundige steg-for-steg forklaringer (tar lengre tid å generere).
           </p>
+
+          <p className="text-base-content/80 leading-relaxed mb-4">
+            <strong>Se kildene</strong>
+            <br />
+            Hvert svar fra assistenten har en &quot;Kilder&quot;-knapp som lar deg se de originale
+            lovtekstene og forskriftene som ble brukt til å generere svaret. Klikk på knappen for å
+            åpne en sidepanel med alle kildedokumentene.
+          </p>
         </div>
 
         {/* About the AI Assistant */}
