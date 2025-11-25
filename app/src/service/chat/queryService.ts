@@ -34,10 +34,10 @@ export async function* queryStream(
     return;
   }
 
-  // Build search context with conversation history for better ES results
+  // Build search context with question history for better ES results
   let searchContext = queryChatRequest.searchText;
 
-  if (queryChatRequest.conversation_id) {
+  if (queryChatRequest.conversation_id && authId !== 'default') {
     const previousQuestions = await getConversationContext(queryChatRequest.conversation_id);
     if (previousQuestions) {
       searchContext = previousQuestions + ' ' + queryChatRequest.searchText;
