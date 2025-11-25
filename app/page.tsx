@@ -210,9 +210,11 @@ function SearchContent({
       setSearchInput('');
       sessionStorage.removeItem('searchInput');
 
-      // Refresh from database to get final state
-      refreshConversations();
-      fetchConversationMessages();
+      // Refresh from database to get final state (only for authenticated users)
+      if (session) {
+        refreshConversations();
+        fetchConversationMessages();
+      }
     } catch (error) {
       console.error('🔴 [ERROR] Query failed:', error);
     }
