@@ -3,7 +3,7 @@ import { searchVectorAndRRFKeyword } from '@/app/src/consumers/esSearchConsumer'
 import { embedText, moderateContent, queryChatStream } from '@/app/src/consumers/openAiConsumer';
 
 import { getMockQueryResponse } from '../../../../tests/mockData';
-import { addUserChatHistory } from '../../consumers/postgresConsumer';
+import { addUserChatHistory, getConversationContext } from '../../consumers/postgresConsumer';
 import { QueryChatRequest } from '../../interface/skattSokInterface';
 
 async function validateQueryRequest(queryChatRequest: QueryChatRequest): Promise<void> {
@@ -34,13 +34,23 @@ export async function* queryStream(
     return;
   }
 
-  const searchVector: number[] = await embedText(queryChatRequest.searchText);
+  // Build search context with conversation history for better ES results
+  let searchContext = queryChatRequest.searchText;
+
+  if (queryChatRequest.conversation_id) {
+    const previousQuestions = await getConversationContext(queryChatRequest.conversation_id);
+    if (previousQuestions) {
+      searchContext = previousQuestions + ' ' + queryChatRequest.searchText;
+    }
+  }
+
+  const searchVector: number[] = await embedText(searchContext);
 
   const esDocuments = await searchVectorAndRRFKeyword(
     searchVector,
     ELASTICSEARCH_INDEX_SKATT,
     queryChatRequest.tags || [],
-    queryChatRequest.searchText
+    searchContext
   );
 
   // Extract content for streaming and source metadata for storage

@@ -317,3 +317,25 @@ export async function getMessageSourceInfo(
     throw error;
   }
 }
+
+export async function getConversationContext(conversationId: number): Promise<string> {
+  try {
+    const messages = await prismaClient.messages.findMany({
+      where: {
+        conversation_id: conversationId,
+        role: 'user',
+      },
+      orderBy: {
+        created_at: 'asc',
+      },
+      select: {
+        content: true,
+      },
+    });
+
+    return messages.map(m => m.content).join(' ');
+  } catch (error) {
+    console.error('Error fetching conversation context:', error);
+    throw error;
+  }
+}
