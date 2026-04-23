@@ -41,6 +41,7 @@ mcp-server/                        new package, monorepo
 ```
 
 Imports from existing code — do NOT duplicate:
+
 - `@/app/src/consumers/openAiConsumer` — `embedText`, `moderateContent`
 - `@/app/src/consumers/esSearchConsumer` — `searchVectorAndRRFKeyword`, `fetchDocumentsByIds`
 - `@/app/src/clients/esClient` — client instances
@@ -48,14 +49,14 @@ Imports from existing code — do NOT duplicate:
 
 ## Tools (v1)
 
-| Tool | Purpose | Notes |
-|---|---|---|
-| `list_knowledge_bases` | Discovery — returns metadata for every registry entry | Let the LLM orient itself |
-| `search_raw_law` | Statutes + regulations (current `ELASTICSEARCH_INDEX_SKATT`) | Filters: `query`, `top_k`, `keywords[]`, `department` |
-| `search_legal_processings` (future) | Administrative/legal processing docs | Filters: `query`, `top_k`, `year_from`, `year_to` |
-| `search_trial_rulings` (future) | Court rulings | Filters: `query`, `top_k`, `year_from`, `year_to`, `court` enum |
-| `fetch_document` | Fetch full doc by index+id after seeing a snippet | Wraps `fetchDocumentsByIds` |
-| `multi_search` (optional later) | Fan out a query to multiple indexes in parallel | Only if the host LLM doesn't do this well with multiple tool calls |
+| Tool                                | Purpose                                                      | Notes                                                              |
+| ----------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `list_knowledge_bases`              | Discovery — returns metadata for every registry entry        | Let the LLM orient itself                                          |
+| `search_raw_law`                    | Statutes + regulations (current `ELASTICSEARCH_INDEX_SKATT`) | Filters: `query`, `top_k`, `keywords[]`, `department`              |
+| `search_legal_processings` (future) | Administrative/legal processing docs                         | Filters: `query`, `top_k`, `year_from`, `year_to`                  |
+| `search_trial_rulings` (future)     | Court rulings                                                | Filters: `query`, `top_k`, `year_from`, `year_to`, `court` enum    |
+| `fetch_document`                    | Fetch full doc by index+id after seeing a snippet            | Wraps `fetchDocumentsByIds`                                        |
+| `multi_search` (optional later)     | Fan out a query to multiple indexes in parallel              | Only if the host LLM doesn't do this well with multiple tool calls |
 
 Do NOT expose `answer_question`. The host LLM composes answers from tool results.
 

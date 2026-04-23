@@ -22,10 +22,7 @@ export default function Card({
 }: CardProps) {
   const Component = Tag as React.ElementType;
   return (
-    <Component
-      {...rest}
-      className={`rounded-box ${variantClasses[variant]} ${className}`}
-    >
+    <Component {...rest} className={`rounded-box ${variantClasses[variant]} ${className}`}>
       {children}
     </Component>
   );

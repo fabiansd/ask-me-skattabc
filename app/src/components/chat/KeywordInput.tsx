@@ -58,7 +58,14 @@ export default function KeywordInput({ keywords, onKeywordsChange }: KeywordInpu
           "
           aria-label="Legg til nøkkelord"
         >
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden>
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            aria-hidden
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m7-7H5" />
           </svg>
         </button>

@@ -25,7 +25,7 @@ loadEnv({ path: resolve(REPO_ROOT, '.env.monitor') });
 
 if (!process.env.DATABASE_URL) {
   console.error(
-    'ERROR: DATABASE_URL is not set. Create .env.monitor with a DATABASE_URL pointing at localhost:5432.',
+    'ERROR: DATABASE_URL is not set. Create .env.monitor with a DATABASE_URL pointing at localhost:5432.'
   );
   process.exit(1);
 }
@@ -72,12 +72,10 @@ function waitForPort(port: number, host: string, timeoutMs: number): Promise<voi
 }
 
 function startProxy(): ChildProcess {
-  const child = spawn(
-    'flyctl',
-    ['proxy', `${LOCAL_PORT}:5432`, '--app', FLY_APP],
-    { stdio: ['ignore', 'pipe', 'pipe'] },
-  );
-  child.on('error', (err) => {
+  const child = spawn('flyctl', ['proxy', `${LOCAL_PORT}:5432`, '--app', FLY_APP], {
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  child.on('error', err => {
     console.error('Failed to start flyctl proxy:', err.message);
   });
   return child;
@@ -103,7 +101,7 @@ function registerCleanup(child: ChildProcess): void {
     cleanup();
     process.exit(143);
   });
-  process.once('uncaughtException', (err) => {
+  process.once('uncaughtException', err => {
     console.error('Uncaught exception:', err);
     cleanup();
     process.exit(1);
@@ -196,22 +194,22 @@ async function runReport(since: Date, limit: number) {
         feedback: feedbackInRangeRow[0]?.n ?? 0,
       },
       authProviderSplit: authSplit,
-      dailySignups: dailySignups.map((r) => ({
+      dailySignups: dailySignups.map(r => ({
         day: r.day.toISOString().slice(0, 10),
         n: r.n,
       })),
-      dailyQueries: dailyQueries.map((r) => ({
+      dailyQueries: dailyQueries.map(r => ({
         day: r.day.toISOString().slice(0, 10),
         n: r.n,
       })),
-      topActiveUsers: topActiveUsers.map((r) => ({
+      topActiveUsers: topActiveUsers.map(r => ({
         user_id: r.user_id,
         username: r.username,
         created_at: r.created_at.toISOString(),
         queries_in_range: r.queries_in_range,
         last_activity: r.last_activity ? r.last_activity.toISOString() : null,
       })),
-      feedback: feedbackItems.map((r) => ({
+      feedback: feedbackItems.map(r => ({
         feedback_id: r.feedback_id,
         username: r.username,
         created_at: r.created_at ? r.created_at.toISOString() : null,
@@ -234,10 +232,10 @@ function formatSummary(report: Report): string {
   lines.push(`since:      ${report.since}`);
   lines.push('');
   lines.push(
-    `totals:     users=${report.totals.users}  queries=${report.totals.queries}  feedback=${report.totals.feedback}`,
+    `totals:     users=${report.totals.users}  queries=${report.totals.queries}  feedback=${report.totals.feedback}`
   );
   lines.push(
-    `in range:   newUsers=${report.inRange.newUsers}  queries=${report.inRange.queries}  feedback=${report.inRange.feedback}`,
+    `in range:   newUsers=${report.inRange.newUsers}  queries=${report.inRange.queries}  feedback=${report.inRange.feedback}`
   );
   lines.push('');
   lines.push('auth providers:');
@@ -260,7 +258,7 @@ function formatSummary(report: Report): string {
   lines.push(header);
   for (const u of report.topActiveUsers) {
     lines.push(
-      `  ${String(u.user_id).padEnd(8)} ${u.username.slice(0, 30).padEnd(30)} ${u.created_at.slice(0, 19).padEnd(20)} ${String(u.queries_in_range).padStart(8)}  ${u.last_activity ? u.last_activity.slice(0, 19) : '-'}`,
+      `  ${String(u.user_id).padEnd(8)} ${u.username.slice(0, 30).padEnd(30)} ${u.created_at.slice(0, 19).padEnd(20)} ${String(u.queries_in_range).padStart(8)}  ${u.last_activity ? u.last_activity.slice(0, 19) : '-'}`
     );
   }
   lines.push('');
@@ -277,7 +275,7 @@ function writeJson(report: Report): string {
 function workspaceCanvasDir(): string {
   return resolve(
     homedir(),
-    '.cursor/projects/Users-fabiansodaldietrichson-develop-optimalskatt-ask-me-skattabc/canvases',
+    '.cursor/projects/Users-fabiansodaldietrichson-develop-optimalskatt-ask-me-skattabc/canvases'
   );
 }
 
@@ -421,7 +419,7 @@ async function main() {
   }
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error('Report failed:', err);
   process.exit(1);
 });

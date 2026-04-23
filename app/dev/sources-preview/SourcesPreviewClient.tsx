@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { ESDocument } from '../../src/clients/esUtil';
 import SourcesSidebar from '../../src/components/navigation/SourcesSidebar';
 
-
 interface SourcesPreviewClientProps {
   initialSources: ESDocument[];
 }

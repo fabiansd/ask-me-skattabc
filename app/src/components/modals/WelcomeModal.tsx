@@ -46,7 +46,14 @@ export default function WelcomeModal({ isVisible, onClose }: WelcomeModalProps) 
         "
       >
         <div className="mx-auto mb-4 inline-flex h-11 w-11 items-center justify-center rounded-full bg-secondary/15 text-secondary">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className="h-5 w-5" aria-hidden>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            className="h-5 w-5"
+            aria-hidden
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -63,8 +70,8 @@ export default function WelcomeModal({ isVisible, onClose }: WelcomeModalProps) 
         </h2>
 
         <p className="text-sm text-base-content/70 leading-relaxed mb-1.5">
-          Profesjonell AI-assistanse innen norsk skatterett. Få presise,
-          kildebelagte svar på komplekse skattespørsmål.
+          Profesjonell AI-assistanse innen norsk skatterett. Få presise, kildebelagte svar på
+          komplekse skattespørsmål.
         </p>
         <p className="text-sm text-base-content/70 leading-relaxed mb-6">
           Logg inn med Google for å låse opp{' '}

@@ -75,8 +75,10 @@ export default function SourcesSidebar({
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onToggle();
       if (sources.length > 1) {
-        if (e.key === 'ArrowLeft') setCurrentIndex(prev => (prev > 0 ? prev - 1 : sources.length - 1));
-        if (e.key === 'ArrowRight') setCurrentIndex(prev => (prev < sources.length - 1 ? prev + 1 : 0));
+        if (e.key === 'ArrowLeft')
+          setCurrentIndex(prev => (prev > 0 ? prev - 1 : sources.length - 1));
+        if (e.key === 'ArrowRight')
+          setCurrentIndex(prev => (prev < sources.length - 1 ? prev + 1 : 0));
       }
     };
     document.addEventListener('keydown', onKey);
@@ -141,9 +143,7 @@ export default function SourcesSidebar({
               <IconButton
                 label="Forrige kilde"
                 data-testid="sources-prev"
-                onClick={() =>
-                  setCurrentIndex(prev => (prev > 0 ? prev - 1 : sources.length - 1))
-                }
+                onClick={() => setCurrentIndex(prev => (prev > 0 ? prev - 1 : sources.length - 1))}
                 variant="subtle"
                 size="sm"
               >
@@ -167,9 +167,7 @@ export default function SourcesSidebar({
               <IconButton
                 label="Neste kilde"
                 data-testid="sources-next"
-                onClick={() =>
-                  setCurrentIndex(prev => (prev < sources.length - 1 ? prev + 1 : 0))
-                }
+                onClick={() => setCurrentIndex(prev => (prev < sources.length - 1 ? prev + 1 : 0))}
                 variant="subtle"
                 size="sm"
               >

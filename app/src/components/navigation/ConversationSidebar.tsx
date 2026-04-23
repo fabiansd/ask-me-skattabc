@@ -58,12 +58,7 @@ export default function ConversationSidebar({
         <div className="flex-1">
           <NewConversationButton onClick={onNewConversation} />
         </div>
-        <IconButton
-          label="Skjul sidestolpe"
-          onClick={onToggle}
-          variant="ghost"
-          size="sm"
-        >
+        <IconButton label="Skjul sidestolpe" onClick={onToggle} variant="ghost" size="sm">
           <svg
             className="h-4 w-4"
             fill="none"

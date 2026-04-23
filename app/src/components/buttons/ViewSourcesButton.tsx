@@ -24,7 +24,14 @@ const ViewSourcesButton: React.FC<ViewSourcesButtonProps> = ({ onClick }) => {
           focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary
         "
       >
-        <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24" aria-hidden>
+        <svg
+          className="h-3.5 w-3.5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.75"
+          viewBox="0 0 24 24"
+          aria-hidden
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"

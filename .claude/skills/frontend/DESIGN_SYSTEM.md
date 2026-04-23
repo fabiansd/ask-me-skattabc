@@ -6,33 +6,33 @@ The `optimalskatt` DaisyUI theme. All components should consume these tokens —
 
 ## Palette
 
-| Token | Hex | Use |
-|---|---|---|
-| `base-100` | `#FBF8F1` | Page background (ivory) |
-| `base-200` | `#F3EEE3` | Cards, sidebar surface, subtle bands |
-| `base-300` | `#E7DFCE` | Borders, dividers, disabled fills |
-| `base-content` | `#1B2430` | Default text (deep ink) |
-| `primary` | `#1F3A5F` | Navy — primary buttons, active states, links |
-| `primary-content` | `#FBF8F1` | Text on primary |
-| `secondary` | `#B08A3E` | Muted gold — secondary highlights, hover accents, brand mark |
-| `secondary-content` | `#1B2430` | Text on secondary |
-| `accent` | `#7D3C2E` | Burgundy — sparing use: destructive confirms, critical badges |
-| `neutral` | `#2B3440` | Dark surface for tooltips / toasts |
-| `neutral-content` | `#F3EEE3` | Text on neutral |
-| `info` | `#2C5E8A` |  |
-| `success` | `#3F7D5B` |  |
-| `warning` | `#B8823C` |  |
-| `error` | `#A0392B` |  |
+| Token               | Hex       | Use                                                           |
+| ------------------- | --------- | ------------------------------------------------------------- |
+| `base-100`          | `#FBF8F1` | Page background (ivory)                                       |
+| `base-200`          | `#F3EEE3` | Cards, sidebar surface, subtle bands                          |
+| `base-300`          | `#E7DFCE` | Borders, dividers, disabled fills                             |
+| `base-content`      | `#1B2430` | Default text (deep ink)                                       |
+| `primary`           | `#1F3A5F` | Navy — primary buttons, active states, links                  |
+| `primary-content`   | `#FBF8F1` | Text on primary                                               |
+| `secondary`         | `#B08A3E` | Muted gold — secondary highlights, hover accents, brand mark  |
+| `secondary-content` | `#1B2430` | Text on secondary                                             |
+| `accent`            | `#7D3C2E` | Burgundy — sparing use: destructive confirms, critical badges |
+| `neutral`           | `#2B3440` | Dark surface for tooltips / toasts                            |
+| `neutral-content`   | `#F3EEE3` | Text on neutral                                               |
+| `info`              | `#2C5E8A` |                                                               |
+| `success`           | `#3F7D5B` |                                                               |
+| `warning`           | `#B8823C` |                                                               |
+| `error`             | `#A0392B` |                                                               |
 
 Rounded radii: `--rounded-btn: 0.375rem`, `--rounded-box: 0.75rem`.
 
 ## Typography
 
-| Role | Family | Tailwind | CSS var |
-|---|---|---|---|
+| Role               | Family                       | Tailwind     | CSS var        |
+| ------------------ | ---------------------------- | ------------ | -------------- |
 | Display / headings | Fraunces (variable, 400–700) | `font-serif` | `--font-serif` |
-| Body / UI | Inter (400/500/600) | `font-sans` | `--font-sans` |
-| Mono (rare) | ui-monospace system | `font-mono` | n/a |
+| Body / UI          | Inter (400/500/600)          | `font-sans`  | `--font-sans`  |
+| Mono (rare)        | ui-monospace system          | `font-mono`  | n/a            |
 
 Both fonts load via `next/font/google` in `app/layout.tsx` and expose CSS variables on `<html>`.
 

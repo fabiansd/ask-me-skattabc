@@ -37,11 +37,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="nb"
-      data-theme="optimalskatt"
-      className={`${inter.variable} ${fraunces.variable}`}
-    >
+    <html lang="nb" data-theme="optimalskatt" className={`${inter.variable} ${fraunces.variable}`}>
       <body className="min-h-[100dvh] flex flex-col bg-base-100 text-base-content antialiased">
         <a href="#main-content" className="skip-to-content">
           Hopp til innhold

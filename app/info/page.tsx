@@ -81,10 +81,9 @@ export default function Info() {
                 Hvordan stille spørsmål
               </h2>
               <p className="text-sm text-base-content/75 leading-relaxed">
-                Skriv skattespørsmålet ditt på vanlig norsk, f.eks. «Kan jeg
-                trekke fra hjemmekontor?». Du kan legge til spesifikke
-                nøkkelord som <em>§ 6-15</em>, <em>fradrag</em> eller{' '}
-                <em>MVA</em> i nøkkelord-feltet for å styre søket.
+                Skriv skattespørsmålet ditt på vanlig norsk, f.eks. «Kan jeg trekke fra
+                hjemmekontor?». Du kan legge til spesifikke nøkkelord som <em>§ 6-15</em>,{' '}
+                <em>fradrag</em> eller <em>MVA</em> i nøkkelord-feltet for å styre søket.
               </p>
             </Card>
 
@@ -93,36 +92,28 @@ export default function Info() {
                 Smart dobbeltsøk
               </h2>
               <p className="text-sm text-base-content/75 leading-relaxed">
-                Assistenten kombinerer semantisk søk i skattematerialet med
-                eksakt matching av nøkkelord og §-referanser. De beste
-                treffene fra begge metodene settes sammen for optimal
-                relevans.
+                Assistenten kombinerer semantisk søk i skattematerialet med eksakt matching av
+                nøkkelord og §-referanser. De beste treffene fra begge metodene settes sammen for
+                optimal relevans.
               </p>
             </Card>
 
             <Card variant="surface" className="p-6 sm:p-7">
-              <h2 className="font-serif text-lg font-medium text-base-content mb-2">
-                Svartyper
-              </h2>
+              <h2 className="font-serif text-lg font-medium text-base-content mb-2">Svartyper</h2>
               <p className="text-sm text-base-content/75 leading-relaxed">
-                Velg <strong className="text-base-content">Konkret</strong>{' '}
-                for korte, fokuserte svar som inviterer til
-                oppfølgingsspørsmål. Velg{' '}
-                <strong className="text-base-content">Detaljert</strong> for
-                grundige steg-for-steg forklaringer (tar litt lengre tid å
-                generere).
+                Velg <strong className="text-base-content">Konkret</strong> for korte, fokuserte
+                svar som inviterer til oppfølgingsspørsmål. Velg{' '}
+                <strong className="text-base-content">Detaljert</strong> for grundige steg-for-steg
+                forklaringer (tar litt lengre tid å generere).
               </p>
             </Card>
 
             <Card variant="surface" className="p-6 sm:p-7">
-              <h2 className="font-serif text-lg font-medium text-base-content mb-2">
-                Se kildene
-              </h2>
+              <h2 className="font-serif text-lg font-medium text-base-content mb-2">Se kildene</h2>
               <p className="text-sm text-base-content/75 leading-relaxed">
                 Hvert svar fra assistenten har en{' '}
-                <strong className="text-base-content">Kilder</strong>-knapp
-                som åpner et sidepanel med de originale lovtekstene og
-                forskriftene svaret er bygget på.
+                <strong className="text-base-content">Kilder</strong>-knapp som åpner et sidepanel
+                med de originale lovtekstene og forskriftene svaret er bygget på.
               </p>
             </Card>
 
@@ -131,9 +122,8 @@ export default function Info() {
                 Hva assistenten kan hjelpe med
               </h2>
               <p className="text-sm text-base-content/75 leading-relaxed mb-4">
-                Optimalskatt bygger på norske skattelover fra Lovdata,
-                Skatteetatens veiledere og offentlige forskrifter. Den dekker
-                blant annet:
+                Optimalskatt bygger på norske skattelover fra Lovdata, Skatteetatens veiledere og
+                offentlige forskrifter. Den dekker blant annet:
               </p>
               <ul className="grid sm:grid-cols-2 gap-2 text-sm">
                 {[
@@ -142,18 +132,15 @@ export default function Info() {
                   ['Investeringer', 'Aksjegevinst, utleie og kapitalinntekt'],
                   ['Internasjonalt', 'Dobbeltbeskatning og utenlandsk inntekt'],
                 ].map(([title, body]) => (
-                  <li
-                    key={title}
-                    className="rounded-box border border-base-300 bg-base-100 p-4"
-                  >
+                  <li key={title} className="rounded-box border border-base-300 bg-base-100 p-4">
                     <div className="font-medium text-base-content text-sm mb-0.5">{title}</div>
                     <div className="text-xs text-base-content/65 leading-relaxed">{body}</div>
                   </li>
                 ))}
               </ul>
               <p className="text-xs text-base-content/50 mt-4 italic">
-                Merk: Dette er en eksperimentell tjeneste som ikke erstatter
-                profesjonell skatterådgivning.
+                Merk: Dette er en eksperimentell tjeneste som ikke erstatter profesjonell
+                skatterådgivning.
               </p>
             </div>
           </section>
@@ -161,9 +148,7 @@ export default function Info() {
           {/* Sidebar: contact + feedback */}
           <aside className="lg:col-span-2 space-y-6">
             <Card variant="subtle" className="p-6">
-              <h2 className="font-serif text-lg font-medium text-base-content mb-4">
-                Kontakt
-              </h2>
+              <h2 className="font-serif text-lg font-medium text-base-content mb-4">Kontakt</h2>
               <dl className="space-y-3 text-sm">
                 <div>
                   <dt className="text-[11px] uppercase tracking-wide text-base-content/50 mb-0.5">
@@ -225,9 +210,7 @@ export default function Info() {
                 placeholder="Ting du skulle ønske Optimalskatt kunne gjøre…"
               />
               <div className="mt-3 flex items-center justify-between gap-3">
-                <span className="text-[11px] text-base-content/50">
-                  ⌘ + Enter for å sende
-                </span>
+                <span className="text-[11px] text-base-content/50">⌘ + Enter for å sende</span>
                 <Button
                   variant="primary"
                   size="sm"

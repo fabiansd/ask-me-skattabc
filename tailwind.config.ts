@@ -10,8 +10,7 @@ const config: Config = {
       },
       boxShadow: {
         card: '0 1px 2px 0 rgb(27 36 48 / 0.04), 0 2px 4px -2px rgb(27 36 48 / 0.04)',
-        elevated:
-          '0 2px 6px 0 rgb(27 36 48 / 0.06), 0 8px 24px -8px rgb(27 36 48 / 0.08)',
+        elevated: '0 2px 6px 0 rgb(27 36 48 / 0.06), 0 8px 24px -8px rgb(27 36 48 / 0.08)',
       },
       keyframes: {
         'fade-in': {

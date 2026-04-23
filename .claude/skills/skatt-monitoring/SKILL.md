@@ -45,6 +45,7 @@ If any prerequisite is missing, stop and tell the user.
 ## What the report contains
 
 `reports/latest.json` and the canvas render:
+
 - Totals: users, queries (`query_history`), feedback
 - In-range counts since `--since`
 - Auth-provider split (default vs google)

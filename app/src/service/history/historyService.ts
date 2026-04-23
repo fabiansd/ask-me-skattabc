@@ -49,10 +49,7 @@ export async function getMessageSources(messageId: number): Promise<ESDocument[]
   // When running with mock data, short-circuit the Elasticsearch fetch and
   // return the matching mock documents so the Kilder pane can be exercised
   // without a populated ES instance.
-  if (
-    process.env.USE_MOCK_DATA === 'true' &&
-    sourceInfo.source_index === MOCK_SOURCE_INDEX
-  ) {
+  if (process.env.USE_MOCK_DATA === 'true' && sourceInfo.source_index === MOCK_SOURCE_INDEX) {
     const idSet = new Set(sourceInfo.source_document_ids);
     return MOCK_SOURCES.filter(doc => idSet.has(doc._id));
   }

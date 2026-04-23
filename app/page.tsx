@@ -39,12 +39,11 @@ function EmptyState({
           AI-drevet skatteassistanse
         </div>
         <h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight text-base-content mb-4 leading-[1.1]">
-          Still et spørsmål om{' '}
-          <span className="text-primary">norsk skatterett</span>.
+          Still et spørsmål om <span className="text-primary">norsk skatterett</span>.
         </h1>
         <p className="text-base text-base-content/70 max-w-xl mx-auto leading-relaxed mb-8">
-          Svarene er basert på norske skattelover, Skatteetatens veiledere og
-          publiserte forskrifter. Hvert svar er lenket til sine kilder.
+          Svarene er basert på norske skattelover, Skatteetatens veiledere og publiserte
+          forskrifter. Hvert svar er lenket til sine kilder.
         </p>
 
         <div className="grid gap-2 sm:grid-cols-3 text-left">
@@ -67,7 +66,14 @@ function EmptyState({
               <span className="block leading-snug">{prompt}</span>
               <span className="mt-2 inline-flex items-center gap-1 text-[11px] text-base-content/50 group-hover:text-secondary transition-colors">
                 Prøv dette
-                <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden>
+                <svg
+                  className="h-3 w-3"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
               </span>

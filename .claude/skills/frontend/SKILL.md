@@ -18,28 +18,28 @@ A reusable workspace guide for frontend work on this repo. Read this whole file 
 
 ## Entry points
 
-| Surface | File |
-|---|---|
-| Root layout + theme + fonts | `app/layout.tsx` |
-| Global CSS | `app/globals.css` |
-| Chat page | `app/page.tsx` |
-| Account | `app/account/page.tsx` |
-| Info / feedback | `app/info/page.tsx` |
-| Header | `app/src/components/navigation/header.tsx` |
-| Welcome modal | `app/src/components/modals/WelcomeModal.tsx` |
-| Chat bubbles / stream | `app/src/components/textManagement/markdownTextDisplay.tsx` |
-| Search textarea | `app/src/components/chat/SearchInput.tsx` |
-| Keyword input + tags | `app/src/components/chat/{KeywordInput,KeywordTags}.tsx` |
-| Submit button | `app/src/components/buttons/SearchButton.tsx` |
-| Detaljert/Konkret toggle | `app/src/components/buttons/ToggleModelDepth.tsx` |
-| Scroll-to-bottom | `app/src/components/buttons/ScrollToBottomButton.tsx` |
-| Collapse input toggle | `app/src/components/buttons/CollapseToggle.tsx` |
-| Chat layout + sidebar trigger | `app/src/components/layout/ChatLayout.tsx` |
-| Conversation sidebar | `app/src/components/navigation/ConversationSidebar.tsx` |
-| Conversation list + delete | `app/src/components/layout/ConversationList.tsx` |
-| Sources drawer | `app/src/components/navigation/SourcesSidebar.tsx` |
-| Shared primitives | `app/src/components/common/` (`Button`, `Card`, `Tooltip`, `IconButton`) |
-| Conversation context | `app/src/contexts/ConversationContext.tsx` |
+| Surface                       | File                                                                     |
+| ----------------------------- | ------------------------------------------------------------------------ |
+| Root layout + theme + fonts   | `app/layout.tsx`                                                         |
+| Global CSS                    | `app/globals.css`                                                        |
+| Chat page                     | `app/page.tsx`                                                           |
+| Account                       | `app/account/page.tsx`                                                   |
+| Info / feedback               | `app/info/page.tsx`                                                      |
+| Header                        | `app/src/components/navigation/header.tsx`                               |
+| Welcome modal                 | `app/src/components/modals/WelcomeModal.tsx`                             |
+| Chat bubbles / stream         | `app/src/components/textManagement/markdownTextDisplay.tsx`              |
+| Search textarea               | `app/src/components/chat/SearchInput.tsx`                                |
+| Keyword input + tags          | `app/src/components/chat/{KeywordInput,KeywordTags}.tsx`                 |
+| Submit button                 | `app/src/components/buttons/SearchButton.tsx`                            |
+| Detaljert/Konkret toggle      | `app/src/components/buttons/ToggleModelDepth.tsx`                        |
+| Scroll-to-bottom              | `app/src/components/buttons/ScrollToBottomButton.tsx`                    |
+| Collapse input toggle         | `app/src/components/buttons/CollapseToggle.tsx`                          |
+| Chat layout + sidebar trigger | `app/src/components/layout/ChatLayout.tsx`                               |
+| Conversation sidebar          | `app/src/components/navigation/ConversationSidebar.tsx`                  |
+| Conversation list + delete    | `app/src/components/layout/ConversationList.tsx`                         |
+| Sources drawer                | `app/src/components/navigation/SourcesSidebar.tsx`                       |
+| Shared primitives             | `app/src/components/common/` (`Button`, `Card`, `Tooltip`, `IconButton`) |
+| Conversation context          | `app/src/contexts/ConversationContext.tsx`                               |
 
 ## Data contracts (do NOT change as part of UI work)
 
