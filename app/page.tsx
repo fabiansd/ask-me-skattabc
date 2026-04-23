@@ -104,10 +104,29 @@ function SearchContent({
   const chatDisplayRef = useRef<ChatDisplayRef>(null);
 
   const { data: session } = useSession();
-  const { currentConversationId, setCurrentConversationId, refreshConversations } =
-    useConversation();
+  const {
+    currentConversationId,
+    setCurrentConversationId,
+    refreshConversations,
+    newConversationSignal,
+  } = useConversation();
 
   const hasMessages = conversationMessages.length > 0;
+
+  // Reset local draft state (keywords + pending search input) whenever the
+  // user starts a new conversation via the "Ny samtale" button. We skip the
+  // initial mount so we don't wipe restored sessionStorage state on load.
+  const firstNewSignalRef = useRef(true);
+  useEffect(() => {
+    if (firstNewSignalRef.current) {
+      firstNewSignalRef.current = false;
+      return;
+    }
+    setKeywords([]);
+    setSearchInput('');
+    sessionStorage.removeItem('keywords');
+    sessionStorage.removeItem('searchInput');
+  }, [newConversationSignal]);
 
   useEffect(() => {
     const savedInput = sessionStorage.getItem('searchInput');
