@@ -8,7 +8,11 @@ interface ConversationContextType {
   startNewConversation: () => void;
   refreshConversations: () => void;
   refreshTrigger: number;
-  clearSearchState?: () => void;
+  /**
+   * Increments every time `startNewConversation` is called. Consumers can
+   * watch this value to reset local draft state (keywords, inputs, etc.).
+   */
+  newConversationSignal: number;
 }
 
 const ConversationContext = createContext<ConversationContextType | undefined>(undefined);
@@ -16,15 +20,16 @@ const ConversationContext = createContext<ConversationContextType | undefined>(u
 export function ConversationProvider({ children }: { children: React.ReactNode }) {
   const [currentConversationId, setCurrentConversationId] = useState<number | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [newConversationSignal, setNewConversationSignal] = useState(0);
 
   const selectConversation = (id: number) => {
     setCurrentConversationId(id);
-    // TODO: Clear current search results when switching conversations
   };
 
   const startNewConversation = () => {
     setCurrentConversationId(null);
     setRefreshTrigger(prev => prev + 1);
+    setNewConversationSignal(prev => prev + 1);
   };
 
   const refreshConversations = () => {
@@ -40,6 +45,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
         startNewConversation,
         refreshConversations,
         refreshTrigger,
+        newConversationSignal,
       }}
     >
       {children}

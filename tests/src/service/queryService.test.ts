@@ -58,6 +58,8 @@ describe('queryService', () => {
       const mockResponse = {
         openaiResponse: 'Mock OpenAI response',
         conversation_id: 1,
+        sourceIndex: 'mock_skatt_para',
+        sourceDocumentIds: ['mock-1', 'mock-2'],
       };
       mockGetMockQueryResponse.mockReturnValue(mockResponse);
       mockAddUserChatHistory.mockResolvedValue(1);
@@ -68,7 +70,9 @@ describe('queryService', () => {
       expect(mockAddUserChatHistory).toHaveBeenCalledWith(
         mockRequest,
         mockResponse.openaiResponse,
-        mockAuthId
+        mockAuthId,
+        mockResponse.sourceIndex,
+        mockResponse.sourceDocumentIds
       );
       expect(chunks).toContain(mockResponse.openaiResponse);
       expect(chunks).toContain(JSON.stringify({ conversation_id: 1 }));
@@ -78,6 +82,8 @@ describe('queryService', () => {
       const mockResponse = {
         openaiResponse: 'Mock response',
         conversation_id: 1,
+        sourceIndex: 'mock_skatt_para',
+        sourceDocumentIds: ['mock-1'],
       };
       mockGetMockQueryResponse.mockReturnValue(mockResponse);
       mockAddUserChatHistory.mockResolvedValue(1);

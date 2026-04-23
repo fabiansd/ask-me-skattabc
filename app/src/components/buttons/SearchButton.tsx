@@ -1,3 +1,5 @@
+'use client';
+import Button from '../common/Button';
 import Tooltip from '../common/Tooltip';
 
 interface SearchButtonProps {
@@ -13,30 +15,41 @@ export default function SearchButton({
   disabled,
   onClick,
   currentConversationId,
-  loadingText = 'Laster',
+  loadingText = 'Laster…',
 }: SearchButtonProps) {
   const buttonText = isLoading
     ? loadingText
     : !currentConversationId
-      ? 'Nytt spørsmål'
-      : 'Oppfølgingsspørsmål';
+      ? 'Still spørsmål'
+      : 'Følg opp';
+
+  const sendIcon = (
+    <svg
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      aria-hidden
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m0 0l-6 6m6-6l6 6" />
+    </svg>
+  );
 
   return (
-    <Tooltip text="Press enter! Assistenten husker samtalen. PS: Jeg jobber :)">
-      <button
-        className="btn bg-sky-700 hover:bg-sky-800 text-white font-bold m-1 px-6 rounded min-w-[180px]"
+    <Tooltip text="Assistenten husker samtalen. Trykk Enter for å sende.">
+      <Button
+        data-testid="submit-query"
+        variant="primary"
+        size="md"
+        loading={isLoading}
         disabled={disabled}
         onClick={onClick}
+        rightIcon={!isLoading ? sendIcon : undefined}
+        className="min-w-[150px]"
       >
-        {isLoading ? (
-          <div className="flex items-center gap-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-            <span>{buttonText}</span>
-          </div>
-        ) : (
-          buttonText
-        )}
-      </button>
+        {buttonText}
+      </Button>
     </Tooltip>
   );
 }

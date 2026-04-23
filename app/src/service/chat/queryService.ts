@@ -28,7 +28,9 @@ export async function* queryStream(
     const conversation_id = await addUserChatHistory(
       queryChatRequest,
       mockResponse.openaiResponse,
-      authId
+      authId,
+      mockResponse.sourceIndex,
+      mockResponse.sourceDocumentIds
     );
     yield JSON.stringify({ conversation_id });
     return;

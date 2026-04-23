@@ -1,4 +1,5 @@
 'use client';
+import Button from '../common/Button';
 
 interface NewConversationButtonProps {
   onClick: () => void;
@@ -6,14 +7,26 @@ interface NewConversationButtonProps {
 
 export default function NewConversationButton({ onClick }: NewConversationButtonProps) {
   return (
-    <button
+    <Button
+      data-testid="new-conversation"
+      variant="primary"
+      size="sm"
       onClick={onClick}
-      className="btn bg-red-500 hover:bg-red-600 text-white px-6 rounded flex-1 mr-2"
+      fullWidth
+      leftIcon={
+        <svg
+          className="h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+          aria-hidden
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m-7-7h14" />
+        </svg>
+      }
     >
-      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-      </svg>
       Ny samtale
-    </button>
+    </Button>
   );
 }
