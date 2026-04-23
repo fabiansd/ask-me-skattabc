@@ -4,85 +4,115 @@ exports[`KeywordTags matches snapshot with empty keywords 1`] = `null`;
 
 exports[`KeywordTags matches snapshot with keywords 1`] = `
 <div
-  className="flex flex-wrap gap-1 mt-2"
+  className="flex flex-wrap gap-1.5 mt-2 justify-center"
 >
   <button
-    className="badge bg-sky-600 gap-2 hover:bg-sky-500 hover:cursor-pointer transition-colors duration-200"
+    aria-label="Fjern nøkkelord mva"
+    className="
+            group inline-flex items-center gap-1.5
+            h-7 pl-2.5 pr-2
+            rounded-full
+            bg-secondary/15 text-secondary-content
+            border border-secondary/30
+            text-xs font-medium
+            transition-colors duration-150
+            hover:bg-secondary/25 hover:border-secondary/50
+          "
+    data-testid="keyword-tag"
     onClick={[Function]}
     type="button"
   >
     <span
-      className="font-bold"
-      style={
-        {
-          "color": "rgb(31 41 55)",
-        }
-      }
+      className="text-base-content/85"
     >
       mva
     </span>
-    <span
-      className="text-xs"
-      style={
-        {
-          "color": "rgb(31 41 55)",
-        }
-      }
+    <svg
+      aria-hidden={true}
+      className="h-3 w-3 text-base-content/50 group-hover:text-accent transition-colors"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.25"
+      viewBox="0 0 24 24"
     >
-      ✕
-    </span>
+      <path
+        d="M6 6l12 12M18 6L6 18"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   </button>
   <button
-    className="badge bg-sky-600 gap-2 hover:bg-sky-500 hover:cursor-pointer transition-colors duration-200"
+    aria-label="Fjern nøkkelord skatt"
+    className="
+            group inline-flex items-center gap-1.5
+            h-7 pl-2.5 pr-2
+            rounded-full
+            bg-secondary/15 text-secondary-content
+            border border-secondary/30
+            text-xs font-medium
+            transition-colors duration-150
+            hover:bg-secondary/25 hover:border-secondary/50
+          "
+    data-testid="keyword-tag"
     onClick={[Function]}
     type="button"
   >
     <span
-      className="font-bold"
-      style={
-        {
-          "color": "rgb(31 41 55)",
-        }
-      }
+      className="text-base-content/85"
     >
       skatt
     </span>
-    <span
-      className="text-xs"
-      style={
-        {
-          "color": "rgb(31 41 55)",
-        }
-      }
+    <svg
+      aria-hidden={true}
+      className="h-3 w-3 text-base-content/50 group-hover:text-accent transition-colors"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.25"
+      viewBox="0 0 24 24"
     >
-      ✕
-    </span>
+      <path
+        d="M6 6l12 12M18 6L6 18"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   </button>
   <button
-    className="badge bg-sky-600 gap-2 hover:bg-sky-500 hover:cursor-pointer transition-colors duration-200"
+    aria-label="Fjern nøkkelord fradrag"
+    className="
+            group inline-flex items-center gap-1.5
+            h-7 pl-2.5 pr-2
+            rounded-full
+            bg-secondary/15 text-secondary-content
+            border border-secondary/30
+            text-xs font-medium
+            transition-colors duration-150
+            hover:bg-secondary/25 hover:border-secondary/50
+          "
+    data-testid="keyword-tag"
     onClick={[Function]}
     type="button"
   >
     <span
-      className="font-bold"
-      style={
-        {
-          "color": "rgb(31 41 55)",
-        }
-      }
+      className="text-base-content/85"
     >
       fradrag
     </span>
-    <span
-      className="text-xs"
-      style={
-        {
-          "color": "rgb(31 41 55)",
-        }
-      }
+    <svg
+      aria-hidden={true}
+      className="h-3 w-3 text-base-content/50 group-hover:text-accent transition-colors"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.25"
+      viewBox="0 0 24 24"
     >
-      ✕
-    </span>
+      <path
+        d="M6 6l12 12M18 6L6 18"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   </button>
 </div>
 `;

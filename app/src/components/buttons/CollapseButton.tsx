@@ -1,10 +1,23 @@
 'use client';
+import IconButton from '../common/IconButton';
 
 interface CollapseButtonProps {
   onClick: () => void;
   title: string;
   isFloating?: boolean;
 }
+
+const ChevronRight = (
+  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+  </svg>
+);
+
+const ChevronLeft = (
+  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+  </svg>
+);
 
 export default function CollapseButton({
   onClick,
@@ -13,24 +26,20 @@ export default function CollapseButton({
 }: CollapseButtonProps) {
   if (isFloating) {
     return (
-      <button
+      <IconButton
+        label={title}
         onClick={onClick}
-        className="fixed left-0 z-60 btn btn-ghost btn-sm p-2 bg-base-200 border border-base-300 transition-opacity duration-200"
-        style={{ top: 'calc(4rem + 1rem + 0.5rem)' }}
-        title={title}
+        variant="subtle"
+        className="fixed left-0 top-[calc(4rem+1rem)] z-40 rounded-l-none rounded-r-btn shadow-card"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
+        {ChevronRight}
+      </IconButton>
     );
   }
 
   return (
-    <button onClick={onClick} className="btn btn-ghost btn-sm p-2" title={title}>
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-      </svg>
-    </button>
+    <IconButton label={title} onClick={onClick} variant="ghost">
+      {ChevronLeft}
+    </IconButton>
   );
 }

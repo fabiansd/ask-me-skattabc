@@ -1,21 +1,26 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useConversation } from '../../contexts/ConversationContext';
 import ConversationSidebar from '../navigation/ConversationSidebar';
 
 interface ChatLayoutProps {
   children: React.ReactNode;
+  // Kept for API compatibility with callers; drawer behavior does not depend on it.
   isInputCollapsed?: boolean;
 }
 
-export default function ChatLayout({ children, isInputCollapsed = false }: ChatLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false); // Start closed by default
+export default function ChatLayout({ children }: ChatLayoutProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { currentConversationId, selectConversation, startNewConversation } = useConversation();
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
+  const toggleSidebar = () => setSidebarOpen(prev => !prev);
 
   const handleSelectConversation = (conversationId: number) => {
     selectConversation(conversationId);
+    if (window.matchMedia('(max-width: 768px)').matches) {
+      setSidebarOpen(false);
+    }
   };
 
   const handleNewConversation = () => {
@@ -23,41 +28,81 @@ export default function ChatLayout({ children, isInputCollapsed = false }: ChatL
     setSidebarOpen(false);
   };
 
+  // Lock body scroll while the drawer is open on mobile
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (!isMobile) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [sidebarOpen]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSidebarOpen(false);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [sidebarOpen]);
+
   return (
-    <div
-      className={`relative ${isInputCollapsed ? 'h-screen overflow-y-auto' : 'min-h-[calc(100vh-4rem)]'}`}
-    >
+    <div className="relative flex-1 flex flex-col min-h-0">
       <button
+        type="button"
+        data-testid="sidebar-toggle"
         onClick={toggleSidebar}
-        className={`group fixed left-0 z-60 bg-base-200 border border-base-300 flex items-center justify-center min-h-[2rem] hover:bg-neutral hover:border-neutral-focus transition-colors ${
-          sidebarOpen ? 'p-2 rounded-md' : 'md:pl-3 md:pr-2 py-2 rounded-r-md w-8 md:w-auto'
-        } top-[10.35rem] md:top-[6.55rem]`}
+        aria-expanded={sidebarOpen}
+        aria-controls="conversation-drawer"
+        className={`
+          group fixed left-0 z-30
+          inline-flex items-center gap-2
+          px-2 py-1.5
+          bg-base-100 border border-l-0 border-base-300
+          rounded-r-btn shadow-card
+          text-xs font-medium text-base-content/70
+          hover:text-base-content hover:border-secondary/50 hover:bg-base-200
+          transition-all duration-150
+          top-[calc(3.5rem+0.75rem)] sm:top-[calc(4rem+1rem)]
+          ${sidebarOpen ? 'opacity-0 pointer-events-none -translate-x-2' : 'opacity-100'}
+          focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary
+        `}
       >
-        {!sidebarOpen && (
-          <span className="text-sm font-medium mr-2 hidden md:flex items-center">Samtaler</span>
-        )}
         <svg
-          className="w-4 h-4 flex-shrink-0 group-hover:scale-110 transition-transform"
+          className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
           fill="none"
           stroke="currentColor"
+          strokeWidth="2"
           viewBox="0 0 24 24"
+          aria-hidden
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d={sidebarOpen ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7'}
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
+        <span className="hidden sm:inline pr-1">Samtaler</span>
       </button>
 
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-neutral/30 backdrop-blur-sm animate-fade-in"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden
+        />
+      )}
+
       <div
+        id="conversation-drawer"
         className={`
-        fixed left-0 top-16 h-[calc(100vh-4rem)] z-50 bg-base-100 shadow-lg
-        transition-transform duration-300 ease-in-out
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        w-80
-      `}
+          fixed left-0 top-14 sm:top-16 z-50
+          h-[calc(100dvh-3.5rem)] sm:h-[calc(100dvh-4rem)]
+          w-full sm:w-80
+          shadow-elevated
+          transition-transform duration-300 ease-out
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}
       >
         <ConversationSidebar
           isOpen={sidebarOpen}
@@ -68,11 +113,7 @@ export default function ChatLayout({ children, isInputCollapsed = false }: ChatL
         />
       </div>
 
-      {sidebarOpen && (
-        <div className="fixed inset-0 bg-transparent z-40" onClick={() => setSidebarOpen(false)} />
-      )}
-
-      <div className="h-full w-full">{children}</div>
+      <div className="flex-1 flex flex-col min-h-0">{children}</div>
     </div>
   );
 }

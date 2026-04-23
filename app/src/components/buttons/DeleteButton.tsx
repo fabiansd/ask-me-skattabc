@@ -1,56 +1,84 @@
 'use client';
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface DeleteButtonProps {
   onDelete: () => void;
 }
 
+const HOLD_DURATION_MS = 600;
+
 export default function DeleteButton({ onDelete }: DeleteButtonProps) {
   const [progress, setProgress] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const rafRef = useRef<number | null>(null);
+  const startedAtRef = useRef<number | null>(null);
 
-  const startDelete = () => {
+  const cancel = useCallback(() => {
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    rafRef.current = null;
+    startedAtRef.current = null;
     setProgress(0);
-    let currentProgress = 0;
+  }, []);
 
-    intervalRef.current = setInterval(() => {
-      currentProgress += 10;
-      setProgress(currentProgress);
-      if (currentProgress >= 100) {
-        clearInterval(intervalRef.current!);
-        onDelete();
+  useEffect(() => cancel, [cancel]);
+
+  const start = (e: React.MouseEvent | React.TouchEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    startedAtRef.current = performance.now();
+    const tick = () => {
+      if (startedAtRef.current === null) return;
+      const elapsed = performance.now() - startedAtRef.current;
+      const next = Math.min(100, (elapsed / HOLD_DURATION_MS) * 100);
+      setProgress(next);
+      if (next >= 100) {
+        startedAtRef.current = null;
         setProgress(0);
+        onDelete();
+        return;
       }
-    }, 50);
-  };
-
-  const cancelDelete = () => {
-    clearInterval(intervalRef.current!);
-    setProgress(0);
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
   };
 
   return (
-    <div
-      className="absolute top-1/2 right-2 transform -translate-y-1/2 w-6 h-6 bg-base-100 rounded opacity-0 group-hover:opacity-100 transition-opacity overflow-hidden"
-      onMouseDown={startDelete}
-      onMouseUp={cancelDelete}
-      onMouseLeave={cancelDelete}
+    <span
+      data-testid="delete-conversation"
+      role="button"
+      tabIndex={-1}
+      aria-label="Hold for å slette"
+      title="Hold knappen inne for å slette"
+      onClick={e => e.stopPropagation()}
+      onMouseDown={start}
+      onMouseUp={cancel}
+      onMouseLeave={cancel}
+      onTouchStart={start}
+      onTouchEnd={cancel}
+      onTouchCancel={cancel}
+      className="
+        absolute top-1/2 right-2 -translate-y-1/2
+        inline-flex items-center justify-center
+        h-7 w-7 rounded-btn
+        text-base-content/50
+        opacity-0 group-hover:opacity-100 group-focus-within:opacity-100
+        md:opacity-0 opacity-100
+        hover:text-accent hover:bg-accent/10
+        transition-[color,opacity,background-color] duration-150
+        overflow-hidden
+      "
     >
-      <div
-        className="absolute inset-0 bg-red-500/30 transition-all duration-75"
+      <span
+        className="absolute inset-0 bg-accent/20 transition-[width] duration-75"
         style={{ width: `${progress}%` }}
+        aria-hidden
       />
-      <svg
-        className="w-5 h-5 absolute inset-0.5 text-base-content/60"
-        fill="currentColor"
-        viewBox="0 0 20 20"
-      >
+      <svg className="relative h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24" aria-hidden>
         <path
-          fillRule="evenodd"
-          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-          clipRule="evenodd"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 002 2h8a2 2 0 002-2l1-12M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2"
         />
       </svg>
-    </div>
+    </span>
   );
 }

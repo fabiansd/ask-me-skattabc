@@ -1,7 +1,9 @@
 'use client';
 import { useSession } from 'next-auth/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import Button from '../src/components/common/Button';
+import Card from '../src/components/common/Card';
 import { UserFeedbackInput } from '../src/interface/feedback';
 import { getUserId } from '../src/service/users/getUserId';
 
@@ -14,166 +16,252 @@ const initialFeedback: UserFeedbackInput = {
 export default function Info() {
   const [feedback, setFeedback] = useState(initialFeedback);
   const [isLoading, setIsLoading] = useState(false);
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const { data: session } = useSession();
 
-  const handeButtonClick = async () => {
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 4000);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const submitFeedback = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(`/api/postgres/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          feedback: feedback,
-        }),
+        body: JSON.stringify({ feedback }),
       });
-      if (!response.ok) {
-        throw new Error('Failed to add feedback');
-      }
+      if (!response.ok) throw new Error('Failed to add feedback');
       await response.json();
       setFeedback(initialFeedback);
+      setToast({ type: 'success', text: 'Takk for tilbakemeldingen!' });
     } catch (error) {
-      console.error('Error fetching search results:', error);
-    }
-    setIsLoading(false);
-  };
-
-  const handleKeyPress = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      handeButtonClick();
+      console.error('Error sending feedback:', error);
+      setToast({ type: 'error', text: 'Kunne ikke sende. Prøv igjen.' });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     const { name, value } = event.target;
-    setFeedback({
-      ...feedback,
+    setFeedback(prev => ({
+      ...prev,
       [name]: value,
       username: getUserId(session),
-    });
+    }));
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      if (feedback.desired_features?.trim()) submitFeedback();
+    }
   };
 
   return (
-    <div className="pt-10 px-4 flex justify-center">
-      <div className="w-full max-w-2xl space-y-8 pb-8">
-        {/* How to Use */}
-        <div>
-          <h2 className="text-xl font-bold text-base-content mb-4">Bruksmanual</h2>
+    <div className="flex-1">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10 sm:py-14">
+        <div className="grid gap-8 lg:grid-cols-5">
+          {/* Manual column */}
+          <section className="lg:col-span-3 space-y-8">
+            <header>
+              <p className="text-[11px] font-medium tracking-wider uppercase text-secondary mb-2">
+                Bruksmanual
+              </p>
+              <h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight text-base-content leading-tight">
+                Slik får du mest ut av Optimalskatt
+              </h1>
+            </header>
 
-          <p className="text-base-content/80 leading-relaxed mb-4">
-            <strong>Hvordan søke</strong>
-            <br />
-            Skriv ditt skattespørsmål på vanlig norsk, f.eks. &quot;Kan jeg trekke fra
-            hjemmekontor?&quot; For bedre treff kan du legge til spesifikke nøkkelord som &quot;§
-            6-15&quot;, &quot;fradrag&quot;, eller &quot;MVA&quot; i nøkkelord-feltet.
-          </p>
+            <Card variant="surface" className="p-6 sm:p-7">
+              <h2 className="font-serif text-lg font-medium text-base-content mb-2">
+                Hvordan stille spørsmål
+              </h2>
+              <p className="text-sm text-base-content/75 leading-relaxed">
+                Skriv skattespørsmålet ditt på vanlig norsk, f.eks. «Kan jeg
+                trekke fra hjemmekontor?». Du kan legge til spesifikke
+                nøkkelord som <em>§ 6-15</em>, <em>fradrag</em> eller{' '}
+                <em>MVA</em> i nøkkelord-feltet for å styre søket.
+              </p>
+            </Card>
 
-          <p className="text-base-content/80 leading-relaxed mb-4">
-            <strong>Smart matching</strong>
-            <br />
-            Assistenten bruker dobbelt søk - den leter etter lover som forstår spørsmålet ditt
-            semantisk, samtidig som den matcher eksakte nøkkelord som §-referanser. De beste
-            treffene fra begge metodene kombineres for optimal relevans.
-          </p>
+            <Card variant="surface" className="p-6 sm:p-7">
+              <h2 className="font-serif text-lg font-medium text-base-content mb-2">
+                Smart dobbeltsøk
+              </h2>
+              <p className="text-sm text-base-content/75 leading-relaxed">
+                Assistenten kombinerer semantisk søk i skattematerialet med
+                eksakt matching av nøkkelord og §-referanser. De beste
+                treffene fra begge metodene settes sammen for optimal
+                relevans.
+              </p>
+            </Card>
 
-          <p className="text-base-content/80 leading-relaxed mb-4">
-            <strong>Svartyper</strong>
-            <br />
-            Velg <em>konkret</em> for korte, fokuserte svar som åpner for oppfølgingsspørsmål. Velg{' '}
-            <em>detaljert</em> for grundige steg-for-steg forklaringer (tar lengre tid å generere).
-          </p>
+            <Card variant="surface" className="p-6 sm:p-7">
+              <h2 className="font-serif text-lg font-medium text-base-content mb-2">
+                Svartyper
+              </h2>
+              <p className="text-sm text-base-content/75 leading-relaxed">
+                Velg <strong className="text-base-content">Konkret</strong>{' '}
+                for korte, fokuserte svar som inviterer til
+                oppfølgingsspørsmål. Velg{' '}
+                <strong className="text-base-content">Detaljert</strong> for
+                grundige steg-for-steg forklaringer (tar litt lengre tid å
+                generere).
+              </p>
+            </Card>
 
-          <p className="text-base-content/80 leading-relaxed mb-4">
-            <strong>Se kildene</strong>
-            <br />
-            Hvert svar fra assistenten har en &quot;Kilder&quot;-knapp som lar deg se de originale
-            lovtekstene og forskriftene som ble brukt til å generere svaret. Klikk på knappen for å
-            åpne en sidepanel med alle kildedokumentene.
-          </p>
-        </div>
+            <Card variant="surface" className="p-6 sm:p-7">
+              <h2 className="font-serif text-lg font-medium text-base-content mb-2">
+                Se kildene
+              </h2>
+              <p className="text-sm text-base-content/75 leading-relaxed">
+                Hvert svar fra assistenten har en{' '}
+                <strong className="text-base-content">Kilder</strong>-knapp
+                som åpner et sidepanel med de originale lovtekstene og
+                forskriftene svaret er bygget på.
+              </p>
+            </Card>
 
-        {/* About the AI Assistant */}
-        <div>
-          <p className="text-base-content/80 leading-relaxed mb-4">
-            Denne AI-assistenten bruker juridiske tekster og alle norske skattelover fra Lovdata til
-            å gi presise svar på komplekse skattespørsmål. Systemet kombinerer semantisk søk i
-            skattemateriale med avanserte språkmodeller for å levere praktiske råd innen:
-          </p>
-          <ul className="list-disc list-inside text-base-content/80 space-y-2 mb-4">
-            <li>
-              <strong>Personlig økonomi:</strong> Selvangivelse, fradrag og skatteoptimalisering
-            </li>
-            <li>
-              <strong>Næringsdrift:</strong> MVA, avskrivninger og bedriftsskatt
-            </li>
-            <li>
-              <strong>Investeringer:</strong> Aksjegevinst, utleie og kapitalinntekt
-            </li>
-            <li>
-              <strong>Internasjonalt:</strong> Dobbeltbeskatningsavtaler og utenlandsk inntekt
-            </li>
-          </ul>
-          <p className="text-base-content/60 text-sm">
-            <em>
-              Merk: Dette er en eksperimentell tjeneste som ikke erstatter profesjonell rådgivning.
-            </em>
-          </p>
-        </div>
-
-        {/* Contact Info */}
-        <div>
-          <h2 className="text-xl font-bold text-base-content mb-4">Kontaktinfo</h2>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="text-base-content/60">📧</span>
-              <a
-                href="mailto:fabian.s.dietrichson@gmail.com"
-                className="text-sky-600 hover:text-sky-800"
-              >
-                fabian.s.dietrichson@gmail.com
-              </a>
+            <div>
+              <h2 className="font-serif text-xl font-medium text-base-content mb-3">
+                Hva assistenten kan hjelpe med
+              </h2>
+              <p className="text-sm text-base-content/75 leading-relaxed mb-4">
+                Optimalskatt bygger på norske skattelover fra Lovdata,
+                Skatteetatens veiledere og offentlige forskrifter. Den dekker
+                blant annet:
+              </p>
+              <ul className="grid sm:grid-cols-2 gap-2 text-sm">
+                {[
+                  ['Personlig økonomi', 'Selvangivelse, fradrag og skatteoptimalisering'],
+                  ['Næringsdrift', 'MVA, avskrivninger og bedriftsskatt'],
+                  ['Investeringer', 'Aksjegevinst, utleie og kapitalinntekt'],
+                  ['Internasjonalt', 'Dobbeltbeskatning og utenlandsk inntekt'],
+                ].map(([title, body]) => (
+                  <li
+                    key={title}
+                    className="rounded-box border border-base-300 bg-base-100 p-4"
+                  >
+                    <div className="font-medium text-base-content text-sm mb-0.5">{title}</div>
+                    <div className="text-xs text-base-content/65 leading-relaxed">{body}</div>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs text-base-content/50 mt-4 italic">
+                Merk: Dette er en eksperimentell tjeneste som ikke erstatter
+                profesjonell skatterådgivning.
+              </p>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-base-content/60">📱</span>
-              <span className="text-base-content/80">+47 412 30 038</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-base-content/60">💼</span>
-              <a
-                href="https://www.linkedin.com/in/fabiansodaldietrichson/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sky-600 hover:text-sky-800"
-              >
-                LinkedIn-profil
-              </a>
-            </div>
-          </div>
-        </div>
+          </section>
 
-        {/* Feedback Section */}
-        <div>
-          <h2 className="text-xl font-bold text-base-content mb-4">Tilbakemelding</h2>
-          <div className="space-y-4">
-            <textarea
-              name="desired_features"
-              value={feedback.desired_features}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyPress}
-              className="textarea textarea-bordered w-full h-32 p-4"
-              placeholder="Ting du skulle ønske skatt AI kunne gjøre og generell tilbakemelding."
-            ></textarea>
-            <div className="flex justify-center">
-              <button
-                className="btn bg-sky-700 hover:bg-sky-800 text-white font-bold px-6 rounded"
-                disabled={isLoading || feedback.desired_features === ''}
-                onClick={handeButtonClick}
-              >
-                Send
-              </button>
-            </div>
-          </div>
+          {/* Sidebar: contact + feedback */}
+          <aside className="lg:col-span-2 space-y-6">
+            <Card variant="subtle" className="p-6">
+              <h2 className="font-serif text-lg font-medium text-base-content mb-4">
+                Kontakt
+              </h2>
+              <dl className="space-y-3 text-sm">
+                <div>
+                  <dt className="text-[11px] uppercase tracking-wide text-base-content/50 mb-0.5">
+                    E-post
+                  </dt>
+                  <dd>
+                    <a
+                      href="mailto:fabian.s.dietrichson@gmail.com"
+                      className="text-primary hover:text-secondary transition-colors break-all"
+                    >
+                      fabian.s.dietrichson@gmail.com
+                    </a>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[11px] uppercase tracking-wide text-base-content/50 mb-0.5">
+                    Telefon
+                  </dt>
+                  <dd className="text-base-content/85">+47 412 30 038</dd>
+                </div>
+                <div>
+                  <dt className="text-[11px] uppercase tracking-wide text-base-content/50 mb-0.5">
+                    LinkedIn
+                  </dt>
+                  <dd>
+                    <a
+                      href="https://www.linkedin.com/in/fabiansodaldietrichson/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:text-secondary transition-colors"
+                    >
+                      Fabian S. Dietrichson
+                    </a>
+                  </dd>
+                </div>
+              </dl>
+            </Card>
+
+            <Card variant="surface" className="p-6">
+              <h2 className="font-serif text-lg font-medium text-base-content mb-1">
+                Tilbakemelding
+              </h2>
+              <p className="text-xs text-base-content/60 mb-4">
+                Noe som mangler? Noe som bør fungere annerledes? Jeg leser alt.
+              </p>
+              <textarea
+                name="desired_features"
+                value={feedback.desired_features}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                rows={5}
+                className="
+                  w-full resize-y
+                  rounded-btn border border-base-300 bg-base-100
+                  px-3.5 py-3
+                  text-sm text-base-content placeholder:text-base-content/40
+                  focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
+                "
+                placeholder="Ting du skulle ønske Optimalskatt kunne gjøre…"
+              />
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <span className="text-[11px] text-base-content/50">
+                  ⌘ + Enter for å sende
+                </span>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  loading={isLoading}
+                  disabled={!feedback.desired_features?.trim()}
+                  onClick={submitFeedback}
+                >
+                  Send
+                </Button>
+              </div>
+            </Card>
+          </aside>
         </div>
       </div>
+
+      {toast && (
+        <div
+          role="status"
+          aria-live="polite"
+          className={`
+            fixed bottom-4 left-1/2 -translate-x-1/2 z-50
+            px-4 py-2.5 rounded-btn shadow-elevated
+            text-sm font-medium
+            animate-slide-up
+            ${
+              toast.type === 'success'
+                ? 'bg-success text-success-content'
+                : 'bg-error text-error-content'
+            }
+          `}
+        >
+          {toast.text}
+        </div>
+      )}
     </div>
   );
 }

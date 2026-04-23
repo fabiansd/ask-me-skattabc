@@ -10,6 +10,7 @@ interface ChatDisplayProps {
   conversationMessages: ConversationMessage[];
   isCollapsed?: boolean;
   onViewSources?: (messageId: number) => void;
+  isStreaming?: boolean;
 }
 
 export interface ChatDisplayRef {
@@ -17,26 +18,21 @@ export interface ChatDisplayRef {
 }
 
 const ChatDisplay = forwardRef<ChatDisplayRef, ChatDisplayProps>(
-  ({ conversationMessages, isCollapsed = false, onViewSources }, ref) => {
+  ({ conversationMessages, isCollapsed = false, onViewSources, isStreaming = false }, ref) => {
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const [showScrollButton, setShowScrollButton] = useState(false);
 
-    // Expose scroll function to parent
     useImperativeHandle(ref, () => ({
       scrollToLastUserMessage: () => {
         if (!chatContainerRef.current) return;
-
-        // Find last user message element
         const userMessages = chatContainerRef.current.querySelectorAll('[data-role="user"]');
         const lastUserMessage = userMessages[userMessages.length - 1];
-
         if (lastUserMessage) {
           lastUserMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       },
     }));
 
-    // Check if user is near bottom
     useEffect(() => {
       const container = chatContainerRef.current;
       if (!container) return;
@@ -44,11 +40,12 @@ const ChatDisplay = forwardRef<ChatDisplayRef, ChatDisplayProps>(
       const handleScroll = () => {
         const { scrollTop, scrollHeight, clientHeight } = container;
         const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
-        setShowScrollButton(!isNearBottom);
+        const isScrollable = scrollHeight > clientHeight + 40;
+        setShowScrollButton(isScrollable && !isNearBottom);
       };
 
       container.addEventListener('scroll', handleScroll);
-      handleScroll(); // Check initial state
+      handleScroll();
 
       return () => container.removeEventListener('scroll', handleScroll);
     }, [conversationMessages]);
@@ -63,81 +60,100 @@ const ChatDisplay = forwardRef<ChatDisplayRef, ChatDisplayProps>(
     };
 
     if (conversationMessages.length === 0) {
-      return <div className="text-center text-base-content/60 py-8">Spør meg om noe</div>;
+      return null;
     }
 
     return (
-      <div className="relative">
+      <div className="relative flex-1 flex flex-col min-h-0">
         <div
           ref={chatContainerRef}
-          className={`${isCollapsed ? 'h-[calc(100vh-6rem)]' : 'h-[calc(100vh-17rem)]'} overflow-y-auto scroll-smooth bg-base-100 rounded-lg`}
+          className={`
+            flex-1 min-h-0
+            overflow-y-auto scroll-smooth thin-scrollbar
+            ${isCollapsed ? 'pt-6' : 'pt-2'}
+            pb-8
+          `}
         >
-          {conversationMessages.map(message => (
-            <div
-              key={message.message_id}
-              className="w-full flex justify-center mb-6"
-              data-role={message.role}
-            >
-              <div
-                className={`p-4 rounded-lg w-full ${
-                  message.role === 'user' ? 'bg-base-300' : 'bg-base-200'
-                }`}
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <div className="text-sm font-medium text-base-content/80">
-                    {message.role === 'user' ? 'Du:' : 'Assistent:'}
-                  </div>
-                  {message.role === 'assistant' &&
-                    message.source_document_ids &&
-                    message.source_document_ids.length > 0 &&
-                    onViewSources && (
-                      <ViewSourcesButton onClick={() => onViewSources(message.message_id)} />
-                    )}
-                </div>
-                <div
-                  className="text-left markdown-content text-base-content"
-                  style={{ whiteSpace: 'pre-line' }}
+          <div className="mx-auto max-w-3xl px-4 sm:px-6">
+            {conversationMessages.map((message, idx) => {
+              const isUser = message.role === 'user';
+              const isLast = idx === conversationMessages.length - 1;
+              const isStreamingThis = isStreaming && isLast && !isUser;
+
+              return (
+                <article
+                  key={message.message_id}
+                  data-testid="chat-message"
+                  data-role={message.role}
+                  className={`group relative py-5 ${idx !== 0 ? 'border-t border-base-300/60' : ''}`}
                 >
-                  <ReactMarkdown
-                    components={{
-                      a: ({ href, children }) => (
-                        <a
-                          href={href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sky-600 hover:text-sky-800 underline"
-                        >
-                          {children}
-                        </a>
-                      ),
-                    }}
-                  >
-                    {message.content}
-                  </ReactMarkdown>
-                </div>
-                {message.role === 'user' && message.tags && message.tags.length > 0 && (
-                  <div className="mt-2">
-                    <span className="text-xs text-base-content/60">Tags: </span>
-                    {message.tags.map((tag, index) => (
-                      <span key={index} className="text-xs text-base-content/60">
-                        {tag}
-                        {index < message.tags!.length - 1 ? ', ' : ''}
+                  <header className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`
+                          inline-flex items-center justify-center
+                          h-6 w-6 rounded-full text-[11px] font-medium
+                          ${
+                            isUser
+                              ? 'bg-base-300 text-base-content/80'
+                              : 'bg-primary text-primary-content'
+                          }
+                        `}
+                        aria-hidden
+                      >
+                        {isUser ? 'Du' : 'O'}
                       </span>
-                    ))}
+                      <span className="text-xs font-medium text-base-content/60 tracking-wide uppercase">
+                        {isUser ? 'Du' : 'Optimalskatt'}
+                      </span>
+                    </div>
+                    {!isUser &&
+                      message.source_document_ids &&
+                      message.source_document_ids.length > 0 &&
+                      onViewSources && (
+                        <ViewSourcesButton onClick={() => onViewSources(message.message_id)} />
+                      )}
+                  </header>
+
+                  <div
+                    className={`
+                      markdown-content text-base-content leading-relaxed
+                      ${isUser ? 'font-sans text-[15px]' : 'font-sans text-[15px]'}
+                      ${isStreamingThis && !message.content ? 'streaming-caret' : ''}
+                      ${isStreamingThis && message.content ? 'streaming-caret' : ''}
+                    `}
+                  >
+                    <ReactMarkdown
+                      components={{
+                        a: ({ href, children }) => (
+                          <a href={href} target="_blank" rel="noopener noreferrer">
+                            {children}
+                          </a>
+                        ),
+                      }}
+                    >
+                      {message.content || (isStreamingThis ? '' : '')}
+                    </ReactMarkdown>
                   </div>
-                )}
-                {message.role === 'assistant' &&
-                  message.source_document_ids &&
-                  message.source_document_ids.length > 0 &&
-                  onViewSources && (
-                    <div className="mt-2 flex justify-end">
-                      <ViewSourcesButton onClick={() => onViewSources(message.message_id)} />
+
+                  {isUser && message.tags && message.tags.length > 0 && (
+                    <div className="mt-2.5 flex flex-wrap gap-1">
+                      {message.tags.map((tag, i) => (
+                        <span
+                          key={i}
+                          className="inline-flex items-center h-5 px-2 rounded-full bg-base-200 text-[11px] text-base-content/70 border border-base-300"
+                        >
+                          {tag}
+                        </span>
+                      ))}
                     </div>
                   )}
-              </div>
-            </div>
-          ))}
+                </article>
+              );
+            })}
+          </div>
         </div>
+
         {showScrollButton && <ScrollToBottomButton onClick={scrollToBottom} />}
       </div>
     );

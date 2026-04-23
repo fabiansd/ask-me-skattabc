@@ -7,20 +7,36 @@ export default function KeywordTags({ keywords, onRemoveKeyword }: KeywordTagsPr
   if (keywords.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap gap-1 mt-2">
+    <div className="flex flex-wrap gap-1.5 mt-2 justify-center">
       {keywords.map((keyword, index) => (
         <button
-          key={index}
+          key={`${keyword}-${index}`}
           type="button"
-          className="badge bg-sky-600 gap-2 hover:bg-sky-500 hover:cursor-pointer transition-colors duration-200"
+          data-testid="keyword-tag"
           onClick={() => onRemoveKeyword(index)}
+          aria-label={`Fjern nøkkelord ${keyword}`}
+          className="
+            group inline-flex items-center gap-1.5
+            h-7 pl-2.5 pr-2
+            rounded-full
+            bg-secondary/15 text-secondary-content
+            border border-secondary/30
+            text-xs font-medium
+            transition-colors duration-150
+            hover:bg-secondary/25 hover:border-secondary/50
+          "
         >
-          <span className="font-bold" style={{ color: 'rgb(31 41 55)' }}>
-            {keyword}
-          </span>
-          <span className="text-xs" style={{ color: 'rgb(31 41 55)' }}>
-            ✕
-          </span>
+          <span className="text-base-content/85">{keyword}</span>
+          <svg
+            className="h-3 w-3 text-base-content/50 group-hover:text-accent transition-colors"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.25"
+            viewBox="0 0 24 24"
+            aria-hidden
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6L6 18" />
+          </svg>
         </button>
       ))}
     </div>

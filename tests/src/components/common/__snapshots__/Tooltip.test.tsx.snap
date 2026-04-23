@@ -2,7 +2,9 @@
 
 exports[`Tooltip matches snapshot with bottom position 1`] = `
 <div
-  className="relative inline-block"
+  className="relative inline-flex"
+  onBlur={[Function]}
+  onFocus={[Function]}
   onMouseEnter={[Function]}
   onMouseLeave={[Function]}
 >
@@ -14,7 +16,9 @@ exports[`Tooltip matches snapshot with bottom position 1`] = `
 
 exports[`Tooltip matches snapshot with default position (top) 1`] = `
 <div
-  className="relative inline-block"
+  className="relative inline-flex"
+  onBlur={[Function]}
+  onFocus={[Function]}
   onMouseEnter={[Function]}
   onMouseLeave={[Function]}
 >
