@@ -5,11 +5,12 @@ import { useEffect, useState } from 'react';
 import { useConversation } from '../../contexts/ConversationContext';
 import { ConversationsList } from '../../interface/history';
 import { getUserId } from '../../service/users/getUserId';
-import CollapseButton from '../buttons/CollapseButton';
 import NewConversationButton from '../buttons/NewConversationButton';
+import IconButton from '../common/IconButton';
 import ConversationList from '../layout/ConversationList';
 
 interface ConversationSidebarProps {
+  // Kept for API compatibility; rendering is owned by the parent drawer.
   isOpen: boolean;
   onToggle: () => void;
   onSelectConversation: (conversationId: number) => void;
@@ -18,31 +19,16 @@ interface ConversationSidebarProps {
 }
 
 export default function ConversationSidebar({
-  isOpen,
   onToggle,
   onSelectConversation,
   onNewConversation,
   currentConversationId,
 }: ConversationSidebarProps) {
-  const [showFloatingButton, setShowFloatingButton] = useState(false);
   const [conversations, setConversations] = useState<ConversationsList[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
   const { refreshTrigger } = useConversation();
 
-  useEffect(() => {
-    if (!isOpen) {
-      // Wait for sidebar animation to complete before showing floating button
-      const timer = setTimeout(() => {
-        setShowFloatingButton(true);
-      }, 300);
-      return () => clearTimeout(timer);
-    } else {
-      setShowFloatingButton(false);
-    }
-  }, [isOpen]);
-
-  // Fetch conversations when component mounts, session changes, or refreshTrigger changes
   useEffect(() => {
     const fetchConversations = async () => {
       if (!session) return;
@@ -52,8 +38,6 @@ export default function ConversationSidebar({
         if (response.ok) {
           const data = await response.json();
           setConversations(data);
-        } else {
-          console.error('Failed to fetch conversations');
         }
       } catch (error) {
         console.error('Error fetching conversations:', error);
@@ -66,30 +50,48 @@ export default function ConversationSidebar({
   }, [session, refreshTrigger]);
 
   return (
-    <>
-      {showFloatingButton && (
-        <CollapseButton onClick={onToggle} title="Vis sidebar" isFloating={true} />
-      )}
-
-      <div className="h-full bg-base-200 border-r border-base-300 w-80 flex flex-col">
-        <div className="p-4 border-b border-base-300 flex justify-between items-center">
+    <aside
+      data-testid="conversation-sidebar"
+      className="h-full w-full bg-base-100 border-r border-base-300 flex flex-col"
+    >
+      <div className="px-4 py-3 border-b border-base-300 flex items-center gap-2">
+        <div className="flex-1">
           <NewConversationButton onClick={onNewConversation} />
-          <CollapseButton onClick={onToggle} title="Skjul sidebar" />
         </div>
+        <IconButton label="Skjul sidestolpe" onClick={onToggle} variant="ghost" size="sm">
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            aria-hidden
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </IconButton>
+      </div>
 
-        <ConversationList
-          conversations={conversations}
-          isLoading={isLoading}
-          currentConversationId={currentConversationId}
-          onSelectConversation={onSelectConversation}
-        />
+      <div className="px-4 py-2 border-b border-base-300/70">
+        <h3 className="font-serif text-sm font-medium text-base-content/80">Samtaler</h3>
+      </div>
 
-        <div className="p-4 border-t border-base-300">
-          <div className="text-xs text-base-content/50 text-center">
-            {conversations.length} samtaler
-          </div>
+      <ConversationList
+        conversations={conversations}
+        isLoading={isLoading}
+        currentConversationId={currentConversationId}
+        onSelectConversation={onSelectConversation}
+      />
+
+      <div className="px-4 py-3 border-t border-base-300">
+        <div className="text-[11px] text-base-content/50 text-center">
+          {!session
+            ? 'Logg inn for historikk'
+            : conversations.length === 0
+              ? 'Ingen samtaler'
+              : `${conversations.length} ${conversations.length === 1 ? 'samtale' : 'samtaler'}`}
         </div>
       </div>
-    </>
+    </aside>
   );
 }

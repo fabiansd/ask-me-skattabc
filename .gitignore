@@ -11,9 +11,12 @@ package-lock.json
 # testing
 /coverage
 
-*.env.local
-*.env
-
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
 # next.js
 /.next/
 /out/
@@ -57,5 +60,15 @@ elasticsearch/notebook_client/notebooks/examples/
 !package*.json
 !**/package*.json
 
-# Claude artifacts
-.claude/
+# Claude artifacts (ad-hoc notes) — but keep shared skills tracked
+.claude/*
+!.claude/skills/
+
+# Playwright visual testing artifacts
+.dev-screenshots/
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+# Monitoring report outputs (generated, contains prod data snapshots)
+reports/*.json

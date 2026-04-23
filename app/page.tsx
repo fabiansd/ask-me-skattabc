@@ -1,6 +1,6 @@
 'use client';
 import { useSession } from 'next-auth/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import CollapseToggle from './src/components/buttons/CollapseToggle';
 import SearchButton from './src/components/buttons/SearchButton';
@@ -18,6 +18,79 @@ import { QueryChatRequest } from './src/interface/skattSokInterface';
 import { createAssistantPlaceholder, createUserMessage } from './src/lib/messageHelpers';
 import { getUserId } from './src/service/users/getUserId';
 
+const EXAMPLE_PROMPTS = [
+  'Kan jeg trekke fra hjemmekontor som lønnsmottaker?',
+  'Hvordan beskattes gevinst ved salg av aksjer?',
+  'Hva er grensen for MVA-registrering?',
+];
+
+function EmptyState({
+  onSelectPrompt,
+  session,
+}: {
+  onSelectPrompt: (prompt: string) => void;
+  session: ReturnType<typeof useSession>['data'];
+}) {
+  return (
+    <div className="flex-1 flex items-center justify-center px-4 py-10 sm:py-16">
+      <div className="w-full max-w-2xl text-center">
+        <div className="inline-flex items-center gap-2 h-7 px-3 rounded-full bg-secondary/10 text-secondary text-[11px] font-medium tracking-wide uppercase mb-6">
+          <span className="h-1.5 w-1.5 rounded-full bg-secondary" aria-hidden />
+          AI-drevet skatteassistanse
+        </div>
+        <h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight text-base-content mb-4 leading-[1.1]">
+          Still et spørsmål om <span className="text-primary">norsk skatterett</span>.
+        </h1>
+        <p className="text-base text-base-content/70 max-w-xl mx-auto leading-relaxed mb-8">
+          Svarene er basert på norske skattelover, Skatteetatens veiledere og publiserte
+          forskrifter. Hvert svar er lenket til sine kilder.
+        </p>
+
+        <div className="grid gap-2 sm:grid-cols-3 text-left">
+          {EXAMPLE_PROMPTS.map(prompt => (
+            <button
+              key={prompt}
+              type="button"
+              onClick={() => onSelectPrompt(prompt)}
+              className="
+                group
+                rounded-box border border-base-300 bg-base-100
+                px-4 py-3
+                text-sm text-base-content/80
+                hover:border-secondary/50 hover:bg-base-200/50 hover:text-base-content
+                transition-all duration-150
+                shadow-card
+                focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary
+              "
+            >
+              <span className="block leading-snug">{prompt}</span>
+              <span className="mt-2 inline-flex items-center gap-1 text-[11px] text-base-content/50 group-hover:text-secondary transition-colors">
+                Prøv dette
+                <svg
+                  className="h-3 w-3"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {!session && (
+          <p className="mt-10 text-xs text-base-content/50">
+            Tips: logg inn for å lagre samtalehistorikk og få tilgang til en kraftigere modell.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function SearchContent({
   isInputAreaCollapsed,
   setIsInputAreaCollapsed,
@@ -27,7 +100,7 @@ function SearchContent({
 }) {
   const [isDetailed, setIsDetailed] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingText, setLoadingText] = useState('Henter lover');
+  const [loadingText, setLoadingText] = useState('Henter kilder…');
   const [searchInput, setSearchInput] = useState('');
   const [keywords, setKeywords] = useState<string[]>([]);
   const [conversationMessages, setConversationMessages] = useState<ConversationMessage[]>([]);
@@ -37,11 +110,31 @@ function SearchContent({
   const chatDisplayRef = useRef<ChatDisplayRef>(null);
 
   const { data: session } = useSession();
-  const { currentConversationId, setCurrentConversationId, refreshConversations } =
-    useConversation();
+  const {
+    currentConversationId,
+    setCurrentConversationId,
+    refreshConversations,
+    newConversationSignal,
+  } = useConversation();
+
+  const hasMessages = conversationMessages.length > 0;
+
+  // Reset local draft state (keywords + pending search input) whenever the
+  // user starts a new conversation via the "Ny samtale" button. We skip the
+  // initial mount so we don't wipe restored sessionStorage state on load.
+  const firstNewSignalRef = useRef(true);
+  useEffect(() => {
+    if (firstNewSignalRef.current) {
+      firstNewSignalRef.current = false;
+      return;
+    }
+    setKeywords([]);
+    setSearchInput('');
+    sessionStorage.removeItem('keywords');
+    sessionStorage.removeItem('searchInput');
+  }, [newConversationSignal]);
 
   useEffect(() => {
-    // Persist search state info for smoother UX
     const savedInput = sessionStorage.getItem('searchInput');
     const savedKeywords = sessionStorage.getItem('keywords');
     const savedConversationId = sessionStorage.getItem('currentConversationId');
@@ -101,7 +194,6 @@ function SearchContent({
         if (response.ok) {
           const data: ConversationMessage[] = await response.json();
           setConversationMessages(data);
-          console.log('🟡 [HISTORY] Loaded conversation messages:', data.length);
         }
       } catch (error) {
         console.error('Error fetching conversation messages:', error);
@@ -120,20 +212,20 @@ function SearchContent({
   };
 
   const handleToggle = (state: boolean) => {
-    console.log('page', isDetailed);
     setIsDetailed(state);
   };
 
   const handleButtonClick = async () => {
-    setIsLoading(true);
-    setLoadingText('Henter lover');
+    if (!searchInput.trim() || isLoading) return;
 
-    setTimeout(() => {
-      setLoadingText('Formulerer svar');
+    setIsLoading(true);
+    setLoadingText('Henter kilder…');
+
+    const phaseTimer = setTimeout(() => {
+      setLoadingText('Formulerer svar…');
     }, 3500);
 
     try {
-      console.log('📤', isDetailed ? 'DETALJERT' : 'KONKRET', 'mode');
       const queryChatRequest: QueryChatRequest = {
         searchText: searchInput,
         tags: keywords.length > 0 ? keywords : undefined,
@@ -141,12 +233,9 @@ function SearchContent({
         conversation_id: currentConversationId || undefined,
       };
 
-      // Add user message to display immediately
       const userMessage = createUserMessage(searchInput, currentConversationId || undefined);
-
       setConversationMessages(prev => [...prev, userMessage]);
 
-      // Scroll to the user's question after it's added
       setTimeout(() => {
         chatDisplayRef.current?.scrollToLastUserMessage();
       }, 100);
@@ -161,12 +250,9 @@ function SearchContent({
         throw new Error('Network response was not ok');
       }
 
-      // Create placeholder assistant message for streaming
       const assistantMessage = createAssistantPlaceholder(currentConversationId || undefined);
-
       setConversationMessages(prev => [...prev, assistantMessage]);
 
-      // Read stream
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let streamedContent = '';
@@ -178,7 +264,6 @@ function SearchContent({
 
           const chunk = decoder.decode(value, { stream: true });
 
-          // Check if this is the final JSON message with conversation_id
           try {
             const parsed = JSON.parse(chunk);
             if (parsed.conversation_id) {
@@ -188,10 +273,7 @@ function SearchContent({
               continue;
             }
           } catch {
-            // Not JSON, it's a text chunk
             streamedContent += chunk;
-
-            // Update the assistant message with streamed content
             setConversationMessages(prev => {
               const updated = [...prev];
               const lastIndex = updated.length - 1;
@@ -210,15 +292,16 @@ function SearchContent({
       setSearchInput('');
       sessionStorage.removeItem('searchInput');
 
-      // Refresh from database to get final state (only for authenticated users)
       if (session) {
         refreshConversations();
         fetchConversationMessages();
       }
     } catch (error) {
-      console.error('🔴 [ERROR] Query failed:', error);
+      console.error('[ERROR] Query failed:', error);
+    } finally {
+      clearTimeout(phaseTimer);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
@@ -238,45 +321,67 @@ function SearchContent({
     setSelectedMessageId(null);
   };
 
+  const selectExamplePrompt = (prompt: string) => {
+    setSearchInput(prompt);
+  };
+
+  const canSubmit = useMemo(
+    () => !isLoading && searchInput.trim().length > 0,
+    [isLoading, searchInput]
+  );
+
   return (
     <>
       <WelcomeModal isVisible={showWelcomeModal} onClose={handleCloseModal} />
 
-      {/* Input area - collapsible */}
+      {/* Input area — collapsible */}
       <div
-        className={`transition-all duration-300 ease-in-out overflow-hidden ${isInputAreaCollapsed ? 'max-h-0' : 'max-h-100'}`}
+        className={`
+          transition-[max-height,opacity,padding] duration-300 ease-out overflow-hidden
+          ${
+            isInputAreaCollapsed
+              ? 'max-h-0 opacity-0 pointer-events-none'
+              : 'max-h-[28rem] opacity-100'
+          }
+        `}
       >
-        <div className="pt-8 px-4">
+        <div className="pt-6 sm:pt-8 px-4 sm:px-6">
           <div className="mx-auto max-w-5xl">
             <div className="flex justify-center">
               <SearchInput
                 value={searchInput}
                 onChange={handleSearchInputChange}
                 onKeyDown={handleKeyPress}
+                disabled={isLoading}
               />
             </div>
-            <div className="flex flex-col items-center pt-2.5 md:pt-5">
-              {/* Desktop layout: Original horizontal layout */}
-              <div className="hidden md:flex items-center gap-4">
-                <KeywordInput keywords={keywords} onKeywordsChange={setKeywords} />
-                <ToggleSwitch onToggle={handleToggle} isDetailed={isDetailed} />
+
+            <div className="mx-auto max-w-3xl mt-3 sm:mt-4">
+              {/* Desktop: horizontal */}
+              <div className="hidden md:flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <KeywordInput keywords={keywords} onKeywordsChange={setKeywords} />
+                  <ToggleSwitch onToggle={handleToggle} isDetailed={isDetailed} />
+                </div>
                 <SearchButton
                   isLoading={isLoading}
-                  disabled={isLoading || searchInput === ''}
+                  disabled={!canSubmit}
                   onClick={handleButtonClick}
                   currentConversationId={currentConversationId}
                   loadingText={loadingText}
                 />
               </div>
 
-              {/* Mobile layout: Two lines */}
-              <div className="flex flex-col items-center gap-2 w-full max-w-2xl md:hidden">
+              {/* Mobile: stacked */}
+              <div className="flex md:hidden flex-col gap-2.5">
                 <KeywordInput keywords={keywords} onKeywordsChange={setKeywords} />
                 <div className="flex items-center gap-2">
-                  <ToggleSwitch onToggle={handleToggle} isDetailed={isDetailed} />
+                  <div className="flex-1">
+                    <ToggleSwitch onToggle={handleToggle} isDetailed={isDetailed} />
+                  </div>
                   <SearchButton
                     isLoading={isLoading}
-                    disabled={isLoading || searchInput === ''}
+                    disabled={!canSubmit}
                     onClick={handleButtonClick}
                     currentConversationId={currentConversationId}
                     loadingText={loadingText}
@@ -284,36 +389,32 @@ function SearchContent({
                 </div>
               </div>
 
-              {/* Tags container - shared for both layouts */}
-              <div className="w-full max-w-2xl mt-2 md:mt-0">
-                <KeywordTags
-                  keywords={keywords}
-                  onRemoveKeyword={index => {
-                    setKeywords(keywords.filter((_, i) => i !== index));
-                  }}
-                />
-              </div>
+              <KeywordTags
+                keywords={keywords}
+                onRemoveKeyword={index => {
+                  setKeywords(keywords.filter((_, i) => i !== index));
+                }}
+              />
             </div>
           </div>
         </div>
       </div>
-      {/* Divider with collapse toggle */}
-      <CollapseToggle isCollapsed={isInputAreaCollapsed} onToggle={setIsInputAreaCollapsed} />
-      {/* Chat display area */}
-      <div className="mx-auto max-w-5xl">
-        <div className="flex justify-center">
-          <div className="w-full max-w-3xl">
-            <ChatDisplay
-              ref={chatDisplayRef}
-              conversationMessages={conversationMessages}
-              isCollapsed={isInputAreaCollapsed}
-              onViewSources={handleViewSources}
-            />
-          </div>
-        </div>
-      </div>
 
-      {/* Sources sidebar */}
+      <CollapseToggle isCollapsed={isInputAreaCollapsed} onToggle={setIsInputAreaCollapsed} />
+
+      {/* Chat area */}
+      {hasMessages ? (
+        <ChatDisplay
+          ref={chatDisplayRef}
+          conversationMessages={conversationMessages}
+          isCollapsed={isInputAreaCollapsed}
+          onViewSources={handleViewSources}
+          isStreaming={isLoading}
+        />
+      ) : (
+        <EmptyState onSelectPrompt={selectExamplePrompt} session={session} />
+      )}
+
       <SourcesSidebar
         isOpen={isSourcesSidebarOpen}
         onToggle={handleCloseSources}
